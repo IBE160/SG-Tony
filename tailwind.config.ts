@@ -1,61 +1,92 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  content: [
+    darkMode: ["class"],
+    content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {
-      // Playful Nordic Color Theme - Norwegian flag-inspired colors
-      colors: {
-        // Primary Colors
-        primary: "#E94560",     // Coral-red - Main actions, CTAs, brand identity
-        secondary: "#0F3460",   // Navy - Supporting actions, headers, text
-        accent: "#FFC93C",      // Yellow - Highlights, attention, playful accents
-
-        // Semantic Colors
-        success: "#06D6A0",     // Green - Positive feedback, completion states
-        error: "#EF476F",       // Red - Errors, destructive actions, alerts
-        info: "#3B82F6",        // Blue - Informational messages, tooltips
-
-        // Neutral Palette
-        background: "#F8F9FA",  // Light gray - App background
-        surface: "#FFFFFF",     // White - Cards, modals, containers
-        "text-primary": "#1F2937",     // Near-black - Main body text
-        "text-secondary": "#6B7280",   // Medium gray - Captions, labels
-        border: "#E5E7EB",      // Light gray - Dividers, input borders
-      },
-
-      // Custom Spacing Scale (4px base unit)
-      spacing: {
-        'xs': '4px',    // Extra small
-        'sm': '8px',    // Small
-        'md': '16px',   // Medium
-        'lg': '24px',   // Large
-        'xl': '32px',   // Extra large
-        '2xl': '48px',  // 2X large
-      },
-
-      // Mobile-First Breakpoints (matching UX spec)
-      screens: {
-        'sm': '640px',    // Tablet
-        'lg': '1024px',   // Desktop
-        // Mobile is default (<640px, no prefix needed)
-      },
-
-      // Typography - Inter font family with system defaults
-      fontFamily: {
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-      },
-
-      // Border Radius - 12px default (friendly, modern)
-      borderRadius: {
-        DEFAULT: '12px',
-      },
-    },
+  	extend: {
+  		colors: {
+  			primary: {
+  				DEFAULT: 'hsl(var(--primary))',
+  				foreground: 'hsl(var(--primary-foreground))'
+  			},
+  			secondary: {
+  				DEFAULT: 'hsl(var(--secondary))',
+  				foreground: 'hsl(var(--secondary-foreground))'
+  			},
+  			accent: {
+  				DEFAULT: 'hsl(var(--accent))',
+  				foreground: 'hsl(var(--accent-foreground))'
+  			},
+  			success: '#06D6A0',
+  			error: '#EF476F',
+  			info: '#3B82F6',
+  			background: 'hsl(var(--background))',
+  			surface: '#FFFFFF',
+  			'text-primary': '#1F2937',
+  			'text-secondary': '#6B7280',
+  			border: 'hsl(var(--border))',
+  			foreground: 'hsl(var(--foreground))',
+  			card: {
+  				DEFAULT: 'hsl(var(--card))',
+  				foreground: 'hsl(var(--card-foreground))'
+  			},
+  			popover: {
+  				DEFAULT: 'hsl(var(--popover))',
+  				foreground: 'hsl(var(--popover-foreground))'
+  			},
+  			muted: {
+  				DEFAULT: 'hsl(var(--muted))',
+  				foreground: 'hsl(var(--muted-foreground))'
+  			},
+  			destructive: {
+  				DEFAULT: 'hsl(var(--destructive))',
+  				foreground: 'hsl(var(--destructive-foreground))'
+  			},
+  			input: 'hsl(var(--input))',
+  			ring: 'hsl(var(--ring))',
+  			chart: {
+  				'1': 'hsl(var(--chart-1))',
+  				'2': 'hsl(var(--chart-2))',
+  				'3': 'hsl(var(--chart-3))',
+  				'4': 'hsl(var(--chart-4))',
+  				'5': 'hsl(var(--chart-5))'
+  			}
+  		},
+  		spacing: {
+  			xs: '4px',
+  			sm: '8px',
+  			md: '16px',
+  			lg: '24px',
+  			xl: '32px',
+  			'2xl': '48px'
+  		},
+  		screens: {
+  			sm: '640px',
+  			lg: '1024px'
+  		},
+  		fontFamily: {
+  			sans: [
+  				'Inter',
+  				'-apple-system',
+  				'BlinkMacSystemFont',
+  				'Segoe UI',
+  				'Roboto',
+  				'sans-serif'
+  			]
+  		},
+  		borderRadius: {
+  			DEFAULT: '12px',
+  			lg: 'var(--radius)',
+  			md: 'calc(var(--radius) - 2px)',
+  			sm: 'calc(var(--radius) - 4px)'
+  		}
+  	}
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 };
 export default config;

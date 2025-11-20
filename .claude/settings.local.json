@@ -26,7 +26,11 @@
       "SlashCommand(/bmad:bmm:agents:sm)",
       "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\docs\\sprint-artifacts\" mkdir \"C:\\Users\\tony-\\SG-Tony\\docs\\sprint-artifacts\")",
       "Bash(nul)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(npx shadcn@latest init:*)",
+      "Bash(npx shadcn@latest add button card input dialog toast progress badge select switch tabs --yes)",
+      "Bash(npx shadcn@latest add label:*)",
+      "Bash(del \"C:\\Users\\tony-\\SG-Tony\\src\\app\\test-komponenter\\page.tsx\")"
     ],
     "deny": [],
     "ask": []
