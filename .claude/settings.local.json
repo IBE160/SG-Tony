@@ -30,7 +30,8 @@
       "Bash(npx shadcn@latest init:*)",
       "Bash(npx shadcn@latest add button card input dialog toast progress badge select switch tabs --yes)",
       "Bash(npx shadcn@latest add label:*)",
-      "Bash(del \"C:\\Users\\tony-\\SG-Tony\\src\\app\\test-komponenter\\page.tsx\")"
+      "Bash(del \"C:\\Users\\tony-\\SG-Tony\\src\\app\\test-komponenter\\page.tsx\")",
+      "SlashCommand(/bmad:bmm:workflows:create-story)"
     ],
     "deny": [],
     "ask": []
