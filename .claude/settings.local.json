@@ -10,7 +10,18 @@
       "SlashCommand(/bmad:bmm:workflows:workflow-init)",
       "Bash(test:*)",
       "SlashCommand(/bmad:bmm:workflows:sprint-planning)",
-      "SlashCommand(/bmad:bmm:workflows:epic-tech-context)"
+      "SlashCommand(/bmad:bmm:workflows:epic-tech-context)",
+      "Bash(node --version:*)",
+      "Bash(npx create-next-app:*)",
+      "Bash(npx create-next-app@latest --typescript --tailwind --app --eslint --src-dir --import-alias \"@/*\" .)",
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)",
+      "Bash(timeout:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npx tsc:*)",
+      "Bash(tree:*)",
+      "SlashCommand(/run-agent-task sm create-story \"Create story file for 1.2-configure-tailwind-with-playful-nordic-theme from epic-1-foundation-infrastructure.md\")"
     ],
     "deny": [],
     "ask": []
