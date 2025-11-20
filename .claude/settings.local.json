@@ -31,7 +31,17 @@
       "Bash(npx shadcn@latest add button card input dialog toast progress badge select switch tabs --yes)",
       "Bash(npx shadcn@latest add label:*)",
       "Bash(del \"C:\\Users\\tony-\\SG-Tony\\src\\app\\test-komponenter\\page.tsx\")",
-      "SlashCommand(/bmad:bmm:workflows:create-story)"
+      "SlashCommand(/bmad:bmm:workflows:create-story)",
+      "Bash(exit 0)",
+      "Bash(npx supabase:*)",
+      "Bash(srctypessupabase.ts)",
+      "Bash(curl:*)",
+      "Bash(del /q srcapptest-databasepage.tsx)",
+      "Bash(if exist srctypessupabase.ts del srctypessupabase.ts)",
+      "Bash(if [ -f srctypessupabase.ts ])",
+      "Bash(then rm srctypessupabase.ts)",
+      "Bash(else echo \"File not found (may already be cleaned up)\")",
+      "Bash(fi)"
     ],
     "deny": [],
     "ask": []
