@@ -135,7 +135,7 @@ export async function refundCredits(
     ...(songId && { p_song_id: songId })
   }
 
-  const { data, error } = await supabase.rpc('refund_credits' as any, params)
+  const { data, error } = await supabase.rpc('refund_credits', params)
 
   if (error) {
     throw new CreditOperationError(`Credit refund failed: ${error.message}`, error)

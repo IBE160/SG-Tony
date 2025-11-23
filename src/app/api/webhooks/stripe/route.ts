@@ -98,60 +98,38 @@ export async function POST(request: Request) {
         return NextResponse.json({ received: true })
       }
 
-      // 6. Get current balance
-      const { data: profile, error: profileError } = await supabase
-        .from('user_profile')
-        .select('credit_balance')
-        .eq('id', userId)
-        .single()
+      // 6. Atomically add credits using stored procedure
+      // This ensures both credit balance update and transaction log are created atomically
+      const { data: transaction, error: addCreditsError } = await supabase.rpc(
+        'add_credits',
+        {
+          p_user_id: userId,
+          p_amount: creditsToAdd,
+          p_description: `Credit purchase: ${packageId} package`,
+          p_stripe_session_id: stripeSessionId,
+        }
+      )
 
-      if (profileError || !profile) {
-        console.error('Failed to fetch user profile:', profileError)
+      if (addCreditsError) {
+        console.error('Failed to add credits:', addCreditsError)
         return NextResponse.json(
-          { error: { code: 'USER_NOT_FOUND', message: 'User profile not found' } },
+          {
+            error: {
+              code: 'ADD_CREDITS_FAILED',
+              message: 'Failed to add credits',
+              details: addCreditsError.message,
+            },
+          },
           { status: 500 }
         )
-      }
-
-      const newBalance = profile.credit_balance + creditsToAdd
-
-      // 7. Atomically update credit balance
-      const { error: updateError } = await supabase
-        .from('user_profile')
-        .update({ credit_balance: newBalance })
-        .eq('id', userId)
-
-      if (updateError) {
-        console.error('Failed to update credit balance:', updateError)
-        return NextResponse.json(
-          { error: { code: 'UPDATE_FAILED', message: 'Failed to update credits' } },
-          { status: 500 }
-        )
-      }
-
-      // 8. Create transaction record
-      const { error: transactionError } = await supabase
-        .from('credit_transaction')
-        .insert({
-          user_id: userId,
-          amount: creditsToAdd,
-          balance_after: newBalance,
-          transaction_type: 'purchase',
-          description: `Credit purchase: ${packageId} package`,
-          stripe_session_id: stripeSessionId,
-        })
-
-      if (transactionError) {
-        console.error('Failed to create transaction record:', transactionError)
-        // Note: Credits already added, so we return success but log the error
-        // Future improvement: Implement rollback logic
       }
 
       console.log('Credits added successfully:', {
         userId,
         credits: creditsToAdd,
-        newBalance,
+        newBalance: transaction.balance_after,
         stripeSessionId,
+        transactionId: transaction.id,
       })
     }
 

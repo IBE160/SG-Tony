@@ -253,6 +253,24 @@ export type Database = {
         }
         Returns: Database['public']['Tables']['credit_transaction']['Row']
       }
+      add_credits: {
+        Args: {
+          p_user_id: string
+          p_amount: number
+          p_description: string
+          p_stripe_session_id?: string
+        }
+        Returns: Database['public']['Tables']['credit_transaction']['Row']
+      }
+      refund_credits: {
+        Args: {
+          p_user_id: string
+          p_amount: number
+          p_description: string
+          p_song_id?: string
+        }
+        Returns: Database['public']['Tables']['credit_transaction']['Row']
+      }
     }
     Enums: {
       [_ in never]: never
