@@ -1,0 +1,328 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>3.2</storyId>
+    <title>Implement AI Lyric Generation with Song Concept Input</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-23</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/stories/3-2-implement-ai-lyric-generation-with-song-concept-input.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>describe my song concept and have AI generate Norwegian lyrics</iWant>
+    <soThat>I don't need to write lyrics myself</soThat>
+    <tasks>
+- [ ] Task 1: Create API route for lyric generation (AC: GPT-4 integration)
+  - [ ] Create `/src/app/api/lyrics/generate/route.ts`
+  - [ ] Set up OpenAI SDK initialization with API key
+  - [ ] Implement POST handler accepting concept and genre
+  - [ ] Configure GPT-4 with temperature 0.7 for creativity
+  - [ ] Return JSON response with generated lyrics
+
+- [ ] Task 2: Implement lyric generation logic (AC: Norwegian cultural context)
+  - [ ] Design prompt template for Norwegian Bokmål lyrics
+  - [ ] Include genre style guidance in prompt
+  - [ ] Include cultural context hints (Norwegian references)
+  - [ ] Limit output to 4-8 lines typical for song verses
+  - [ ] Handle edge cases (inappropriate content, API errors)
+
+- [ ] Task 3: Create concept input component (AC: Textarea with character count)
+  - [ ] Create textarea component for song concept input
+  - [ ] Implement real-time character counter (1-500 chars)
+  - [ ] Add placeholder text in Norwegian
+  - [ ] Display validation state (error if too short/long)
+  - [ ] Style according to UX design specification
+
+- [ ] Task 4: Create lyric display/edit component (AC: Editable textarea)
+  - [ ] Create textarea for displaying generated lyrics
+  - [ ] Make lyrics editable after generation
+  - [ ] Preserve line breaks and formatting
+  - [ ] Add Norwegian label "Generert tekst"
+  - [ ] Style consistently with concept input
+
+- [ ] Task 5: Implement generate lyrics button and flow (AC: Integration)
+  - [ ] Create "Generer tekst med AI" button
+  - [ ] Disable button if genre not selected or concept empty
+  - [ ] Show loading state during API call (<10s)
+  - [ ] Handle success: populate lyrics textarea
+  - [ ] Handle errors: show Norwegian error message with retry
+  - [ ] Integrate with genre selection from Story 3.1
+
+- [ ] Task 6: Testing and quality validation (AC: All)
+  - [ ] Test with various genre + concept combinations
+  - [ ] Verify Norwegian cultural references appear
+  - [ ] Verify lyrics match genre style
+  - [ ] Test character count validation
+  - [ ] Test manual editing of generated lyrics
+  - [ ] Verify API response time <10 seconds
+  - [ ] Test error handling (API failure, timeout)
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+**Given** I have selected a genre from the genre selection
+**When** I enter a song concept in the textarea (e.g., "Morsom bursdagssang for vennen min Lars som elsker fiske")
+**Then** Character count appears below textarea (1-500 characters)
+**And** When I click "Generer tekst med AI" button
+**Then** OpenAI GPT-4 generates Norwegian lyrics based on concept + genre
+**And** Generated lyrics appear in editable textarea (4-8 verse lines typical)
+**And** Lyrics match the genre style (e.g., Country Rock = twangy, upbeat)
+**And** Norwegian cultural context is preserved (references Norwegian life, humor)
+**And** Generation takes <10 seconds
+**And** I can edit generated lyrics manually before proceeding
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>FR5-FR8: Song Creation &amp; Lyrics Input</section>
+        <snippet>Users can input Norwegian lyrics for song generation (text entry), select genre/style from pre-configured prompt templates, and preview lyrics before submitting. This story implements AI-powered lyrics generation to remove the barrier of manual lyric writing.</snippet>
+      </doc>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>Integration Requirements - OpenAI GPT-4</section>
+        <snippet>OpenAI GPT-4 for Norwegian lyric generation with temperature 0.7 for creativity balance. Response time target &lt;5 seconds. Cost ~$0.03 per request. Prompt engineering for Norwegian cultural context.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Language &amp; Localization</section>
+        <snippet>CRITICAL: Norwegian UI Content, English Code. All user-facing text must be in Norwegian (buttons, labels, placeholders, error messages). Technical code, variable names, comments remain in English for maintainability.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>API Response Format</section>
+        <snippet>Standard API response pattern: Success: {data: {...}}, Error: {error: {code: 'ERROR_CODE', message: 'Norwegian error message'}}. All error messages must be user-friendly and in Norwegian.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics/epic-3-norwegian-song-creation-core.md</path>
+        <title>Epic 3: Norwegian Song Creation (CORE)</title>
+        <section>Story 3.2: Implement AI Lyric Generation</section>
+        <snippet>Create /src/app/api/lyrics/generate/route.ts for AI lyric generation. Use OpenAI GPT-4 API with temperature 0.7. Prompt: "Generate Norwegian Bokmål lyrics for a {genre} song about {concept}. Make it authentic, funny, and culturally Norwegian. 4-8 lines." Cost: ~$0.03 per request.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/3-2-implement-ai-lyric-generation-with-song-concept-input.md</path>
+        <title>Story 3.2 Full Specification</title>
+        <section>Dev Notes - Requirements Context</section>
+        <snippet>Implements FR5, FR6, FR8. OpenAI Integration with GPT-4, temperature 0.7. Environment variable: OPENAI_API_KEY (server-side only). Cost: ~$0.03 per request. Timeout: &lt;10 seconds target response time. API Route: /src/app/api/lyrics/generate/route.ts (Next.js App Router pattern).</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>src/components/genre-selection.tsx</path>
+        <kind>component</kind>
+        <symbol>GenreSelection</symbol>
+        <lines>1-150</lines>
+        <reason>Existing genre selection component from Story 3.1. This story must integrate with it to receive selected genre for lyric generation API call. Interface: onGenreSelect callback provides genreId and genreName.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/supabase/client.ts</path>
+        <kind>library</kind>
+        <symbol>createClient</symbol>
+        <reason>Supabase browser client used in client components for database operations. Pattern: import {createClient} from '@/lib/supabase/client', then call createClient() to get instance.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/supabase/server.ts</path>
+        <kind>library</kind>
+        <symbol>createClient</symbol>
+        <reason>Supabase server client used in API routes and Server Components. Pattern: const supabase = await createClient(). Required for authentication checks in API routes.</reason>
+      </artifact>
+      <artifact>
+        <path>src/app/api/credits/balance/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>GET</symbol>
+        <lines>1-96</lines>
+        <reason>Reference API route pattern for Next.js App Router. Shows authentication pattern (session check), error handling format, and standard JSON response structure to follow.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/utils.ts</path>
+        <kind>utility</kind>
+        <symbol>cn</symbol>
+        <reason>Utility function for merging Tailwind CSS classes. Use for component styling: cn('base-classes', conditionalClasses).</reason>
+      </artifact>
+      <artifact>
+        <path>src/app/page.tsx</path>
+        <kind>page</kind>
+        <symbol>Home</symbol>
+        <lines>1-51</lines>
+        <reason>Main landing page where lyric generation UI will be integrated. Currently has GenreSelection component and placeholder for lyrics input. This story will add concept input, lyrics editor, and generation button to this page.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/ui/button.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Button</symbol>
+        <reason>shadcn/ui Button component for "Generer tekst med AI" button. Supports variants (default, outline, etc.) and loading states.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/ui/label.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Label</symbol>
+        <reason>shadcn/ui Label component for form labels. Use for Norwegian labels like "Konsept" and "Generert tekst".</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <nodejs>
+        <package name="next" version="^14.2.3">Next.js framework with App Router</package>
+        <package name="react" version="^18.2.0">React library</package>
+        <package name="typescript" version="^5">TypeScript for type safety</package>
+        <package name="@supabase/supabase-js" version="^2.84.0">Supabase client SDK</package>
+        <package name="@supabase/ssr" version="^0.7.0">Supabase SSR helpers for Next.js</package>
+        <package name="tailwindcss" version="^3.4.1">Tailwind CSS for styling</package>
+        <package name="lucide-react" version="^0.554.0">Icon library</package>
+        <package name="clsx" version="^2.1.1">Utility for conditional class names</package>
+        <package name="tailwind-merge" version="^3.4.0">Merge Tailwind classes</package>
+        <package name="zod" version="^4.1.12">Schema validation (for form validation)</package>
+      </nodejs>
+      <external-apis>
+        <api name="OpenAI GPT-4">
+          <purpose>Norwegian lyric generation</purpose>
+          <auth>OPENAI_API_KEY environment variable (server-side only)</auth>
+          <cost>~$0.03 per request</cost>
+          <note>Need to install: npm install openai</note>
+        </api>
+        <api name="Supabase">
+          <purpose>Database for genre data, future song storage</purpose>
+          <auth>NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY</auth>
+        </api>
+      </external-apis>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint priority="critical">
+      <rule>All user-facing text MUST be in Norwegian (Bokmål)</rule>
+      <rationale>Norwegian-first product targeting Norwegian users. UI language in Norwegian, code/technical content in English.</rationale>
+      <examples>
+        - Button: "Generer tekst med AI" (not "Generate lyrics")
+        - Label: "Konsept (1-500 tegn)" (not "Concept (1-500 chars)")
+        - Error: "Kunne ikke generere tekst. Prøv igjen." (not "Failed to generate")
+      </examples>
+    </constraint>
+    <constraint priority="critical">
+      <rule>OpenAI API key MUST be server-side only</rule>
+      <rationale>Security: Never expose API keys to client. Use OPENAI_API_KEY in .env.local, access only in API routes.</rationale>
+      <enforcement>API route at /src/app/api/lyrics/generate/route.ts, not client component</enforcement>
+    </constraint>
+    <constraint priority="high">
+      <rule>API response time must be &lt;10 seconds</rule>
+      <rationale>User acceptance criteria. GPT-4 typically responds in 3-7 seconds. Include timeout handling and loading UI.</rationale>
+    </constraint>
+    <constraint priority="high">
+      <rule>Character count validation: 1-500 characters for concept input</rule>
+      <rationale>Acceptance criteria. Prevent empty/too-long concepts. Real-time counter with client and server-side validation.</rationale>
+    </constraint>
+    <constraint priority="high">
+      <rule>Generated lyrics must be 4-8 lines typical</rule>
+      <rationale>Song verse length constraint from Epic 3. Include in GPT-4 prompt instructions.</rationale>
+    </constraint>
+    <constraint priority="medium">
+      <rule>Follow existing component patterns from Story 3.1</rule>
+      <rationale>Consistency: Use same styling patterns (min-h-[44px], Norwegian labels, error handling) as GenreSelection component.</rationale>
+    </constraint>
+    <constraint priority="medium">
+      <rule>Use shadcn/ui components for UI consistency</rule>
+      <rationale>Architecture decision. Button, Label, and future Textarea components from shadcn/ui maintain design system.</rationale>
+    </constraint>
+    <constraint priority="medium">
+      <rule>API error responses must follow standard format</rule>
+      <rationale>Architecture pattern: {error: {code: 'ERROR_CODE', message: 'Norwegian message'}}. Maintains consistency across all API routes.</rationale>
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>Genre Selection Callback</name>
+      <kind>React prop callback</kind>
+      <signature>onGenreSelect?: (genreId: string, genreName: string) =&gt; void</signature>
+      <path>src/components/genre-selection.tsx</path>
+      <usage>Story 3.2 components must receive genre selection from GenreSelection component. Use this callback to capture selected genre for lyric generation API call.</usage>
+    </interface>
+    <interface>
+      <name>Lyrics Generation API Endpoint</name>
+      <kind>REST API POST</kind>
+      <signature>POST /api/lyrics/generate
+Request: {concept: string, genre: string}
+Response: {data: {lyrics: string}} | {error: {code: string, message: string}}</signature>
+      <path>src/app/api/lyrics/generate/route.ts (to be created)</path>
+      <usage>Client component calls this endpoint with concept and genre. Server-side GPT-4 call returns generated Norwegian lyrics.</usage>
+    </interface>
+    <interface>
+      <name>Supabase createClient (server)</name>
+      <kind>Function</kind>
+      <signature>async createClient(): Promise&lt;SupabaseClient&gt;</signature>
+      <path>src/lib/supabase/server.ts</path>
+      <usage>Use in API routes for authentication: const supabase = await createClient(); const {data: {session}} = await supabase.auth.getSession();</usage>
+    </interface>
+    <interface>
+      <name>Genre Database Schema</name>
+      <kind>Database table</kind>
+      <signature>genre table: {id: string, name: string, display_name: string, emoji: string, is_active: boolean, sort_order: number, suno_prompt_template: string}</signature>
+      <usage>Genre name (e.g., "country-rock") used in lyric generation prompt. Query: supabase.from('genre').select('name').eq('id', genreId).single()</usage>
+    </interface>
+    <interface>
+      <name>cn utility</name>
+      <kind>Utility function</kind>
+      <signature>cn(...inputs: ClassValue[]): string</signature>
+      <path>src/lib/utils.ts</path>
+      <usage>Merge Tailwind CSS classes: cn('base-class', condition &amp;&amp; 'conditional-class')</usage>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Next.js project uses TypeScript with ESLint for code quality. Testing approach follows these patterns: (1) Type safety via TypeScript interfaces and Zod schemas, (2) Error handling with try-catch and proper error responses, (3) Integration testing via manual QA on dev server (npm run dev), (4) API route testing using browser DevTools Network tab or Postman. No formal unit test framework configured yet - focus on TypeScript type checking and runtime validation.</standards>
+    <locations>
+      - API routes: src/app/api/** (test via HTTP requests)
+      - Components: src/components/** (test via browser UI)
+      - Manual testing on dev server: npm run dev
+      - Type checking: npm run build or npx tsc --noEmit
+    </locations>
+    <ideas>
+      <test id="AC-1" criteria="Character count appears (1-500 chars)">
+        - Verify character counter displays real-time count
+        - Test with empty input (should show 0/500)
+        - Test with 500 chars (should show 500/500, no error)
+        - Test with 501 chars (should show error, disable button)
+        - Verify Norwegian text: "X/500 tegn"
+      </test>
+      <test id="AC-2" criteria="GPT-4 generates Norwegian lyrics">
+        - Test API route with genre="country-rock" and concept="Bursdagssang for Lars"
+        - Verify response contains Norwegian lyrics (check for Norwegian characters æ, ø, å)
+        - Verify lyrics are 4-8 lines (count newlines)
+        - Test with different genres to verify style variation
+        - Verify response time &lt;10 seconds
+      </test>
+      <test id="AC-3" criteria="Lyrics match genre style">
+        - Generate lyrics for "Country Rock" - expect twangy, upbeat references
+        - Generate lyrics for "Norwegian Pop" - expect modern, catchy structure
+        - Manual review: Do lyrics feel appropriate for the genre?
+      </test>
+      <test id="AC-4" criteria="Norwegian cultural context preserved">
+        - Verify lyrics contain Norwegian references (places, traditions, humor)
+        - Check for authentic Norwegian expressions (not literal English translations)
+        - Manual review: Does it feel genuinely Norwegian?
+      </test>
+      <test id="AC-5" criteria="Manual editing works">
+        - Verify generated lyrics appear in editable textarea
+        - Type new text - verify changes persist
+        - Verify line breaks are preserved when editing
+      </test>
+      <test id="AC-6" criteria="Error handling">
+        - Test with invalid OPENAI_API_KEY - verify Norwegian error message
+        - Test with empty concept - verify validation error
+        - Test with network timeout - verify timeout error with retry option
+        - Verify all errors show Norwegian messages
+      </test>
+      <test id="INTEGRATION" criteria="Genre selection integration">
+        - Select genre first, then enter concept - verify button enables
+        - Try to generate without selecting genre - verify button stays disabled
+        - Verify selected genre name passed to API correctly
+      </test>
+    </ideas>
+  </tests>
+</story-context>
