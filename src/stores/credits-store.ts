@@ -1,12 +1,16 @@
 import { create } from 'zustand'
 
+const LOW_BALANCE_THRESHOLD = 20 // Show warning when balance < 20 credits
+
 interface CreditsStore {
   balance: number
   setBalance: (balance: number) => void
   refreshBalance: () => Promise<void>
+  isLowBalance: () => boolean
+  hasInsufficientCredits: (required: number) => boolean
 }
 
-export const useCreditsStore = create<CreditsStore>((set) => ({
+export const useCreditsStore = create<CreditsStore>((set, get) => ({
   balance: 0,
   setBalance: (balance) => set({ balance }),
   refreshBalance: async () => {
@@ -20,5 +24,7 @@ export const useCreditsStore = create<CreditsStore>((set) => ({
     } catch (error) {
       console.error('Error refreshing balance:', error)
     }
-  }
+  },
+  isLowBalance: () => get().balance < LOW_BALANCE_THRESHOLD,
+  hasInsufficientCredits: (required) => get().balance < required,
 }))

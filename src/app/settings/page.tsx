@@ -88,9 +88,10 @@ function SettingsContent() {
     loadProfile()
   }, [refreshBalance, searchParams])
 
-  // Handle payment redirect query params
+  // Handle payment redirect query params and modal open
   useEffect(() => {
     const payment = searchParams.get('payment')
+    const openModal = searchParams.get('openPurchaseModal')
 
     if (payment === 'success') {
       toast({
@@ -107,6 +108,10 @@ function SettingsContent() {
         description: 'No charges were made to your account.',
         variant: 'default',
       })
+      // Clear query param
+      router.replace('/settings')
+    } else if (openModal === 'true') {
+      setIsPurchaseModalOpen(true)
       // Clear query param
       router.replace('/settings')
     }
@@ -180,20 +185,70 @@ function SettingsContent() {
           </CardContent>
         </Card>
 
+        {/* Low Balance Warning (if applicable) */}
+        {balance < 20 && balance > 0 && (
+          <Card className="mb-6 bg-yellow-50 border-yellow-400 border-2">
+            <CardContent className="pt-6">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 text-2xl">⚠️</div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg text-gray-900 mb-1">
+                    Lav kredittsaldo!
+                  </h3>
+                  <p className="text-gray-700 mb-4">
+                    Du har {balance} kreditter igjen. Kjøp flere kreditter for å fortsette å lage sanger.
+                  </p>
+                  <Button
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                    onClick={() => setIsPurchaseModalOpen(true)}
+                  >
+                    Kjøp kreditter nå
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Zero Balance Error (if applicable) */}
+        {balance === 0 && (
+          <Card className="mb-6 bg-red-50 border-red-400 border-2">
+            <CardContent className="pt-6">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 text-2xl">❌</div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg text-gray-900 mb-1">
+                    Ingen kreditter igjen
+                  </h3>
+                  <p className="text-gray-700 mb-4">
+                    Du må kjøpe kreditter for å kunne generere sanger.
+                  </p>
+                  <Button
+                    className="bg-red-600 hover:bg-red-700 text-white font-semibold"
+                    onClick={() => setIsPurchaseModalOpen(true)}
+                  >
+                    Kjøp kreditter for å fortsette
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Credit Balance Card */}
-        <Card className="mb-6 bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200">
+        <Card className={`mb-6 ${balance < 20 ? 'bg-gradient-to-br from-red-50 to-orange-50 border-red-200' : 'bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200'}`}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Coins className="w-5 h-5 text-amber-600" />
+              <Coins className={`w-5 h-5 ${balance < 20 ? 'text-red-600' : 'text-amber-600'}`} />
               Credit Balance
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-center py-4">
-              <div className="text-6xl font-bold text-amber-500 mb-2">
+              <div className={`text-6xl font-bold mb-2 ${balance < 20 ? 'text-red-500' : 'text-amber-500'}`}>
                 {balance}
               </div>
-              <p className="text-lg text-amber-700">credits</p>
+              <p className={`text-lg ${balance < 20 ? 'text-red-700' : 'text-amber-700'}`}>credits</p>
             </div>
 
             <Button

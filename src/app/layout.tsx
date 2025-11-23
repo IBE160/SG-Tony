@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { BottomNavigation } from "@/components/layout/bottom-navigation";
+import { LowCreditWarningWrapper } from "@/components/low-credit-warning-wrapper";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Musikkfabrikken - Lag norske sanger med AI",
@@ -15,14 +17,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
     <html lang="nb">
       <body>
+        <LowCreditWarningWrapper userId={user?.id} />
         {children}
         <BottomNavigation />
       </body>
