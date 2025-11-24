@@ -1,0 +1,325 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>3.4</storyId>
+    <title>Create Phonetic Diff Viewer Component</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-24</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs\sprint-artifacts\3-4-create-phonetic-diff-viewer-component.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>to see a side-by-side comparison of original and optimized lyrics</iWant>
+    <soThat>I understand what pronunciation changes are being made</soThat>
+    <tasks>- Task 1: Create PhoneticDiffViewer component structure (AC: Modal with split-screen layout)
+  - Create `/src/components/phonetic-diff-viewer.tsx` component file
+  - Set up component props interface (originalLyrics, optimizedLyrics, onAccept, onRevert)
+  - Implement modal container using shadcn/ui Dialog component
+  - Create responsive layout: side-by-side on desktop, stacked on mobile
+  - Add Norwegian labels and headers
+
+- Task 2: Implement diff highlighting logic (AC: Green highlights for changes)
+  - Create diff algorithm to compare original vs optimized lyrics line-by-line
+  - Identify changed words within each line
+  - Apply green background (#06D6A0) to changed words
+  - Apply gray color to unchanged words
+  - Use monospace font for proper text alignment
+  - Handle edge cases (empty lines, punctuation)
+
+- Task 3: Add line numbering and layout (AC: Numbered lines)
+  - Implement line number column for both sides
+  - Ensure line numbers align with content
+  - Style line numbers (gray, smaller font)
+  - Handle long lines with proper wrapping
+  - Maintain alignment between left and right sides
+
+- Task 4: Implement per-line toggle functionality (AC: Individual line toggles)
+  - Add checkbox for each line to toggle optimization ON/OFF
+  - Track toggle state in component state
+  - Update displayed lyrics when toggles change
+  - Merge selected lines (original vs optimized) for final output
+  - Provide visual feedback for toggled state
+  - Add Norwegian label "Bruk original" for checkboxes
+
+- Task 5: Implement modal actions (AC: Accept/Revert functionality)
+  - Create "Godta endringer" (Accept) button
+  - Create "Tilbake til original" (Revert) button
+  - Create "Lukk" (Close) button
+  - Implement onAccept callback with merged lyrics
+  - Implement onRevert callback to restore original
+  - Handle modal close without action (preserve state)
+  - Style buttons according to UX design (primary green, secondary gray)
+
+- Task 6: Responsive design and accessibility (AC: Mobile stacked layout)
+  - Implement desktop layout: 2-column grid (50/50 split)
+  - Implement mobile layout: stacked vertical (Original above, Optimized below)
+  - Add breakpoint at 768px for mobile/desktop switch
+  - Ensure touch-friendly tap targets (48px+ for checkboxes)
+  - Add ARIA labels for screen readers
+  - Implement keyboard navigation (Tab, Enter, Escape)
+  - Test with Norwegian screen reader
+
+- Task 7: Integration and testing (AC: All)
+  - Integrate with pronunciation optimizer output (Story 3.3)
+  - Test with various lyrics lengths (short, long, multi-verse)
+  - Test diff highlighting accuracy
+  - Test per-line toggle functionality
+  - Test modal open/close/accept/revert flows
+  - Test responsive breakpoints on mobile and desktop
+  - Verify Norwegian UI text throughout
+  - Test accessibility with keyboard only</tasks>
+  </story>
+
+  <acceptanceCriteria>**Given** Pronunciation optimization has been applied
+**When** I click "Forhåndsvis fonetiske endringer" button
+**Then** A modal opens showing split-screen view: Original (left) | Optimized (right)
+**And** Changed words are highlighted in green background (#06D6A0)
+**And** Unchanged words are displayed in gray
+**And** Each line is numbered (1, 2, 3...)
+**And** I can toggle optimization ON/OFF for individual lines (per-line checkbox)
+**And** I can close modal and accept changes or revert to original
+**And** Mobile view: Stacked layout (Original above, Optimized below)</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/epics/epic-3-norwegian-song-creation-core.md</path>
+        <title>Epic 3: Norwegian Song Creation (CORE)</title>
+        <section>Story 3.4: Create Phonetic Diff Viewer Component</section>
+        <snippet>Creates visual comparison interface for pronunciation optimizer - shows split-screen original vs optimized lyrics with green highlights for changes, line numbering, and per-line toggle control. Prerequisites: Story 3.3 (Pronunciation Optimizer). Technical: Create /src/components/phonetic-diff-viewer.tsx with monospace font, diff algorithm, and accessibility support.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture - Component Structure</title>
+        <section>Component Path and UI Libraries</section>
+        <snippet>Component path: /src/components/phonetic-diff-viewer.tsx (custom component). Uses shadcn/ui Dialog for modal, Tailwind CSS for styling with green highlights (#06D6A0), monospace font for text alignment. Responsive: Mobile-first design with stacked mobile layout. Accessibility: WCAG 2.1 AA compliant with keyboard navigation and ARIA labels.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture - Implementation Patterns: Language & Localization</title>
+        <section>Norwegian UI Content, English Code</section>
+        <snippet>CRITICAL: All user-facing content in Norwegian (buttons, labels, headers, messages). All code in English (variables, functions, comments). Examples: Button labels "Godta endringer", "Tilbake til original", "Lukk". Modal title "Forhåndsvisning av fonetiske endringer". Headers "Original tekst" | "Optimert tekst". Checkbox labels "Bruk original".</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design - Custom Component: Phonetic Diff Viewer</title>
+        <section>Component Anatomy and Behavior</section>
+        <snippet>Split screen: Original (left) | Optimized (right). Diff highlights: Green background (#06D6A0) for changed words. Line numbers in left margin. Per-line override toggle checkbox. States: Desktop = side-by-side, Mobile = stacked (before → after vertical scroll). Behavior: Tap line to toggle override for that line. Supports full diff (all lyrics) and compact (only changed lines) variants.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>src/components/ui/dialog.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter</symbol>
+        <lines>1-112</lines>
+        <reason>shadcn/ui Dialog component for modal container. Use DialogContent for main modal, DialogHeader for title section, DialogFooter for action buttons. Already installed from Story 1.4.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/ui/button.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Button</symbol>
+        <lines>-</lines>
+        <reason>shadcn/ui Button component for "Godta endringer", "Tilbake til original", "Lukk" action buttons. Already installed from Story 1.4.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/ui/checkbox.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Checkbox</symbol>
+        <lines>-</lines>
+        <reason>shadcn/ui Checkbox component for per-line optimization toggles. NOTE: Not yet installed - needs to be added with `npx shadcn@latest add checkbox`.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/phonetic/optimizer.ts</path>
+        <kind>lib</kind>
+        <symbol>PhoneticChange, OptimizationResult, optimizeLyrics</symbol>
+        <lines>9-21</lines>
+        <reason>Pronunciation optimizer from Story 3.3. Provides PhoneticChange interface (original, optimized, reason, lineNumber) and OptimizationResult interface (originalLyrics, optimizedLyrics, changes[]). This is the input data structure for the diff viewer.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/pronunciation-toggle.tsx</path>
+        <kind>component</kind>
+        <symbol>PronunciationToggle</symbol>
+        <lines>1-50</lines>
+        <reason>Existing pronunciation toggle component from Story 3.3. May need to integrate "Forhåndsvis fonetiske endringer" button here or create separate trigger button.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/lyrics-editor.tsx</path>
+        <kind>component</kind>
+        <symbol>LyricsEditor</symbol>
+        <lines>14-50</lines>
+        <reason>Reference pattern for monospace font (font-mono class), line counting, and textarea styling. Diff viewer should use similar monospace font for text alignment.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <react>
+        <package name="react" version="^18.2.0" />
+        <package name="react-dom" version="^18.2.0" />
+      </react>
+      <nextjs>
+        <package name="next" version="^14.2.3" />
+      </nextjs>
+      <ui>
+        <package name="@radix-ui/react-dialog" version="^1.1.15" reason="Dialog modal primitives for phonetic diff viewer modal" />
+        <package name="@radix-ui/react-slot" version="^1.2.4" reason="Required by shadcn/ui Button component" />
+        <package name="@radix-ui/react-checkbox" version="NOT_INSTALLED" reason="NEEDS INSTALLATION: Per-line optimization toggle checkboxes. Install with: npx shadcn@latest add checkbox" />
+        <package name="lucide-react" version="^0.554.0" reason="Icons (if needed for visual indicators)" />
+      </ui>
+      <styling>
+        <package name="tailwindcss" version="^3.4.1" reason="CSS framework for styling, responsive design, and color utilities" />
+        <package name="class-variance-authority" version="^0.7.1" reason="CVA for component variants" />
+        <package name="clsx" version="^2.1.1" reason="Conditional className utilities" />
+        <package name="tailwind-merge" version="^3.4.0" reason="Merge Tailwind classes safely (cn utility)" />
+        <package name="tailwindcss-animate" version="^1.0.7" reason="Animation utilities for modal transitions" />
+      </styling>
+      <typescript>
+        <package name="typescript" version="^5" />
+        <package name="@types/node" version="^20" />
+        <package name="@types/react" version="^18" />
+        <package name="@types/react-dom" version="^18" />
+      </typescript>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>
+      <category>Norwegian UI Language</category>
+      <rule>ALL user-facing text MUST be in Norwegian. Buttons: "Godta endringer" (Accept), "Tilbake til original" (Revert), "Lukk" (Close). Modal title: "Forhåndsvisning av fonetiske endringer". Headers: "Original tekst" | "Optimert tekst". Checkbox label: "Bruk original".</rule>
+    </constraint>
+    <constraint>
+      <category>Component Path</category>
+      <rule>Create component at /src/components/phonetic-diff-viewer.tsx. Use 'use client' directive for client-side interactivity (state management for toggles).</rule>
+    </constraint>
+    <constraint>
+      <category>UI Components</category>
+      <rule>Use shadcn/ui components: Dialog for modal, Button for actions, Checkbox for per-line toggles. Checkbox component needs to be installed first with `npx shadcn@latest add checkbox`.</rule>
+    </constraint>
+    <constraint>
+      <category>Styling</category>
+      <rule>Use Tailwind CSS. Changed words: green background (#06D6A0 = bg-[#06D6A0]). Unchanged words: gray text (text-gray-500). Monospace font: font-mono class for proper alignment. Line numbers: text-gray-400, smaller font (text-xs).</rule>
+    </constraint>
+    <constraint>
+      <category>Responsive Design</category>
+      <rule>Desktop (≥768px): Side-by-side 2-column grid (grid-cols-2). Mobile (<768px): Stacked vertical layout (Original above, Optimized below). Use Tailwind breakpoint: md:grid-cols-2.</rule>
+    </constraint>
+    <constraint>
+      <category>Accessibility</category>
+      <rule>WCAG 2.1 AA compliant. Keyboard navigation: Tab (move between elements), Enter (toggle checkbox), Escape (close modal). ARIA labels: aria-label on checkboxes "Toggle optimization for line X". Screen reader text for line numbers and change highlights.</rule>
+    </constraint>
+    <constraint>
+      <category>Touch Targets</category>
+      <rule>Mobile checkboxes MUST be 48px+ for touch-friendly tapping (min-h-12 min-w-12 or similar).</rule>
+    </constraint>
+    <constraint>
+      <category>Data Structure</category>
+      <rule>Component receives originalLyrics (string), optimizedLyrics (string) from PhoneticChange optimizer. Must split by line, perform word-level diff, track per-line toggle state, merge selected lines on Accept.</rule>
+    </constraint>
+    <constraint>
+      <category>Diff Algorithm</category>
+      <rule>Word-level comparison within lines. Preserve punctuation and spacing. Handle Norwegian characters (æ, ø, å) correctly. Handle empty lines gracefully.</rule>
+    </constraint>
+    <constraint>
+      <category>File Organization</category>
+      <rule>Main component: /src/components/phonetic-diff-viewer.tsx. Diff algorithm utility: /src/lib/phonetic/diff.ts. TypeScript types: /src/types/phonetic.ts (DiffLine, DiffSegment, PhoneticDiffData interfaces).</rule>
+    </constraint>
+  </constraints>
+  <interfaces>
+    <interface>
+      <name>PhoneticDiffViewerProps</name>
+      <kind>React Component Props Interface</kind>
+      <signature>{ originalLyrics: string; optimizedLyrics: string; isOpen: boolean; onClose: () => void; onAccept: (mergedLyrics: string) => void; onRevert: () => void; }</signature>
+      <path>src/components/phonetic-diff-viewer.tsx</path>
+    </interface>
+    <interface>
+      <name>PhoneticChange</name>
+      <kind>Type Interface (existing)</kind>
+      <signature>{ original: string; optimized: string; reason: string; lineNumber: number; }</signature>
+      <path>src/lib/phonetic/optimizer.ts</path>
+    </interface>
+    <interface>
+      <name>OptimizationResult</name>
+      <kind>Type Interface (existing)</kind>
+      <signature>{ originalLyrics: string; optimizedLyrics: string; changes: PhoneticChange[]; cacheHitRate: number; }</signature>
+      <path>src/lib/phonetic/optimizer.ts</path>
+    </interface>
+    <interface>
+      <name>DiffLine</name>
+      <kind>Type Interface (to create)</kind>
+      <signature>{ lineNumber: number; original: string; optimized: string; isToggled: boolean; segments: DiffSegment[]; }</signature>
+      <path>src/types/phonetic.ts</path>
+    </interface>
+    <interface>
+      <name>DiffSegment</name>
+      <kind>Type Interface (to create)</kind>
+      <signature>{ text: string; isChanged: boolean; }</signature>
+      <path>src/types/phonetic.ts</path>
+    </interface>
+    <interface>
+      <name>computeDiff</name>
+      <kind>Utility Function</kind>
+      <signature>(originalLyrics: string, optimizedLyrics: string) => DiffLine[]</signature>
+      <path>src/lib/phonetic/diff.ts</path>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>
+Next.js project uses manual testing approach during development. Focus on visual inspection, user interaction testing, and accessibility validation. Key testing patterns: Component rendering (verify UI appears correctly), User interactions (click buttons, toggle checkboxes, keyboard navigation), Responsive design (test mobile and desktop layouts), Accessibility (keyboard only navigation, screen reader compatibility), Edge cases (empty lyrics, long lyrics, Norwegian characters).
+    </standards>
+    <locations>
+      <location>src/components/__tests__/</location>
+      <location>Co-located with source: src/components/phonetic-diff-viewer.test.tsx (if unit tests created)</location>
+    </locations>
+    <ideas>
+      <test ac="Modal opens showing split-screen view">
+        <id>AC-1</id>
+        <description>Test that clicking "Forhåndsvis fonetiske endringer" button opens modal with Dialog component. Verify modal displays with correct Norwegian title "Forhåndsvisning av fonetiske endringer".</description>
+      </test>
+      <test ac="Changed words highlighted in green">
+        <id>AC-2</id>
+        <description>Test diff highlighting: Compare originalLyrics="rundt" vs optimizedLyrics="rrrrundt". Verify "rrrrundt" has green background (#06D6A0). Test with multiple changed words per line.</description>
+      </test>
+      <test ac="Unchanged words displayed in gray">
+        <id>AC-3</id>
+        <description>Test that words without changes show gray text (text-gray-500). Example: "og" remains unchanged between original and optimized.</description>
+      </test>
+      <test ac="Lines numbered correctly">
+        <id>AC-4</id>
+        <description>Test line numbering: Verify each line has 1-based number (1, 2, 3...) in left margin. Numbers should align with content lines.</description>
+      </test>
+      <test ac="Per-line toggle functionality">
+        <id>AC-5</id>
+        <description>Test per-line checkbox: Click checkbox for line 2 to toggle OFF optimization. Verify state updates and merged lyrics uses original for line 2, optimized for other lines.</description>
+      </test>
+      <test ac="Accept/Revert/Close buttons work">
+        <id>AC-6</id>
+        <description>Test action buttons: "Godta endringer" calls onAccept with merged lyrics. "Tilbake til original" calls onRevert. "Lukk" calls onClose. Verify Norwegian labels.</description>
+      </test>
+      <test ac="Mobile stacked layout">
+        <id>AC-7</id>
+        <description>Test responsive design: At mobile width (<768px), layout switches to stacked vertical (Original above, Optimized below). At desktop (≥768px), side-by-side 2-column grid.</description>
+      </test>
+      <test ac="Accessibility - keyboard navigation">
+        <id>AC-8</id>
+        <description>Test keyboard navigation: Tab moves between checkboxes and buttons. Enter toggles checkbox. Escape closes modal. Verify ARIA labels on all interactive elements.</description>
+      </test>
+      <test ac="Edge case - empty lyrics">
+        <id>AC-9</id>
+        <description>Test with empty original/optimized lyrics. Should handle gracefully without errors. Display empty state or close modal.</description>
+      </test>
+      <test ac="Edge case - long lyrics (10+ verses)">
+        <id>AC-10</id>
+        <description>Test with long lyrics (50+ lines). Verify modal content is scrollable. Line numbers remain visible. Performance remains smooth.</description>
+      </test>
+      <test ac="Norwegian characters handled correctly">
+        <id>AC-11</id>
+        <description>Test with Norwegian characters (æ, ø, å) in lyrics. Verify diff algorithm compares correctly. Highlight works with Norwegian characters.</description>
+      </test>
+      <test ac="Punctuation preserved in diff">
+        <id>AC-12</id>
+        <description>Test diff algorithm preserves punctuation: "rundt," vs "rrrrundt," should highlight "rrrrundt" but keep comma. Test with quotes, periods, exclamations.</description>
+      </test>
+    </ideas>
+  </tests>
+</story-context>
