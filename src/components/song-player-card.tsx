@@ -1,0 +1,392 @@
+'use client'
+
+import { useEffect, useRef, useState, useCallback } from 'react'
+import { Howl } from 'howler'
+import WaveSurfer from 'wavesurfer.js'
+import { Play, Pause, Volume2, VolumeX, Volume1 } from 'lucide-react'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Slider } from '@/components/ui/slider'
+import { Badge } from '@/components/ui/badge'
+
+export interface SongPlayerCardProps {
+  songId: string
+  title: string
+  genre: string
+  audioUrl: string
+  duration?: number
+  createdAt: string
+  genreEmoji?: string
+}
+
+export function SongPlayerCard({
+  songId,
+  title,
+  genre,
+  audioUrl,
+  duration,
+  createdAt,
+  genreEmoji = '🎵'
+}: SongPlayerCardProps) {
+  // Audio state
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [audioDuration, setAudioDuration] = useState(duration || 0)
+  const [volume, setVolume] = useState(80) // Default 80%
+  const [isMuted, setIsMuted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  // Refs
+  const soundRef = useRef<Howl | null>(null)
+  const wavesurferRef = useRef<WaveSurfer | null>(null)
+  const waveformContainerRef = useRef<HTMLDivElement>(null)
+  const animationFrameRef = useRef<number>()
+  const cardRef = useRef<HTMLDivElement>(null)
+
+  // Format time as mm:ss
+  const formatTime = (seconds: number): string => {
+    if (!seconds || isNaN(seconds)) return '0:00'
+    const mins = Math.floor(seconds / 60)
+    const secs = Math.floor(seconds % 60)
+    return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
+
+  // Format date in Norwegian locale
+  const formatDate = (dateString: string): string => {
+    return new Date(dateString).toLocaleDateString('nb-NO', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    })
+  }
+
+  // Initialize Howler.js audio player
+  useEffect(() => {
+    if (!audioUrl) return
+
+    const sound = new Howl({
+      src: [audioUrl],
+      html5: true,
+      preload: true,
+      volume: volume / 100,
+      onload: () => {
+        setIsLoading(false)
+        setAudioDuration(sound.duration())
+      },
+      onplay: () => setIsPlaying(true),
+      onpause: () => setIsPlaying(false),
+      onend: () => {
+        setIsPlaying(false)
+        setCurrentTime(0)
+      },
+      onloaderror: (id, error) => {
+        console.error('Audio load failed:', error)
+        setError('Noe gikk galt med lydavspillingen')
+        setIsLoading(false)
+      },
+      onplayerror: (id, error) => {
+        console.error('Audio play failed:', error)
+        setError('Kunne ikke spille av lyden')
+      }
+    })
+
+    soundRef.current = sound
+
+    // Load volume from localStorage
+    const savedVolume = localStorage.getItem('musikkfabrikken-volume')
+    if (savedVolume) {
+      const vol = parseInt(savedVolume)
+      setVolume(vol)
+      sound.volume(vol / 100)
+    }
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current)
+      }
+      sound.unload()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [audioUrl])
+
+  // Initialize WaveSurfer.js waveform
+  useEffect(() => {
+    if (!waveformContainerRef.current || !audioUrl) return
+
+    const wavesurfer = WaveSurfer.create({
+      container: waveformContainerRef.current,
+      waveColor: '#98c1d9',
+      progressColor: '#E94560',
+      height: 60,
+      barWidth: 2,
+      barGap: 1,
+      cursorWidth: 0,
+      normalize: true
+    })
+
+    wavesurfer.load(audioUrl)
+
+    wavesurfer.on('ready', () => {
+      if (!duration) {
+        setAudioDuration(wavesurfer.getDuration())
+      }
+    })
+
+    // Handle waveform clicks for seeking
+    wavesurfer.on('click', (progress: number) => {
+      if (soundRef.current) {
+        const seekTime = progress * audioDuration
+        soundRef.current.seek(seekTime)
+        setCurrentTime(seekTime)
+
+        // Update waveform progress
+        wavesurfer.seekTo(progress)
+      }
+    })
+
+    wavesurferRef.current = wavesurfer
+
+    return () => {
+      wavesurfer.destroy()
+    }
+  }, [audioUrl, audioDuration, duration])
+
+  // Sync waveform with Howler playback
+  useEffect(() => {
+    if (!soundRef.current || !wavesurferRef.current) return
+
+    const updateProgress = () => {
+      if (soundRef.current && soundRef.current.playing()) {
+        const seek = soundRef.current.seek()
+        setCurrentTime(typeof seek === 'number' ? seek : 0)
+
+        if (wavesurferRef.current && audioDuration > 0) {
+          const progress = (typeof seek === 'number' ? seek : 0) / audioDuration
+          wavesurferRef.current.seekTo(progress)
+        }
+
+        animationFrameRef.current = requestAnimationFrame(updateProgress)
+      }
+    }
+
+    if (isPlaying) {
+      updateProgress()
+    }
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current)
+      }
+    }
+  }, [isPlaying, audioDuration])
+
+  // Play/pause toggle
+  const togglePlay = useCallback(() => {
+    if (!soundRef.current) return
+
+    if (isPlaying) {
+      soundRef.current.pause()
+    } else {
+      soundRef.current.play()
+    }
+  }, [isPlaying])
+
+  // Seek to specific time
+  const handleSeek = useCallback((value: number[]) => {
+    if (!soundRef.current || !wavesurferRef.current) return
+
+    const seekTime = value[0]
+    soundRef.current.seek(seekTime)
+    setCurrentTime(seekTime)
+
+    // Update waveform
+    const progress = seekTime / audioDuration
+    wavesurferRef.current.seekTo(progress)
+  }, [audioDuration])
+
+  // Handle volume change
+  const handleVolumeChange = useCallback((value: number[]) => {
+    const newVolume = value[0]
+    setVolume(newVolume)
+
+    if (soundRef.current) {
+      soundRef.current.volume(newVolume / 100)
+    }
+
+    // Save to localStorage
+    localStorage.setItem('musikkfabrikken-volume', newVolume.toString())
+
+    // Unmute if muted
+    if (isMuted && newVolume > 0) {
+      setIsMuted(false)
+    }
+  }, [isMuted])
+
+  // Toggle mute
+  const toggleMute = useCallback(() => {
+    if (!soundRef.current) return
+
+    if (isMuted) {
+      soundRef.current.volume(volume / 100)
+      setIsMuted(false)
+    } else {
+      soundRef.current.volume(0)
+      setIsMuted(true)
+    }
+  }, [isMuted, volume])
+
+  // Keyboard controls
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only handle if card is focused or contains focused element
+      if (!cardRef.current?.contains(document.activeElement)) return
+
+      switch (e.key) {
+        case ' ':
+          e.preventDefault()
+          togglePlay()
+          break
+        case 'ArrowLeft':
+          e.preventDefault()
+          if (soundRef.current) {
+            const newTime = Math.max(0, currentTime - 5)
+            soundRef.current.seek(newTime)
+            setCurrentTime(newTime)
+          }
+          break
+        case 'ArrowRight':
+          e.preventDefault()
+          if (soundRef.current) {
+            const newTime = Math.min(audioDuration, currentTime + 5)
+            soundRef.current.seek(newTime)
+            setCurrentTime(newTime)
+          }
+          break
+        case 'ArrowUp':
+          e.preventDefault()
+          handleVolumeChange([Math.min(100, volume + 10)])
+          break
+        case 'ArrowDown':
+          e.preventDefault()
+          handleVolumeChange([Math.max(0, volume - 10)])
+          break
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [togglePlay, currentTime, audioDuration, volume, handleVolumeChange])
+
+  // Get volume icon
+  const VolumeIcon = isMuted || volume === 0 ? VolumeX : volume < 50 ? Volume1 : Volume2
+
+  return (
+    <Card
+      ref={cardRef}
+      className="flex flex-col md:flex-row gap-4 p-4 rounded-lg shadow-md bg-card hover:shadow-lg transition-shadow duration-200"
+      role="region"
+      aria-label="Sangavspiller"
+      tabIndex={0}
+    >
+      {/* Artwork */}
+      <div className="w-full md:w-16 h-16 flex-shrink-0 flex items-center justify-center rounded-md bg-gradient-to-br from-[#E94560] to-[#FFC93C] text-3xl">
+        {genreEmoji}
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        {/* Metadata */}
+        <div className="mb-2">
+          <h3 className="text-lg font-semibold truncate" title={title}>
+            {title}
+          </h3>
+          <div className="flex items-center gap-2 mt-1">
+            <Badge variant="secondary" className="text-xs">
+              {genre}
+            </Badge>
+            <span className="text-xs text-muted-foreground">
+              {formatDate(createdAt)}
+            </span>
+          </div>
+        </div>
+
+        {/* Waveform */}
+        {!error && (
+          <div
+            ref={waveformContainerRef}
+            className="w-full cursor-pointer mb-2"
+            aria-label="Lydformvisualisering"
+          />
+        )}
+
+        {/* Error message */}
+        {error && (
+          <div className="text-sm text-red-500 mb-2" role="alert">
+            {error}
+          </div>
+        )}
+
+        {/* Time display */}
+        <div
+          className="text-sm text-muted-foreground"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {formatTime(currentTime)} / {formatTime(audioDuration)}
+        </div>
+
+        {/* Progress slider */}
+        <Slider
+          value={[currentTime]}
+          max={audioDuration || 100}
+          step={0.1}
+          onValueChange={handleSeek}
+          className="mt-2"
+          aria-label="Søk i sangen"
+          disabled={isLoading || !!error}
+        />
+      </div>
+
+      {/* Controls */}
+      <div className="flex flex-col md:flex-row gap-2 items-center justify-center md:justify-end">
+        {/* Play/Pause Button */}
+        <Button
+          size="lg"
+          onClick={togglePlay}
+          disabled={isLoading || !!error}
+          className="w-12 h-12 rounded-full"
+          aria-label={isPlaying ? 'Pause' : 'Spill av'}
+        >
+          {isLoading ? (
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white" />
+          ) : isPlaying ? (
+            <Pause className="h-6 w-6" />
+          ) : (
+            <Play className="h-6 w-6" />
+          )}
+        </Button>
+
+        {/* Volume Control (Desktop Only) */}
+        <div className="hidden md:flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleMute}
+            aria-label={isMuted ? 'Slå på lyd' : 'Demp'}
+          >
+            <VolumeIcon className="h-5 w-5" />
+          </Button>
+          <Slider
+            value={[isMuted ? 0 : volume]}
+            max={100}
+            step={1}
+            onValueChange={handleVolumeChange}
+            className="w-24"
+            aria-label="Volum"
+          />
+        </div>
+      </div>
+    </Card>
+  )
+}
