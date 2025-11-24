@@ -41,7 +41,7 @@ export interface Song {
   suno_song_id?: string
   audio_url?: string
   duration_seconds?: number
-  status: 'generating' | 'completed' | 'failed'
+  status: 'generating' | 'completed' | 'failed' | 'cancelled'
   error_message?: string
   canvas_url?: string
   shared_count: number

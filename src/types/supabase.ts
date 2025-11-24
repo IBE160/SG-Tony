@@ -49,7 +49,7 @@ export type Database = {
           suno_song_id: string | null
           audio_url: string | null
           duration_seconds: number | null
-          status: 'generating' | 'completed' | 'failed'
+          status: 'generating' | 'completed' | 'failed' | 'cancelled'
           error_message: string | null
           canvas_url: string | null
           shared_count: number
@@ -69,7 +69,7 @@ export type Database = {
           suno_song_id?: string | null
           audio_url?: string | null
           duration_seconds?: number | null
-          status: 'generating' | 'completed' | 'failed'
+          status: 'generating' | 'completed' | 'failed' | 'cancelled'
           error_message?: string | null
           canvas_url?: string | null
           shared_count?: number

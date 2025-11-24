@@ -56,7 +56,10 @@
       "WebSearch",
       "WebFetch(domain:docs.sunoapi.org)",
       "WebFetch(domain:old-docs.sunoapi.org)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(if not exist \"src\\app\\api\\songs\\[id]\\cancel\" mkdir \"src\\app\\api\\songs\\[id]\\cancel\")",
+      "Bash(if exist \"C:\\Users\\tony-\\SG-Tony\\src\\app\\api\\songs\\[id]\\cancel\\route.ts\" del \"C:\\Users\\tony-\\SG-Tony\\src\\app\\api\\songs\\[id]\\cancel\\route.ts\")",
+      "Bash(if exist \"C:\\Users\\tony-\\SG-Tony\\src\\app\\api\\songs\\[id]\\cancel\" rmdir \"C:\\Users\\tony-\\SG-Tony\\src\\app\\api\\songs\\[id]\\cancel\")"
     ],
     "deny": [],
     "ask": []

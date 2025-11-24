@@ -6,9 +6,10 @@ import { ConceptInput } from '@/components/concept-input'
 import { LyricsEditor } from '@/components/lyrics-editor'
 import { PronunciationToggle } from '@/components/pronunciation-toggle'
 import { PhoneticDiffViewer } from '@/components/phonetic-diff-viewer'
+import { GenerationProgressModal } from '@/components/generation-progress-modal'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
-import { Loader2, Eye } from 'lucide-react'
+import { Loader2, Eye, Music } from 'lucide-react'
 import type { OptimizationResult, PhoneticChange } from '@/types/song'
 
 export default function Home() {
@@ -25,6 +26,9 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [isOptimizing, setIsOptimizing] = useState(false)
   const [isDiffViewerOpen, setIsDiffViewerOpen] = useState(false)
+  const [isGeneratingSong, setIsGeneratingSong] = useState(false)
+  const [progressModalOpen, setProgressModalOpen] = useState(false)
+  const [currentSongId, setCurrentSongId] = useState<string | null>(null)
   const { toast } = useToast()
 
   const handleGenreSelect = (genreId: string, genreName: string) => {
@@ -225,6 +229,99 @@ export default function Home() {
     }
   }
 
+  const handleGenerateSong = async () => {
+    if (!selectedGenre) {
+      toast({
+        variant: 'destructive',
+        title: 'Ingen sjanger valgt',
+        description: 'Vennligst velg en sjanger før du genererer sang'
+      })
+      return
+    }
+
+    if (!lyrics || lyrics.trim().length === 0) {
+      toast({
+        variant: 'destructive',
+        title: 'Ingen tekst',
+        description: 'Vennligst generer eller skriv sangtekst først'
+      })
+      return
+    }
+
+    setIsGeneratingSong(true)
+
+    try {
+      const response = await fetch('/api/songs/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: concept || 'Min sang',
+          genre: selectedGenre.name, // API expects genre name, not ID
+          concept: concept,
+          lyrics: originalLyrics || lyrics, // Send as 'lyrics' not 'originalLyrics'
+          optimizedLyrics: pronunciationEnabled && optimizedLyrics ? optimizedLyrics : null,
+          phoneticEnabled: pronunciationEnabled
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok || data.error) {
+        throw new Error(data.error?.message || 'Kunne ikke starte generering')
+      }
+
+      // Open progress modal with song ID
+      setCurrentSongId(data.data.songId)
+      setProgressModalOpen(true)
+    } catch (error) {
+      console.error('Song generation error:', error)
+
+      toast({
+        variant: 'destructive',
+        title: 'Generering feilet',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Kunne ikke starte sanggenerering. Prøv igjen.'
+      })
+    } finally {
+      setIsGeneratingSong(false)
+    }
+  }
+
+  const handleSongComplete = (audioUrl: string) => {
+    toast({
+      title: 'Sangen er klar! 🎉',
+      description: 'Din norske sang er ferdig generert'
+    })
+
+    setProgressModalOpen(false)
+    setCurrentSongId(null)
+
+    // TODO: Navigate to song player or show audio player
+    console.log('Song completed with audio URL:', audioUrl)
+  }
+
+  const handleSongCancel = () => {
+    setProgressModalOpen(false)
+    setCurrentSongId(null)
+
+    toast({
+      title: 'Generering avbrutt',
+      description: 'Kreditter har blitt refundert'
+    })
+  }
+
+  const handleSongError = (error: string) => {
+    toast({
+      variant: 'destructive',
+      title: 'Generering feilet',
+      description: error
+    })
+  }
+
   const isGenerateDisabled =
     !selectedGenre ||
     concept.length < 10 ||
@@ -341,6 +438,30 @@ export default function Home() {
                   </Button>
                 )}
             </div>
+
+            {/* Generate Song Button - Main CTA */}
+            {lyrics && !isGenerating && !isOptimizing && (
+              <div className="mt-6">
+                <Button
+                  onClick={handleGenerateSong}
+                  disabled={isGeneratingSong}
+                  className="w-full h-14 text-lg bg-[#E94560] hover:bg-[#D62839]"
+                  size="lg"
+                >
+                  {isGeneratingSong ? (
+                    <>
+                      <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                      Starter generering...
+                    </>
+                  ) : (
+                    <>
+                      <Music className="mr-2 h-6 w-6" />
+                      Generer sang med Suno (10 kreditter)
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -354,6 +475,15 @@ export default function Home() {
         onClose={handleCloseDiffViewer}
         onAccept={handleAcceptChanges}
         onRevert={handleRevertChanges}
+      />
+
+      {/* Generation Progress Modal */}
+      <GenerationProgressModal
+        open={progressModalOpen}
+        songId={currentSongId}
+        onComplete={handleSongComplete}
+        onCancel={handleSongCancel}
+        onError={handleSongError}
       />
     </main>
   )
