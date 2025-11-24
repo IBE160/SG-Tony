@@ -315,4 +315,4 @@ So that each genre has optimized Suno prompts for authentic Norwegian music styl
 - Gradients match Playful Nordic theme (red-to-yellow, blue-to-red, etc.)
 
 ---
-
+

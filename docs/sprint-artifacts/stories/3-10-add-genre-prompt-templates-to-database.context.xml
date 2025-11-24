@@ -1,0 +1,214 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>10</storyId>
+    <title>Add Genre Prompt Templates to Database</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-24</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/stories/3-10-add-genre-prompt-templates-to-database.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>genre prompt templates seeded in the database</iWant>
+    <soThat>each genre has optimized Suno prompts for authentic Norwegian music styles</soThat>
+    <tasks>- Task 1: Create database seed script (AC: All genres with required fields)
+  - Create `/supabase/migrations/seed_genres.sql` or `/supabase/seed.sql` file
+  - Define INSERT statements for 8-10 genres with all required fields
+  - Include Norwegian-optimized Suno prompt templates for each genre
+  - Add emoji for each genre (🎸, 🪕, 🎉, 🎤, etc.)
+  - Define gradient colors matching Playful Nordic theme
+  - Set `is_active=true` and appropriate `sort_order` for all genres
+
+- Task 2: Define genre data structure (AC: Each genre has required fields)
+  - Add `name` field (internal identifier, e.g., "country-rock")
+  - Add `display_name` field (user-facing label, e.g., "Country Rock")
+  - Add `emoji` field (visual identifier for UI)
+  - Add `gradient_colors` field (JSON or string for background styling)
+  - Add `suno_prompt_template` field (Suno API prompt text)
+  - Add `description` field (optional, for tooltip/help text)
+  - Add `is_active` boolean field (default true)
+  - Add `sort_order` integer field (display order in UI)
+
+- Task 3: Create seed execution script or migration (AC: Seed data can be executed)
+  - Add seed script to Supabase migrations directory
+  - Ensure idempotency (check if genres already exist before inserting)
+  - Add script to project documentation with execution instructions
+  - Test seed script execution locally
+  - Verify genres are inserted correctly with all fields populated
+
+- Task 4: Validate prompt templates with founder (AC: Templates validated by expert)
+  - Review each Suno prompt template for Norwegian optimization
+  - Confirm genre names and descriptions are culturally appropriate
+  - Verify emoji selections match genre expectations
+  - Get founder approval on all prompt templates
+  - Document any changes based on founder feedback
+
+- Task 5: Test genre prompts with Suno API (AC: Verify prompt effectiveness)
+  - Generate test songs for each genre using seed data
+  - Verify Suno API accepts all prompt templates
+  - Assess audio quality and genre authenticity for each template
+  - Document any prompt adjustments needed based on test results
+  - Update seed data if prompts need refinement
+
+- Task 6: Update genre UI components (AC: Genres display correctly)
+  - Verify genre carousel component can fetch and display seed data
+  - Confirm emoji and gradient colors render correctly in UI
+  - Test genre selection flow with seed data
+  - Update any hardcoded genre references to use database data
+  - Verify Norwegian display names appear correctly throughout app</tasks>
+  </story>
+
+  <acceptanceCriteria>**Given** Database schema includes `genre` table
+**When** I run seed script
+**Then** 8-10 genres are inserted with Norwegian-optimized prompt templates:
+  - Country Rock: "Country, rock, anthem, twangy guitar, catchy fiddle, drum, bass, Norwegian vocals"
+  - Norwegian Pop: "Pop, Norwegian, catchy melody, electronic, upbeat, modern production"
+  - Folk Ballad: "Folk, acoustic, Norwegian traditional, heartfelt, storytelling"
+  - Party Anthem: "Dance, party, energetic, sing-along, festive, Norwegian celebration"
+  - Rap/Hip-Hop: "Hip-hop, rap, Norwegian flow, urban, rhythmic, modern beats"
+  - Rock Ballad: "Rock, ballad, emotional, guitar solo, powerful vocals, Norwegian"
+**And** Each genre has: name, display_name, emoji, gradient colors, suno_prompt_template
+**And** Genres are marked `is_active=true` and ordered by `sort_order`
+**And** Test each genre with actual Suno generation to verify prompt effectiveness</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <!-- Epic 3: Norwegian Song Creation Core -->
+      <doc path="docs/epics/epic-3-norwegian-song-creation-core.md" title="Epic 3: Norwegian Song Creation" section="Story 3.10">
+        Story 3.10 provides foundational genre data with Norwegian-optimized Suno prompt templates. Genres power the genre carousel (Story 3.1) and song generation (Story 3.5). Templates validated by founder's 80k listener expertise ensure authentic Norwegian music generation.
+      </doc>
+
+      <!-- Architecture: Database Schema and Patterns -->
+      <doc path="docs/architecture.md" title="Architecture Document" section="Database Schema">
+        Genre table schema: id (UUID), name (TEXT unique), display_name (TEXT), description (TEXT), emoji (TEXT), suno_prompt_template (TEXT NOT NULL), sort_order (INTEGER), is_active (BOOLEAN). Genre table is reference data and does NOT need RLS.
+      </doc>
+
+      <doc path="docs/architecture.md" title="Architecture Document" section="Implementation Patterns - Language & Localization">
+        Norwegian UI Content, English Code: Display names in Norwegian where user-facing (e.g., "Countryrock", "Norsk pop"). Internal names in English for developer clarity (e.g., "country-rock"). Database fields use snake_case.
+      </doc>
+
+      <doc path="docs/architecture.md" title="Architecture Document" section="Database Patterns">
+        Supabase PostgreSQL 17. Every table has created_at TIMESTAMPTZ DEFAULT NOW(). Naming: Tables singular snake_case (genre), columns snake_case (suno_prompt_template). Use gen_random_uuid() for primary keys.
+      </doc>
+
+      <!-- PRD: Genre Templates Feature -->
+      <doc path="docs/prd.md" title="Product Requirements Document" section="FR51: Genre/Style Prompt Templates">
+        Users can access genre/style prompt templates with drag-and-drop or selection. Genre templates lower barrier for non-technical users who don't know how to describe musical styles. User-facing: Simple genre names. Background: Advanced prompt engineering optimized for Norwegian music.
+      </doc>
+    </docs>
+
+    <code>
+      <!-- Existing Genre Migrations -->
+      <code path="supabase/migrations/20251120_initial_schema.sql" kind="migration" symbol="genre table + 4 initial genres" lines="84-271" reason="Defines genre table schema and seeds 4 initial genres (country-rock, norwegian-pop, folk-ballad, party-anthem). Current prompts DO NOT include 'Norwegian vocals' suffix - need update."/>
+
+      <code path="supabase/migrations/20251123_add_additional_genres.sql" kind="migration" symbol="6 additional genres" lines="8-62" reason="Adds 6 more genres (rap-hiphop, rock-ballad, indie-pop, blues-rock, electronic-dance, acoustic-singer-songwriter) for total of 10. Prompts also missing Norwegian optimization."/>
+
+      <!-- Seed Script Reference -->
+      <code path="scripts/seed-genres.js" kind="utility-script" symbol="seedGenres()" lines="82-141" reason="Example Node.js script for programmatic genre seeding with idempotency check. Uses Supabase service role key. Can be used as reference for seed execution pattern."/>
+
+      <!-- Suno API Integration -->
+      <code path="src/lib/api/suno.ts" kind="api-wrapper" symbol="SunoGenerateParams.style" lines="27-41" reason="Suno API wrapper accepts 'style' parameter which receives the suno_prompt_template from genre table. This is where genre prompts are actually used for music generation."/>
+    </code>
+
+    <dependencies>
+      <!-- Runtime Dependencies -->
+      <runtime>
+        <dep name="@supabase/supabase-js" version="^2.84.0">PostgreSQL client for genre data insertion</dep>
+        <dep name="next" version="^14.2.3">Next.js framework</dep>
+        <dep name="typescript" version="^5">Type safety</dep>
+      </runtime>
+
+      <!-- Database -->
+      <database>
+        <dep name="PostgreSQL" version="17">Supabase-managed database</dep>
+        <dep name="Supabase CLI" version="latest">For running migrations: npx supabase db push</dep>
+      </database>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <!-- Database Constraints -->
+    <constraint type="schema">Genre table schema already exists and MUST be preserved. Do NOT create new table or alter schema. Only INSERT or UPDATE genre data.</constraint>
+    <constraint type="data-integrity">Genre name field is UNIQUE - use ON CONFLICT (name) DO UPDATE for idempotency</constraint>
+    <constraint type="naming">Internal names: English snake-case (country-rock). Display names: Norwegian user-facing (Countryrock, Norsk pop)</constraint>
+
+    <!-- Norwegian Optimization -->
+    <constraint type="quality">Prompt templates MUST include "Norwegian vocals" suffix to ensure authentic Norwegian pronunciation (founder-validated pattern)</constraint>
+    <constraint type="localization">Display names should be in Norwegian where culturally appropriate, but English acceptable for universal genres (Hip-Hop, Rock Ballad)</constraint>
+
+    <!-- Migration Pattern -->
+    <constraint type="migration">Use Supabase migration file with date prefix format: YYYYMMDD_description.sql (e.g., 20251124_update_genre_prompts_norwegian.sql)</constraint>
+    <constraint type="idempotency">Seed script must be idempotent - check existing genres before inserting, use ON CONFLICT clause</constraint>
+
+    <!-- Playful Nordic Theme -->
+    <constraint type="ui-colors">Gradient colors must match Playful Nordic theme: Primary red #E94560, Accent yellow #FFC93C, Secondary navy #0F3460</constraint>
+    <constraint type="emoji">Each genre must have appropriate emoji (🎸, 🪕, 🎉, 🎤, 💃, 🎹, etc.)</constraint>
+  </constraints>
+
+  <interfaces>
+    <!-- Genre Table Schema (Reference) -->
+    <interface name="genre table" kind="database-table" signature="CREATE TABLE genre (...)" path="supabase/migrations/20251120_initial_schema.sql:84-96">
+      Fields: id UUID PRIMARY KEY, name TEXT UNIQUE NOT NULL, display_name TEXT NOT NULL, description TEXT, emoji TEXT, suno_prompt_template TEXT NOT NULL, sort_order INTEGER DEFAULT 0, is_active BOOLEAN DEFAULT true
+    </interface>
+
+    <!-- Suno API Style Parameter -->
+    <interface name="SunoGenerateParams.style" kind="api-parameter" signature="style: string" path="src/lib/api/suno.ts:30">
+      The genre's suno_prompt_template value is passed as the 'style' parameter to Suno API for music generation
+    </interface>
+
+    <!-- Supabase Migration Pattern -->
+    <interface name="Supabase Migration" kind="sql-file" signature="-- migration file.sql" path="supabase/migrations/">
+      Standard pattern: SQL file in supabase/migrations/ directory, executed with 'npx supabase db push'
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Testing approach for database seed data:
+      1. Manual verification: Run seed script/migration locally, query genre table to verify all 8-10 genres inserted
+      2. Integration test: Verify genre carousel component can fetch and display seed data
+      3. E2E test: Generate test song for each genre using actual Suno API to validate prompt effectiveness
+      4. Quality test: Founder reviews generated samples for Norwegian authenticity
+    </standards>
+
+    <locations>
+      - Manual SQL queries against Supabase database
+      - Browser-based testing of genre carousel component (Story 3.1)
+      - Suno API test generations (use real API with test account)
+    </locations>
+
+    <ideas>
+      <!-- AC: All genres with required fields -->
+      <idea ac="All genres inserted with required fields" tests="
+        - Query genre table: SELECT COUNT(*) FROM genre WHERE is_active = true (expect 8-10)
+        - Verify each genre has: name, display_name, emoji, gradient_colors, suno_prompt_template
+        - Check all prompts include 'Norwegian vocals' suffix
+        - Verify sort_order creates logical display sequence
+      "/>
+
+      <!-- AC: Each genre has required fields -->
+      <idea ac="Each genre has all required fields" tests="
+        - Verify NO NULL values in: name, display_name, suno_prompt_template
+        - Check gradient_colors format (JSONB or TEXT with color codes)
+        - Validate emoji characters display correctly (UTF-8 encoding)
+      "/>
+
+      <!-- AC: Genres active and ordered -->
+      <idea ac="Genres marked is_active=true and ordered" tests="
+        - Query: SELECT * FROM genre WHERE is_active = true ORDER BY sort_order
+        - Verify sort_order creates intuitive flow (popular genres first)
+        - Check no gaps or duplicates in sort_order sequence
+      "/>
+
+      <!-- AC: Test prompts with Suno -->
+      <idea ac="Test each genre with Suno generation" tests="
+        - Generate 30-second preview for each genre using genre carousel
+        - Verify Suno API accepts all prompt templates without errors
+        - Listen to generated samples - assess Norwegian pronunciation quality
+        - Document any genres where pronunciation needs further prompt refinement
+      "/>
+    </ideas>
+  </tests>
+</story-context>

@@ -79,7 +79,7 @@ development_status:
   3-7-implement-webhook-handler-for-suno-completion: review
   3-8-build-song-player-card-component: done
   3-9-implement-free-30-second-preview-generation: review
-  3-10-add-genre-prompt-templates-to-database: backlog
+  3-10-add-genre-prompt-templates-to-database: ready-for-dev
   epic-3-retrospective: optional
 
   # Epic 4: Song Library & Management (7 stories)
