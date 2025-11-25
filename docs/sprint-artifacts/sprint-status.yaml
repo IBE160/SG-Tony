@@ -82,16 +82,15 @@ development_status:
   3-10-add-genre-prompt-templates-to-database: review
   epic-3-retrospective: optional
 
-  # Epic 4: Song Library & Management (7 stories)
+  # Epic 4: Song Library & Management (5 stories)
   # Enables users to manage, replay, download, and organize their songs
+  # Note: 14-day auto-deletion with no warnings (background job)
   epic-4: backlog
-  4-1-create-my-songs-page-with-track-list: backlog
+  4-1-create-my-songs-page-with-track-list: ready-for-dev
   4-2-implement-song-detail-modal-with-full-player: backlog
   4-3-implement-song-download-functionality: backlog
   4-4-implement-song-deletion-with-confirmation: backlog
   4-5-implement-song-rename-functionality: backlog
-  4-6-implement-14-day-deletion-warning-system: backlog
-  4-7-implement-batch-download-functionality: backlog
   epic-4-retrospective: optional
 
   # Epic 5: Social Sharing & Viral Features (5 stories)

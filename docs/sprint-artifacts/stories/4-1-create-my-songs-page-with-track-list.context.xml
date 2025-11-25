@@ -1,0 +1,236 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>1</storyId>
+    <title>Create "My Songs" Page with Track List</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-25</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/4-1-create-my-songs-page-with-track-list.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>view all my generated songs in a dedicated library page</iWant>
+    <soThat>I can access and replay any song I've created</soThat>
+    <tasks>
+- Task 1: Create /songs page with list layout (AC: #1, #2)
+  - Create `/src/app/songs/page.tsx` with Server Component for SSR
+  - Query `song` table WHERE user_id = current_user AND deleted_at IS NULL
+  - Sort by created_at DESC
+  - Implement responsive grid layout (1 column mobile, 2-3 columns tablet/desktop)
+  - Use shadcn/ui Card component for song cards
+
+- Task 2: Implement song card component (AC: #2, #3)
+  - Create `/src/components/song-card.tsx` component
+  - Display artwork thumbnail with gradient background (from genre colors)
+  - Show song title, genre badge, creation date (relative format, Norwegian)
+  - Display duration in MM:SS format
+  - Add play icon overlay
+  - Make card tappable/clickable with hover state
+
+- Task 3: Implement pagination/infinite scroll (AC: #5)
+  - Implement cursor-based pagination (20 songs per page)
+  - Add "Load More" button or infinite scroll (use IntersectionObserver)
+  - Show loading state when fetching more songs
+  - Cache song list in React Query or SWR for performance
+
+- Task 4: Create empty state component (AC: #6)
+  - Create empty state component with Norwegian text
+  - Add illustration or icon for visual appeal
+  - Include "Lag sang" button that navigates to home page
+  - Style according to Playful Nordic theme
+
+- Task 5: Connect to song player modal (AC: #4)
+  - Import and integrate Song Player Card from Story 3.8
+  - Pass song ID to modal on card tap
+  - Implement modal open/close state management
+  - Ensure modal displays song details and playback controls
+
+- Task 6: Add Norwegian date formatting (AC: #2)
+  - Implement relative date formatting: "Akkurat nå", "5 minutter siden", "2 timer siden", "I går", "3 dager siden"
+  - Use `nb-NO` locale for date formatting
+  - Create utility function: `formatRelativeDate(dateString: string): string`
+
+- Task 7: Testing and validation
+  - Test with 0 songs (empty state)
+  - Test with 1-5 songs (no pagination needed)
+  - Test with 20+ songs (pagination triggered)
+  - Test song card click opens modal
+  - Verify Norwegian text displays correctly
+  - Test responsive layout on mobile, tablet, desktop
+  - Verify RLS policies allow users to see only their songs
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. **Given** I have generated multiple songs
+   **When** I tap "My Songs" in the bottom navigation
+   **Then** I see a list of all my songs sorted by creation date (newest first)
+
+2. **And** Each song card displays:
+   - Artwork thumbnail (60x60px gradient)
+   - Song title
+   - Genre badge
+   - Creation date (relative: "2 timer siden")
+   - Duration
+
+3. **And** I see a small play icon on each card
+
+4. **And** Tapping a card opens the full song player modal
+
+5. **And** List supports infinite scroll (load 20 songs at a time)
+
+6. **And** Empty state displays if no songs: "Ingen sanger ennå! La oss lage ditt første mesterverk 🎵" with "Lag sang" button
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>Track List & Session Management (FR21-FR27)</section>
+        <snippet>FR24: Users can view all their generated songs in a persistent track list. FR25: Songs display with thumbnail, title, genre, date, duration. FR26: Users can tap a song to open full player modal. FR27: Song library supports pagination for large collections.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Project Structure - Song Pages</section>
+        <snippet>Song library page at /src/app/songs/page.tsx with Server Component for SSR. Query song table WHERE user_id = current_user AND deleted_at IS NULL, sorted by created_at DESC. Use shadcn/ui Card components for song cards. Implement pagination with cursor-based or offset pagination.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Database Schema - Song Table</section>
+        <snippet>Song table: id (UUID), user_id (UUID FK), title (TEXT), genre (TEXT), audio_url (TEXT), duration_seconds (INTEGER), status (TEXT), created_at (TIMESTAMPTZ), deleted_at (TIMESTAMPTZ for soft delete). RLS policies ensure users only see their own songs.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Language & Localization</section>
+        <snippet>All UI text in Norwegian (buttons, labels, messages). Empty states use Norwegian patterns like "Ingen sanger ennå!". Relative dates in Norwegian: "Akkurat nå", "X minutter siden", "X timer siden", "I går", "X dager siden". Date formatting uses nb-NO locale.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Journey 3: Song Library Management</section>
+        <snippet>Users tap "My Songs" in bottom nav → Song List Screen with infinite scroll → Each card shows: Artwork thumbnail (gradient with emoji), Song title, Genre, Date, Play icon → Tapping card opens Song Detail Modal with full-screen player, waveform, and actions (Share, Download, Delete, Re-generate).</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Component Library - Song Player Card</section>
+        <snippet>Artwork thumbnail 60x60px gradient, Song metadata (Title bold, genre + date small gray), Play/pause button 48x48px, Waveform SVG visualization, Scrubable progress bar. States: Idle (play button), Playing (pause + animated waveform), Loading (spinner), Error (red icon). Tap artwork → Expand to full player.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Empty State Patterns</section>
+        <snippet>First use empty state: Large icon 120px, Friendly Norwegian message "Ingen sanger ennå! La oss lage ditt første mesterverk 🎵", Primary CTA "Lag sang" button navigating to home page.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics/epic-4-song-library-management.md</path>
+        <title>Epic 4: Song Library & Management</title>
+        <section>Story 4.1: Create "My Songs" Page with Track List</section>
+        <snippet>Create /songs page with list layout. Query song table WHERE user_id = current_user AND deleted_at IS NULL, sorted by created_at DESC. Responsive grid (1 column mobile, 2-3 tablet/desktop). Song cards with artwork, title, genre, relative date, duration, play icon. Infinite scroll (20 songs/page). Empty state with Norwegian text and "Lag sang" button.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>src/components/song-player-card.tsx</path>
+        <kind>component</kind>
+        <symbol>SongPlayerCard</symbol>
+        <lines>1-403</lines>
+        <reason>Existing song player component to be integrated for modal playback. Uses Howler.js for audio, WaveSurfer.js for waveform visualization. Includes Norwegian locale date formatting (nb-NO).</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/supabase/server.ts</path>
+        <kind>service</kind>
+        <symbol>createClient</symbol>
+        <lines>36-61</lines>
+        <reason>Server-side Supabase client for querying song table in Server Component. Automatically enforces RLS based on auth.uid() from session cookies.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/layout/bottom-navigation.tsx</path>
+        <kind>component</kind>
+        <symbol>BottomNavigation</symbol>
+        <lines>1-58</lines>
+        <reason>Existing bottom navigation component with /songs route defined. Shows active state pattern to follow for new songs page.</reason>
+      </artifact>
+      <artifact>
+        <path>src/types/song.ts</path>
+        <kind>type</kind>
+        <symbol>Song</symbol>
+        <lines>32-53</lines>
+        <reason>Song type definition matching database schema. Interface for all song operations in the app.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <package name="@supabase/ssr" version="latest">Server-side Supabase client</package>
+        <package name="@supabase/supabase-js" version="latest">Supabase SDK</package>
+        <package name="next" version="14.2+">Next.js framework with App Router</package>
+        <package name="react" version="18+">React library</package>
+      </node>
+      <ui>
+        <package name="@radix-ui/react-*" version="latest">shadcn/ui component primitives</package>
+        <package name="lucide-react" version="latest">Icon library (Music, Play icons)</package>
+        <package name="tailwindcss" version="3.4+">Utility-first CSS framework</package>
+      </ui>
+      <audio>
+        <package name="howler" version="latest">Audio playback (used in SongPlayerCard)</package>
+        <package name="wavesurfer.js" version="latest">Waveform visualization</package>
+      </audio>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Server Components by default: Use Server Components for data fetching (better performance). Only mark components 'use client' when needed for interactivity.</constraint>
+    <constraint>Norwegian UI Text: All user-facing text must be in Norwegian. Empty state: "Ingen sanger ennå! La oss lage ditt første mesterverk 🎵". Relative dates: "Akkurat nå", "X minutter siden", "X timer siden", "I går", "X dager siden".</constraint>
+    <constraint>Row Level Security (RLS): All database queries automatically enforce RLS. Users can only see songs WHERE auth.uid() = user_id. Never bypass RLS or use service role key.</constraint>
+    <constraint>Project-relative paths: All paths in context must be project-relative (e.g., "src/app/songs/page.tsx" not full paths).</constraint>
+    <constraint>Responsive design: Mobile-first with breakpoints at 640px (tablet) and 1024px (desktop). Single column layout on mobile, 2-3 columns on tablet/desktop.</constraint>
+    <constraint>Touch-friendly targets: Minimum 48x48px tap targets for mobile. Song cards should have adequate padding for thumb reach.</constraint>
+    <constraint>Pagination: Implement cursor-based or offset pagination loading 20 songs at a time for performance with large libraries.</constraint>
+    <constraint>Soft delete filtering: Always filter deleted songs with WHERE deleted_at IS NULL in queries.</constraint>
+  </constraints>
+  <interfaces>
+    <interface>
+      <name>Song (TypeScript Interface)</name>
+      <kind>TypeScript type</kind>
+      <signature>interface Song { id: string; user_id: string; title: string; genre: string; audio_url?: string; duration_seconds?: number; status: 'generating' | 'completed' | 'failed' | 'cancelled'; created_at: string; updated_at: string; deleted_at?: string; }</signature>
+      <path>src/types/song.ts</path>
+    </interface>
+    <interface>
+      <name>SongPlayerCardProps</name>
+      <kind>React component props</kind>
+      <signature>interface SongPlayerCardProps { songId: string; title: string; genre: string; audioUrl: string; duration?: number; createdAt: string; genreEmoji?: string; isPreview?: boolean; }</signature>
+      <path>src/components/song-player-card.tsx</path>
+    </interface>
+    <interface>
+      <name>Supabase Query Pattern</name>
+      <kind>API query</kind>
+      <signature>const { data, error } = await supabase.from('song').select('*').eq('user_id', userId).is('deleted_at', null).order('created_at', { ascending: false }).range(0, 19)</signature>
+      <path>src/lib/supabase/server.ts</path>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>Testing follows Next.js and React best practices. Co-locate tests with source files using .test.tsx or .spec.tsx naming. Use React Testing Library for component tests. Test Server Components by testing their rendered output. Integration tests verify database queries return correct filtered data (RLS enforcement). Accessibility testing ensures WCAG 2.1 AA compliance (keyboard navigation, ARIA labels, screen reader support). E2E tests use Playwright for critical user flows.</standards>
+    <locations>src/app/songs/__tests__/, src/components/__tests__/, src/lib/utils/__tests__/</locations>
+    <ideas>
+      <test ac="1" desc="Test empty song list displays empty state component with Norwegian text 'Ingen sanger ennå!' and 'Lag sang' button">Verify empty state when user has zero songs</test>
+      <test ac="1" desc="Test song list displays all user songs sorted by created_at DESC (newest first)">Query database, verify sort order matches created_at timestamps</test>
+      <test ac="2" desc="Test song card displays all required metadata: artwork thumbnail (60x60px gradient), title, genre badge, relative date, duration in MM:SS format">Render song card, verify all elements present with correct data</test>
+      <test ac="2" desc="Test Norwegian relative date formatting: 'Akkurat nå', '5 minutter siden', '2 timer siden', 'I går', '3 dager siden'">Test formatRelativeDate utility function with various time differences</test>
+      <test ac="3" desc="Test play icon is visible on each song card">Verify play button/icon rendered on card</test>
+      <test ac="4" desc="Test tapping song card opens song player modal">Click card, verify modal opens with SongPlayerCard component</test>
+      <test ac="5" desc="Test infinite scroll loads 20 songs at a time">Mock API with 50 songs, verify initial load shows 20, scroll triggers next 20</test>
+      <test ac="6" desc="Test empty state button navigates to home page">Click 'Lag sang' button, verify navigation to '/' route</test>
+      <test desc="Test RLS enforcement: users only see their own songs">Create test with multiple users, verify query filters by auth.uid()</test>
+      <test desc="Test soft delete filtering: deleted songs (deleted_at IS NOT NULL) are excluded from list">Create songs with deleted_at set, verify they don't appear in list</test>
+      <test desc="Test responsive layout: 1 column mobile, 2-3 columns tablet/desktop">Resize viewport, verify grid layout adjusts</test>
+      <test desc="Test accessibility: keyboard navigation through song cards, ARIA labels on play icons">Tab through cards, verify focus indicators and screen reader labels</test>
+      <test desc="Test pagination performance: loading indicator appears during fetch">Scroll to trigger pagination, verify loading state displayed</test>
+    </ideas>
+  </tests>
+</story-context>

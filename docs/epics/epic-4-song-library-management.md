@@ -1,10 +1,12 @@
 # Epic 4: Song Library & Management
 
-**Goal:** Enable users to manage their created songs effectively with playback, downloads, organization, and storage management.
+**Goal:** Enable users to manage their created songs effectively with playback, downloads, and organization.
 
 **User Value:** Users can organize, replay, and download their Norwegian song library.
 
-**FRs Covered:** FR24-FR27 (Track Management), FR46-FR48, FR50 (Storage & Downloads)
+**FRs Covered:** FR24-FR27 (Track Management), FR46-FR48 (Storage & Downloads)
+
+**Note:** Songs are automatically deleted after 14 days (no warnings or recovery).
 
 ---
 
@@ -100,29 +102,28 @@ So that I can keep them permanently and share them offline.
 
 As a **user**,
 I want to delete songs I no longer need,
-So that my library stays organized and I can free up storage space.
+So that my library stays organized.
 
 **Acceptance Criteria:**
 
 **Given** I am viewing a song in the player modal
-**When** I tap "Delete" button
-**Then** A confirmation modal appears: "Delete '{song-title}'? This can't be undone."
-**And** Two options: "Cancel" (secondary button) and "Delete Forever" (destructive red button)
+**When** I tap "Delete" button (trash icon)
+**Then** A confirmation dialog appears: "Slett '{song-title}'? Dette kan ikke angres."
+**And** Two options: "Avbryt" (secondary button) and "Slett" (destructive red button)
 **And** When I confirm deletion
-**Then** Song record is soft-deleted: `deleted_at = NOW()`
+**Then** Song record is permanently deleted from database
+**And** Audio file is removed from Supabase Storage
 **And** Song disappears from my library immediately
-**And** I see toast: "Song deleted. Undo?" (10-second window)
-**And** If I tap "Undo", soft delete is reversed: `deleted_at = NULL`
-**And** After 10 seconds or navigating away, undo option expires
+**And** I see success toast: "Sangen ble slettet"
 
 **Prerequisites:** Story 4.2
 
 **Technical Notes:**
-- Soft delete: Set `deleted_at` timestamp instead of hard DELETE
-- Update query to filter: `WHERE deleted_at IS NULL`
-- Undo mechanism: Store deleted song ID in component state
-- After 14 days, background job permanently deletes soft-deleted songs
-- Deletion also removes audio file from Supabase Storage after 14 days
+- Permanent deletion: Hard DELETE from database (no soft delete)
+- Remove audio file from Supabase Storage bucket immediately
+- Use database transaction to ensure both record and file are deleted atomically
+- No undo functionality - deletion is permanent
+- Confirmation dialog prevents accidental deletions
 
 ---
 
@@ -155,65 +156,12 @@ So that I can easily identify them in my library.
 
 ---
 
-### Story 4.6: Implement 14-Day Deletion Warning System
-
-As a **user**,
-I want to be notified before my songs are automatically deleted,
-So that I can download songs I want to keep permanently.
-
-**Acceptance Criteria:**
-
-**Given** I have songs approaching the 14-day deletion deadline
-**When** A song is 12 days old (2 days before deletion)
-**Then** I see a warning banner: "💡 Your song '{title}' will be deleted in 2 days. Download to keep forever!"
-**And** Banner appears on "My Songs" page and in song player modal
-**And** "Download" button is prominently displayed next to warning
-**When** A song reaches 14 days old
-**Then** Song is soft-deleted automatically: `deleted_at = NOW()`
-**And** I receive an email notification listing deleted songs (if opted in)
-**And** Songs remain soft-deleted for 7 more days (grace period) before permanent deletion
-
-**Prerequisites:** Story 4.3 (Download), Story 4.4 (Soft delete)
-
-**Technical Notes:**
-- Create background job (Vercel Cron or Supabase Function) that runs daily
-- Query songs WHERE `created_at < NOW() - INTERVAL '14 days'` AND `deleted_at IS NULL`
-- Set `deleted_at` for expired songs
-- Display warning in UI for songs WHERE `created_at > NOW() - INTERVAL '12 days'`
-- Email notifications: Use Supabase Auth email or Resend API
-- Permanent deletion: After 21 days total (14 + 7 grace), hard delete record + audio file
-
----
-
-### Story 4.7: Implement Batch Download Functionality
-
-As a **user**,
-I want to download multiple songs at once,
-So that I can archive my entire library efficiently.
-
-**Acceptance Criteria:**
-
-**Given** I am viewing my song library with multiple songs
-**When** I tap "Select Multiple" button in the header
-**Then** Checkboxes appear on each song card
-**And** I can select/deselect individual songs by tapping
-**And** A floating action bar appears at bottom: "{n} songs selected" | "Download All" | "Cancel"
-**When** I tap "Download All"
-**Then** All selected songs are downloaded as a ZIP file: "musikkfabrikken-songs-{date}.zip"
-**And** ZIP includes all audio files with readable filenames
-**And** Download completes within 30 seconds (for 10 songs)
-**And** I see success toast: "✓ {n} songs downloaded!"
-
-**Prerequisites:** Story 4.3 (Download)
-
-**Technical Notes:**
-- Create API route: POST `/api/songs/batch-download` with `songIds[]`
-- Server-side: Generate ZIP archive using JSZip or similar
-- Stream ZIP to client (don't buffer entire file in memory)
-- Limit: Max 50 songs per batch to prevent timeout
-- Alternative: Generate individual downloads in browser using async queue
-
----
+**Note on Automatic Deletion:**
+- Songs are automatically deleted after 14 days to manage storage costs
+- Background job (Vercel Cron or Supabase Function) runs daily
+- Query: `WHERE created_at < NOW() - INTERVAL '14 days'`
+- Permanent deletion: Hard delete record + remove audio file from Supabase Storage
+- No warnings, notifications, or recovery options (users can download before deletion)
 
 ---
 
