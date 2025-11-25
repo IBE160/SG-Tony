@@ -59,7 +59,9 @@
       "WebFetch(domain:github.com)",
       "Bash(if not exist \"src\\app\\api\\songs\\[id]\\cancel\" mkdir \"src\\app\\api\\songs\\[id]\\cancel\")",
       "Bash(if exist \"C:\\Users\\tony-\\SG-Tony\\src\\app\\api\\songs\\[id]\\cancel\\route.ts\" del \"C:\\Users\\tony-\\SG-Tony\\src\\app\\api\\songs\\[id]\\cancel\\route.ts\")",
-      "Bash(if exist \"C:\\Users\\tony-\\SG-Tony\\src\\app\\api\\songs\\[id]\\cancel\" rmdir \"C:\\Users\\tony-\\SG-Tony\\src\\app\\api\\songs\\[id]\\cancel\")"
+      "Bash(if exist \"C:\\Users\\tony-\\SG-Tony\\src\\app\\api\\songs\\[id]\\cancel\" rmdir \"C:\\Users\\tony-\\SG-Tony\\src\\app\\api\\songs\\[id]\\cancel\")",
+      "Bash(src/types/supabase.ts)",
+      "Bash(node scripts/update-genres-with-gradients.js:*)"
     ],
     "deny": [],
     "ask": []

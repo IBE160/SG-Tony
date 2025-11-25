@@ -10,6 +10,10 @@ interface Genre {
   display_name: string
   emoji: string | null
   sort_order: number
+  gradient_colors: {
+    from: string
+    to: string
+  } | null
 }
 
 interface GenreSelectionProps {
@@ -35,9 +39,9 @@ export function GenreSelection({
     async function fetchGenres() {
       try {
         const supabase = createClient()
-        const { data, error } = await supabase
+        const { data, error} = await supabase
           .from('genre')
-          .select('id, name, display_name, emoji, sort_order')
+          .select('id, name, display_name, emoji, sort_order, gradient_colors')
           .eq('is_active', true)
           .order('sort_order', { ascending: true })
 
@@ -115,20 +119,28 @@ export function GenreSelection({
       <div className="flex flex-wrap gap-3 justify-center md:justify-start">
         {genres.map((genre) => {
           const isSelected = selectedId === genre.id
+          const gradientFrom = genre.gradient_colors?.from || '#E94560'
+          const gradientTo = genre.gradient_colors?.to || '#FFC93C'
+
           return (
             <Button
               key={genre.id}
               onClick={() => handleGenreClick(genre)}
               onKeyDown={(e) => handleKeyDown(e, genre)}
               variant={isSelected ? 'default' : 'outline'}
+              style={{
+                background: isSelected
+                  ? `linear-gradient(135deg, ${gradientFrom} 0%, ${gradientTo} 100%)`
+                  : 'white',
+              }}
               className={`
                 min-h-[44px] min-w-[44px] px-4 py-2 rounded-lg
                 transition-all duration-200
                 flex items-center gap-2
                 ${
                   isSelected
-                    ? 'border-[3px] border-[#E94560] bg-[#E94560] text-white hover:bg-[#E94560]/90'
-                    : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                    ? 'border-[3px] border-[#E94560] text-white hover:opacity-90'
+                    : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
                 }
                 focus:outline-none focus:ring-2 focus:ring-[#E94560] focus:ring-offset-2
               `}
