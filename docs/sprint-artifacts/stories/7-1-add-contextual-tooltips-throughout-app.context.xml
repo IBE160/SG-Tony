@@ -1,0 +1,283 @@
+<story-context id="7-1-add-contextual-tooltips-throughout-app" v="1.0">
+  <metadata>
+    <epicId>7</epicId>
+    <storyId>1</storyId>
+    <title>Add Contextual Tooltips Throughout App</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-26</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/7-1-add-contextual-tooltips-throughout-app.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>helpful tooltips when I hover/tap on unfamiliar features</iWant>
+    <soThat>I understand what each feature does without leaving the page</soThat>
+    <tasks>
+      <task id="1" title="Create Tooltip Constants File">
+        <subtasks>
+          <subtask>Create /src/lib/constants/tooltips.ts</subtask>
+          <subtask>Define tooltip content object with Norwegian text</subtask>
+          <subtask>Export type for tooltip keys</subtask>
+        </subtasks>
+        <acceptance>AC #3 (Norwegian Content), AC #4 (Key Tooltips)</acceptance>
+      </task>
+      <task id="2" title="Create InfoTooltip Wrapper Component">
+        <subtasks>
+          <subtask>Create /src/components/info-tooltip.tsx</subtask>
+          <subtask>Use existing shadcn/ui Tooltip from /src/components/ui/tooltip.tsx</subtask>
+          <subtask>Add Info icon from lucide-react</subtask>
+          <subtask>Style: white background, drop shadow, max-w-[250px], rounded-md</subtask>
+          <subtask>Ensure ARIA attributes for accessibility</subtask>
+          <subtask>Props: content: string, side?: top|bottom|left|right</subtask>
+        </subtasks>
+        <acceptance>AC #1, #2, #5, #6, #7</acceptance>
+      </task>
+      <task id="3" title="Add TooltipProvider to Root Layout">
+        <subtasks>
+          <subtask>Update /src/app/layout.tsx</subtask>
+          <subtask>Wrap app with TooltipProvider from shadcn/ui</subtask>
+          <subtask>Configure delayDuration (default 400ms)</subtask>
+        </subtasks>
+        <acceptance>AC #2</acceptance>
+      </task>
+      <task id="4" title="Add Tooltip to Pronunciation Toggle">
+        <subtasks>
+          <subtask>Update /src/components/pronunciation-toggle.tsx</subtask>
+          <subtask>Replace existing tooltip with new InfoTooltip using TOOLTIPS.pronunciation</subtask>
+          <subtask>Position: right side of label</subtask>
+        </subtasks>
+        <acceptance>AC #4</acceptance>
+        <note>pronunciation-toggle.tsx already has a tooltip - update to use centralized constants</note>
+      </task>
+      <task id="5" title="Add Tooltip to Credit Display">
+        <subtasks>
+          <subtask>Find credit balance display in header/navigation</subtask>
+          <subtask>Add InfoTooltip next to "Kreditter" label</subtask>
+          <subtask>Use TOOLTIPS.credits content</subtask>
+          <subtask>Also add to credit-purchase-modal.tsx</subtask>
+        </subtasks>
+        <acceptance>AC #4</acceptance>
+      </task>
+      <task id="6" title="Add Tooltip to Free Preview Feature">
+        <subtasks>
+          <subtask>Find free preview button/UI in song generation flow</subtask>
+          <subtask>Add InfoTooltip next to preview option</subtask>
+          <subtask>Use TOOLTIPS.freePreview content</subtask>
+        </subtasks>
+        <acceptance>AC #4</acceptance>
+      </task>
+      <task id="7" title="Add Tooltip to Download Button">
+        <subtasks>
+          <subtask>Update /src/components/song-player-card.tsx</subtask>
+          <subtask>Add InfoTooltip next to download button</subtask>
+          <subtask>Use TOOLTIPS.download content</subtask>
+          <subtask>Mention 14-day availability</subtask>
+        </subtasks>
+        <acceptance>AC #4</acceptance>
+      </task>
+      <task id="8" title="Style Tooltip Content">
+        <subtasks>
+          <subtask>Customize TooltipContent in info-tooltip.tsx</subtask>
+          <subtask>Apply: bg-white, shadow-lg, text-secondary (navy), max-w-[250px]</subtask>
+          <subtask>Verify text is readable (proper contrast)</subtask>
+          <subtask>Test on mobile and desktop</subtask>
+        </subtasks>
+        <acceptance>AC #5</acceptance>
+      </task>
+      <task id="9" title="Test Keyboard Accessibility">
+        <subtasks>
+          <subtask>Tab to info icon - verify focus visible</subtask>
+          <subtask>Press Enter/Space on focused icon - verify tooltip shows</subtask>
+          <subtask>Tab away - verify tooltip dismisses</subtask>
+          <subtask>Verify ARIA attributes in DOM</subtask>
+        </subtasks>
+        <acceptance>AC #7</acceptance>
+      </task>
+      <task id="10" title="Test Touch Behavior">
+        <subtasks>
+          <subtask>Test on mobile viewport (Chrome DevTools)</subtask>
+          <subtask>Tap info icon - tooltip appears</subtask>
+          <subtask>Tap outside - tooltip dismisses</subtask>
+          <subtask>Verify touch target is at least 44x44px</subtask>
+        </subtasks>
+        <acceptance>AC #6</acceptance>
+      </task>
+      <task id="11" title="Build Verification">
+        <subtasks>
+          <subtask>Run npm run build - verify success</subtask>
+          <subtask>Run npm run lint - verify no errors</subtask>
+          <subtask>Check for TypeScript errors</subtask>
+        </subtasks>
+        <acceptance>AC #8</acceptance>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="AC1">Info Icons Added: Info icons appear next to key features that need explanation</criterion>
+    <criterion id="AC2">Tooltip on Hover/Tap: Hovering (desktop) or tapping (mobile) info icon shows tooltip</criterion>
+    <criterion id="AC3">Norwegian Content: All tooltip text is in Norwegian (Bokmal) as per ui_content_language config</criterion>
+    <criterion id="AC4">Key Tooltips Implemented:
+      - "Uttalelse Bokmal": "Forbedrer automatisk norsk uttale for Suno AI"
+      - "Kreditter": "1 kreditt = ca. kr 5. Full sang koster 10 kreditter."
+      - "Gratis forhandsvisning": "30-sekunders forhandsvisning for a hore sangen din for kjop"
+      - "Last ned": "Last ned hele sangen som MP3 (tilgjengelig i 14 dager)"</criterion>
+    <criterion id="AC5">Tooltip Styling: White card with drop shadow, max-width 250px, rounded corners</criterion>
+    <criterion id="AC6">Dismiss Behavior: Tooltips dismiss when tapping outside or hovering away</criterion>
+    <criterion id="AC7">Accessibility: ARIA role="tooltip", keyboard accessible (focus to show)</criterion>
+    <criterion id="AC8">Build Verification: Production build succeeds with no TypeScript or ESLint errors</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>7.1 Consistency Rules - Feedback Patterns</section>
+        <snippet>Info Tooltip Pattern: White card with drop shadow, auto-dismiss on tap outside. Usage: Explaining features like "Uttalelse Bokmal" toggle. Info Blue: #3B82F6 for informational messages.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Implementation Patterns - Language and Localization</section>
+        <snippet>Norwegian UI Content, English Code - All user-facing content in Norwegian, code/variables in English. ui_content_language: Norwegian in config.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Technology Stack - UI Components</section>
+        <snippet>shadcn/ui (Radix UI + Tailwind) - Accessible by default (WCAG 2.1 AA), copy-paste components. lucide-react for icons.</snippet>
+      </doc>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>FR52</section>
+        <snippet>System displays helpful tooltips and guidance for non-technical users.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics/epic-7-user-experience-help.md</path>
+        <title>Epic 7: User Experience and Help</title>
+        <section>Story 7.1 Technical Notes</section>
+        <snippet>Use shadcn/ui Tooltip component, Info icons with Lucide, tooltip styling: white card, drop shadow, max-width 250px. Content stored in constants file.</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <file>
+        <path>src/components/ui/tooltip.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>TooltipProvider, Tooltip, TooltipTrigger, TooltipContent</symbol>
+        <lines>1-33</lines>
+        <reason>Base tooltip component from shadcn/ui - will wrap with InfoTooltip</reason>
+      </file>
+      <file>
+        <path>src/components/pronunciation-toggle.tsx</path>
+        <kind>component</kind>
+        <symbol>PronunciationToggle</symbol>
+        <lines>1-67</lines>
+        <reason>Already has tooltip implementation - refactor to use centralized constants</reason>
+      </file>
+      <file>
+        <path>src/components/song-player-card.tsx</path>
+        <kind>component</kind>
+        <symbol>SongPlayerCard</symbol>
+        <lines>460-474</lines>
+        <reason>Download button needs tooltip added</reason>
+      </file>
+      <file>
+        <path>src/components/credit-purchase-modal.tsx</path>
+        <kind>component</kind>
+        <symbol>CreditPurchaseModal</symbol>
+        <lines>1-127</lines>
+        <reason>Credit display area - add tooltip for credits explanation</reason>
+      </file>
+      <file>
+        <path>src/app/layout.tsx</path>
+        <kind>layout</kind>
+        <symbol>RootLayout</symbol>
+        <lines>1-38</lines>
+        <reason>Root layout - needs TooltipProvider wrapper</reason>
+      </file>
+      <file>
+        <path>src/lib/constants.ts</path>
+        <kind>constants</kind>
+        <symbol>CREDIT_COSTS</symbol>
+        <lines>1-48</lines>
+        <reason>Reference for credit costs - tooltips folder will be parallel</reason>
+      </file>
+    </code>
+
+    <dependencies>
+      <node>
+        <package>@radix-ui/react-tooltip</package>
+        <version>^1.2.8</version>
+        <usage>Core tooltip primitive - already installed</usage>
+      </node>
+      <node>
+        <package>lucide-react</package>
+        <version>^0.554.0</version>
+        <usage>Info icon component - already installed</usage>
+      </node>
+      <node>
+        <package>tailwind-merge</package>
+        <version>^3.4.0</version>
+        <usage>Utility for merging Tailwind classes - already installed</usage>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <interfaces>
+    <interface>
+      <name>TooltipProvider</name>
+      <kind>React Component</kind>
+      <signature>TooltipProvider: React.FC with delayDuration prop</signature>
+      <path>src/components/ui/tooltip.tsx</path>
+    </interface>
+    <interface>
+      <name>Tooltip, TooltipTrigger, TooltipContent</name>
+      <kind>React Components</kind>
+      <signature>Radix UI Tooltip primitives exported from shadcn/ui</signature>
+      <path>src/components/ui/tooltip.tsx</path>
+    </interface>
+    <interface>
+      <name>Info Icon</name>
+      <kind>Icon Component</kind>
+      <signature>import { Info } from "lucide-react"</signature>
+      <path>node_modules/lucide-react</path>
+    </interface>
+  </interfaces>
+
+  <constraints>
+    <constraint source="architecture">Norwegian UI Content: All tooltip text must be in Norwegian (Bokmal)</constraint>
+    <constraint source="architecture">English Code: Variable names, component names, file names in English</constraint>
+    <constraint source="ux-spec">Tooltip Styling: White card, drop shadow, max-width 250px, rounded corners</constraint>
+    <constraint source="ux-spec">Touch Target: Minimum 44x44px for info icon button</constraint>
+    <constraint source="ux-spec">Accessibility: WCAG 2.1 AA compliance required</constraint>
+    <constraint source="dev-notes">Use existing shadcn/ui Tooltip component - do not create new tooltip from scratch</constraint>
+    <constraint source="dev-notes">Store tooltip content in centralized constants file for easy editing</constraint>
+  </constraints>
+
+  <tests>
+    <standards>
+      No formal test framework currently in use. Build verification via npm run build and npm run lint.
+      Manual testing for accessibility (keyboard navigation, screen reader) and mobile touch behavior.
+      TypeScript strict mode provides compile-time type checking.
+    </standards>
+    <locations>
+      <location>Build output: npm run build</location>
+      <location>Lint output: npm run lint</location>
+      <location>Manual browser testing</location>
+    </locations>
+    <ideas>
+      <idea ac="AC1">Verify info icons render next to Uttalelse Bokmal, Kreditter, Free Preview, Download</idea>
+      <idea ac="AC2">Test hover shows tooltip on desktop, tap shows on mobile</idea>
+      <idea ac="AC3">Verify all tooltip text is Norwegian - check for any English UI strings</idea>
+      <idea ac="AC4">Verify exact tooltip content matches AC requirements for each feature</idea>
+      <idea ac="AC5">Inspect tooltip styling: white bg, shadow, max-width, border-radius</idea>
+      <idea ac="AC6">Test dismiss: hover away, click outside on mobile</idea>
+      <idea ac="AC7">Tab to info icon, verify focus ring, Enter/Space opens tooltip, verify ARIA attributes</idea>
+      <idea ac="AC8">npm run build exits 0, npm run lint exits 0, no TypeScript errors</idea>
+    </ideas>
+  </tests>
+</story-context>
