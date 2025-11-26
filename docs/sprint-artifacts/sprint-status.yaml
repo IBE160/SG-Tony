@@ -108,7 +108,7 @@ development_status:
   # Story 7.4 (Example Songs) deferred to post-MVP
   epic-7: backlog
   7-1-add-contextual-tooltips-throughout-app: review
-  7-2-create-onboarding-flow-for-first-time-users: ready-for-dev
+  7-2-create-onboarding-flow-for-first-time-users: review
   7-3-create-faq-and-help-documentation-page: backlog
   7-4-add-example-songs-showcase-page: deferred  # Moved to future-enhancements.md
   7-5-implement-friendly-error-messages-with-recovery-actions: backlog

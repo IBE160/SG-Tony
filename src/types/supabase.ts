@@ -21,6 +21,7 @@ export interface Database {
           display_name: string | null
           credit_balance: number
           preferences: Json
+          onboarding_completed: boolean
           created_at: string
           updated_at: string
         }
@@ -29,6 +30,7 @@ export interface Database {
           display_name?: string | null
           credit_balance?: number
           preferences?: Json
+          onboarding_completed?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -37,6 +39,7 @@ export interface Database {
           display_name?: string | null
           credit_balance?: number
           preferences?: Json
+          onboarding_completed?: boolean
           created_at?: string
           updated_at?: string
         }

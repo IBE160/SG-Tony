@@ -1,6 +1,6 @@
 # Story 7.2: Create Onboarding Flow for First-Time Users
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -25,65 +25,65 @@ so that I understand how to create my first Norwegian song.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Add onboarding_completed Column to user_profile (AC: #6, #7)
-  - [ ] Create migration: `supabase/migrations/XXXXXX_add_onboarding_completed.sql`
-  - [ ] Add column: `onboarding_completed BOOLEAN DEFAULT false`
-  - [ ] Update TypeScript types if using generated types
+- [x] Task 1: Add onboarding_completed Column to user_profile (AC: #6, #7)
+  - [x] Create migration: `supabase/migrations/20251126_add_onboarding_completed.sql`
+  - [x] Add column: `onboarding_completed BOOLEAN DEFAULT false`
+  - [x] Update TypeScript types if using generated types
 
-- [ ] Task 2: Create Onboarding Hook (AC: #1, #6, #7)
-  - [ ] Create `/src/hooks/use-onboarding.ts`
-  - [ ] Fetch `onboarding_completed` from user_profile on mount
-  - [ ] Provide `completeOnboarding()` function to update database
-  - [ ] Return `{ showOnboarding, completeOnboarding, isLoading }`
+- [x] Task 2: Create Onboarding Hook (AC: #1, #6, #7)
+  - [x] Create `/src/hooks/use-onboarding.ts`
+  - [x] Fetch `onboarding_completed` from user_profile on mount
+  - [x] Provide `completeOnboarding()` function to update database
+  - [x] Return `{ showOnboarding, completeOnboarding, isLoading }`
 
-- [ ] Task 3: Create OnboardingModal Component (AC: #1, #2, #3, #4, #5)
-  - [ ] Create `/src/components/onboarding-modal.tsx`
-  - [ ] Use shadcn/ui Dialog component
-  - [ ] Implement 3-screen wizard with useState for currentStep
-  - [ ] Add progress indicator (step dots or "1/3" text)
-  - [ ] Add Next/Back/Skip buttons
-  - [ ] All text in Norwegian (Bokmål)
+- [x] Task 3: Create OnboardingModal Component (AC: #1, #2, #3, #4, #5)
+  - [x] Create `/src/components/onboarding-modal.tsx`
+  - [x] Use shadcn/ui Dialog component
+  - [x] Implement 3-screen wizard with useState for currentStep
+  - [x] Add progress indicator (step dots or "1/3" text)
+  - [x] Add Next/Back/Skip buttons
+  - [x] All text in Norwegian (Bokmål)
 
-- [ ] Task 4: Implement Screen 1 - Genre Selection (AC: #3)
-  - [ ] Display header: "Velg dine favorittsjangre"
-  - [ ] Show genre carousel/grid (reuse GenreCarousel or genre data)
-  - [ ] Multi-select up to 3 genres
-  - [ ] Store selected genres in component state
-  - [ ] Show selected count: "3 av 3 valgt"
+- [x] Task 4: Implement Screen 1 - Genre Selection (AC: #3)
+  - [x] Display header: "Velg dine favorittsjangre"
+  - [x] Show genre carousel/grid (reuse GenreCarousel or genre data)
+  - [x] Multi-select up to 3 genres
+  - [x] Store selected genres in component state
+  - [x] Show selected count: "3 av 3 valgt"
 
-- [ ] Task 5: Implement Screen 2 - Song Concept Input (AC: #3)
-  - [ ] Display header: "Hva handler sangen din om?"
-  - [ ] Textarea with placeholder: "Bursdagssang til en venn som elsker å fiske..."
-  - [ ] Store concept in component state
-  - [ ] Optional: Character count hint
+- [x] Task 5: Implement Screen 2 - Song Concept Input (AC: #3)
+  - [x] Display header: "Hva handler sangen din om?"
+  - [x] Textarea with placeholder: "Bursdagssang til en venn som elsker å fiske..."
+  - [x] Store concept in component state
+  - [x] Optional: Character count hint
 
-- [ ] Task 6: Implement Screen 3 - Generate First Song (AC: #3)
-  - [ ] Display header: "Lag din første sang!"
-  - [ ] Explain credits briefly: "Gratis forhåndsvisning tilgjengelig"
-  - [ ] CTA button: "Lag forhåndsvisning" or "Start"
-  - [ ] On complete, call `completeOnboarding()` and close modal
+- [x] Task 6: Implement Screen 3 - Generate First Song (AC: #3)
+  - [x] Display header: "Lag din første sang!"
+  - [x] Explain credits briefly: "Gratis forhåndsvisning tilgjengelig"
+  - [x] CTA button: "Lag forhåndsvisning" or "Start"
+  - [x] On complete, call `completeOnboarding()` and close modal
 
-- [ ] Task 7: Implement Skip Functionality (AC: #5, #7)
-  - [ ] Add "Hopp over" ghost button on all screens
-  - [ ] On skip, call `completeOnboarding()` and close modal
-  - [ ] Confirmation optional (or just skip immediately)
+- [x] Task 7: Implement Skip Functionality (AC: #5, #7)
+  - [x] Add "Hopp over" ghost button on all screens
+  - [x] On skip, call `completeOnboarding()` and close modal
+  - [x] Confirmation optional (or just skip immediately)
 
-- [ ] Task 8: Add Spotlight Effect for Post-Onboarding (AC: #8)
-  - [ ] After modal closes, trigger brief highlight on genre carousel
-  - [ ] Options: pulse animation, ring highlight, or subtle glow
-  - [ ] Duration: 2-3 seconds, then fade out
-  - [ ] Use CSS animation or framer-motion
+- [x] Task 8: Add Spotlight Effect for Post-Onboarding (AC: #8)
+  - [x] After modal closes, trigger brief highlight on genre carousel
+  - [x] Options: pulse animation, ring highlight, or subtle glow
+  - [x] Duration: 2-3 seconds, then fade out
+  - [x] Use CSS animation or framer-motion
 
-- [ ] Task 9: Integrate OnboardingModal into Create Page (AC: #1, #7)
-  - [ ] Update `/src/app/page.tsx` or create page component
-  - [ ] Use `useOnboarding()` hook
-  - [ ] Conditionally render `<OnboardingModal>` when `showOnboarding === true`
-  - [ ] Pass `onComplete` callback to handle post-onboarding effects
+- [x] Task 9: Integrate OnboardingModal into Create Page (AC: #1, #7)
+  - [x] Update `/src/app/page.tsx` or create page component
+  - [x] Use `useOnboarding()` hook
+  - [x] Conditionally render `<OnboardingModal>` when `showOnboarding === true`
+  - [x] Pass `onComplete` callback to handle post-onboarding effects
 
-- [ ] Task 10: Build Verification (AC: #9)
-  - [ ] Run `npm run build` - success
-  - [ ] Run `npm run lint` - no errors
-  - [ ] No TypeScript errors
+- [x] Task 10: Build Verification (AC: #9)
+  - [x] Run `npm run build` - success
+  - [x] Run `npm run lint` - no errors
+  - [x] No TypeScript errors
 
 ## Dev Notes
 
@@ -209,6 +209,13 @@ const handleBack = () => setCurrentStep(prev => Math.max(prev - 1, 1))
 
 ## Change Log
 
+**2025-11-26 - Implementation Complete (review status)**
+- Implemented full 3-screen onboarding wizard with genre selection, concept input, and completion summary
+- Created useOnboarding hook for state management with Supabase integration
+- Added database migration for onboarding_completed column
+- Integrated OnboardingModal into main create page with spotlight effect
+- All acceptance criteria met; build and lint pass
+
 **2025-11-26 - Story Created (drafted status)**
 - Story drafted by SM agent using create-story workflow
 - Extracted from Epic 7: User Experience & Help
@@ -226,10 +233,35 @@ const handleBack = () => setCurrentStep(prev => Math.max(prev - 1, 1))
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Claude Opus 4.5 (claude-opus-4-5-20251101)
 
 ### Debug Log References
 
+- Implementation followed patterns from existing components (GenreSelection, use-toast hook)
+- Used shadcn/ui Dialog for modal with controlled open state (no dismiss on outside click per UX spec)
+- Spotlight effect uses Tailwind ring and animate-pulse with 3s timeout
+- All UI text in Norwegian (Bokmål) per ui_content_language config
+
 ### Completion Notes List
 
+- ✅ Complete 3-screen onboarding wizard with progress indicator
+- ✅ Screen 1: Multi-select genre picker (max 3) with gradient styling
+- ✅ Screen 2: Song concept textarea with character count
+- ✅ Screen 3: Summary view with "Start" CTA explaining free preview
+- ✅ Skip functionality on all screens (ghost button)
+- ✅ Spotlight ring effect (3s) on genre section after onboarding completion
+- ✅ Pre-fills concept from onboarding into main page state
+- ✅ Database migration adds onboarding_completed column
+- ✅ TypeScript types updated for user_profile
+- ✅ Build and lint pass with no errors
+
 ### File List
+
+**Created:**
+- supabase/migrations/20251126_add_onboarding_completed.sql
+- src/hooks/use-onboarding.ts
+- src/components/onboarding-modal.tsx
+
+**Modified:**
+- src/types/supabase.ts (added onboarding_completed to user_profile types)
+- src/app/page.tsx (integrated OnboardingModal, added spotlight effect)

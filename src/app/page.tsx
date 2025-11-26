@@ -7,8 +7,10 @@ import { LyricsEditor } from '@/components/lyrics-editor'
 import { PronunciationToggle } from '@/components/pronunciation-toggle'
 import { PhoneticDiffViewer } from '@/components/phonetic-diff-viewer'
 import { GenerationProgressModal } from '@/components/generation-progress-modal'
+import { OnboardingModal } from '@/components/onboarding-modal'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
+import { useOnboarding } from '@/hooks/use-onboarding'
 import { Loader2, Eye, Music } from 'lucide-react'
 import type { OptimizationResult, PhoneticChange } from '@/types/song'
 
@@ -29,7 +31,9 @@ export default function Home() {
   const [isGeneratingSong, setIsGeneratingSong] = useState(false)
   const [progressModalOpen, setProgressModalOpen] = useState(false)
   const [currentSongId, setCurrentSongId] = useState<string | null>(null)
+  const [showGenreSpotlight, setShowGenreSpotlight] = useState(false)
   const { toast } = useToast()
+  const { showOnboarding, completeOnboarding, isLoading: isOnboardingLoading } = useOnboarding()
 
   const handleGenreSelect = (genreId: string, genreName: string) => {
     setSelectedGenre({ id: genreId, name: genreName })
@@ -322,6 +326,33 @@ export default function Home() {
     })
   }
 
+  const handleOnboardingComplete = async (selectedGenres: string[], songConcept: string) => {
+    await completeOnboarding()
+
+    // Pre-fill concept if provided
+    if (songConcept) {
+      setConcept(songConcept)
+    }
+
+    // Trigger spotlight effect on genre carousel
+    setShowGenreSpotlight(true)
+    setTimeout(() => setShowGenreSpotlight(false), 3000)
+
+    toast({
+      title: 'Velkommen! 🎉',
+      description: 'Du er klar til å lage din første sang!'
+    })
+  }
+
+  const handleOnboardingSkip = async () => {
+    await completeOnboarding()
+
+    toast({
+      title: 'Onboarding hoppet over',
+      description: 'Du kan alltid starte når som helst!'
+    })
+  }
+
   const isGenerateDisabled =
     !selectedGenre ||
     concept.length < 10 ||
@@ -340,7 +371,9 @@ export default function Home() {
         </p>
 
         {/* Genre Selection Section */}
-        <div className="mb-8">
+        <div className={`mb-8 rounded-lg transition-all duration-500 ${
+          showGenreSpotlight ? 'ring-4 ring-[#E94560] ring-opacity-60 animate-pulse p-4 bg-pink-50/30' : ''
+        }`}>
           <h2 className="text-2xl font-semibold mb-4 text-center md:text-left">
             Velg sjanger
           </h2>
@@ -484,6 +517,13 @@ export default function Home() {
         onComplete={handleSongComplete}
         onCancel={handleSongCancel}
         onError={handleSongError}
+      />
+
+      {/* Onboarding Modal for First-Time Users */}
+      <OnboardingModal
+        open={showOnboarding && !isOnboardingLoading}
+        onComplete={handleOnboardingComplete}
+        onSkip={handleOnboardingSkip}
       />
     </main>
   )
