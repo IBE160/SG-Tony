@@ -316,6 +316,199 @@ export async function GET(
 }
 
 /**
+ * DELETE /api/songs/[id]
+ *
+ * Permanently delete a song and its audio file from storage.
+ * Uses RLS + explicit ownership check for security.
+ *
+ * @param request - Next.js request object
+ * @param params - Route parameters containing song ID
+ * @returns JSON response with success or error
+ */
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    // Await the params object
+    const { id: songId } = await params
+
+    // Step 1: Validate authentication
+    const supabase = await createClient()
+    const {
+      data: { user },
+      error: authError
+    } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      return errorResponse(
+        'UNAUTHORIZED',
+        'Ikke autentisert. Vennligst logg inn.',
+        401
+      )
+    }
+
+    // Step 2: Validate song ID
+    if (!songId || songId.trim().length === 0) {
+      return errorResponse(
+        'INVALID_ID',
+        'Ugyldig sang-ID.',
+        400
+      )
+    }
+
+    logInfo('Song deletion requested', {
+      userId: user.id,
+      songId
+    })
+
+    // Step 3: Fetch song to get audio_url for storage deletion
+    // RLS policy ensures users can only access their own songs
+    const { data: song, error: fetchError } = await supabase
+      .from('song')
+      .select('id, title, audio_url, user_id')
+      .eq('id', songId)
+      .single()
+
+    // Step 4: Handle fetch errors
+    if (fetchError) {
+      if (fetchError.code === 'PGRST116') {
+        return errorResponse(
+          'NOT_FOUND',
+          'Sangen ble ikke funnet.',
+          404
+        )
+      }
+
+      logError('Database error fetching song for deletion', fetchError as Error, {
+        userId: user.id,
+        songId
+      })
+
+      return errorResponse(
+        'DATABASE_ERROR',
+        'Kunne ikke slette sangen. Prøv igjen.',
+        500
+      )
+    }
+
+    if (!song) {
+      return errorResponse(
+        'NOT_FOUND',
+        'Sangen ble ikke funnet.',
+        404
+      )
+    }
+
+    // Step 5: Double-check ownership (RLS should handle this, but extra safety)
+    if (song.user_id !== user.id) {
+      logError('Unauthorized deletion attempt', new Error('User does not own song'), {
+        userId: user.id,
+        songId,
+        songOwnerId: song.user_id
+      })
+
+      return errorResponse(
+        'UNAUTHORIZED',
+        'Du har ikke tilgang til å slette denne sangen.',
+        401
+      )
+    }
+
+    // Step 6: Delete audio file from Supabase Storage
+    if (song.audio_url) {
+      const storagePath = extractStoragePath(song.audio_url)
+
+      if (storagePath) {
+        const { error: storageError } = await supabase
+          .storage
+          .from('songs')
+          .remove([storagePath])
+
+        if (storageError) {
+          // Log but continue - database deletion should still proceed
+          logError('Storage deletion error', storageError as Error, {
+            userId: user.id,
+            songId,
+            storagePath
+          })
+        } else {
+          logInfo('Audio file deleted from storage', {
+            userId: user.id,
+            songId,
+            storagePath
+          })
+        }
+      }
+    }
+
+    // Step 7: Delete song record from database (permanent hard delete)
+    const { error: deleteError } = await supabase
+      .from('song')
+      .delete()
+      .eq('id', songId)
+
+    if (deleteError) {
+      logError('Database deletion error', deleteError as Error, {
+        userId: user.id,
+        songId
+      })
+
+      return errorResponse(
+        'DATABASE_ERROR',
+        'Kunne ikke slette sangen. Prøv igjen.',
+        500
+      )
+    }
+
+    logInfo('Song deleted successfully', {
+      userId: user.id,
+      songId,
+      songTitle: song.title
+    })
+
+    // Return success response
+    return NextResponse.json(
+      {
+        success: true,
+        deletedId: songId,
+        message: 'Sangen ble slettet.'
+      },
+      { status: 200 }
+    )
+  } catch (error) {
+    // Unexpected server error
+    logError('Unexpected error in song deletion API', error as Error)
+
+    return errorResponse(
+      'INTERNAL_ERROR',
+      'En uventet feil oppstod. Prøv igjen senere.',
+      500
+    )
+  }
+}
+
+/**
+ * Extract storage path from audio URL
+ *
+ * Handles both Supabase Storage URLs and direct paths
+ * Format: https://{project}.supabase.co/storage/v1/object/public/songs/{path}
+ * Or: songs/{path}
+ */
+function extractStoragePath(audioUrl: string): string | null {
+  if (!audioUrl) return null
+
+  // If it's already a storage path (starts with songs/)
+  if (audioUrl.startsWith('songs/')) {
+    return audioUrl.replace('songs/', '')
+  }
+
+  // Extract path from full Supabase Storage URL
+  const match = audioUrl.match(/\/songs\/(.+)$/)
+  return match ? match[1] : null
+}
+
+/**
  * OPTIONS /api/songs/[id]
  *
  * CORS preflight handler
@@ -326,7 +519,7 @@ export async function OPTIONS() {
     {
       status: 200,
       headers: {
-        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Methods': 'GET, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization'
       }
     }

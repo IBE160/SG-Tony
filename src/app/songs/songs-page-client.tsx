@@ -91,6 +91,11 @@ export function SongsPageClient({
     setTimeout(() => setSelectedSong(null), 200)
   }
 
+  // Handle song deletion - remove from list (optimistic update)
+  const handleSongDelete = (deletedId: string) => {
+    setSongs(currentSongs => currentSongs.filter(s => s.id !== deletedId))
+  }
+
   // Empty state
   if (songs.length === 0 && !isLoading) {
     return (
@@ -161,6 +166,8 @@ export function SongsPageClient({
               duration={selectedSong.duration_seconds}
               createdAt={selectedSong.created_at}
               isPreview={selectedSong.is_preview}
+              onDelete={handleSongDelete}
+              onClose={handleCloseModal}
             />
           )}
           {selectedSong && !selectedSong.audio_url && (

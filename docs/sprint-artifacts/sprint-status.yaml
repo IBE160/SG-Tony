@@ -89,7 +89,7 @@ development_status:
   4-1-create-my-songs-page-with-track-list: done
   4-2-implement-song-detail-modal-with-full-player: backlog  # Deferred post-MVP - current basic modal sufficient
   4-3-implement-song-download-functionality: review
-  4-4-implement-song-deletion-with-confirmation: ready-for-dev
+  4-4-implement-song-deletion-with-confirmation: review
   4-5-implement-song-rename-functionality: backlog
   epic-4-retrospective: optional
 

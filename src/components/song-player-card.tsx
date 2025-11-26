@@ -3,13 +3,23 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { Howl } from 'howler'
 import WaveSurfer from 'wavesurfer.js'
-import { Play, Pause, Volume2, VolumeX, Volume1, Download, Loader2 } from 'lucide-react'
+import { Play, Pause, Volume2, VolumeX, Volume1, Download, Loader2, Trash2 } from 'lucide-react'
 import { downloadSong } from '@/lib/utils/download'
 import { toast } from '@/hooks/use-toast'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { Badge } from '@/components/ui/badge'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
 export interface SongPlayerCardProps {
   songId: string
@@ -20,6 +30,8 @@ export interface SongPlayerCardProps {
   createdAt: string
   genreEmoji?: string
   isPreview?: boolean // Free 30-second preview
+  onDelete?: (songId: string) => void // Callback when song is deleted
+  onClose?: () => void // Callback to close the player modal
 }
 
 export function SongPlayerCard({
@@ -30,7 +42,9 @@ export function SongPlayerCard({
   duration,
   createdAt,
   genreEmoji = '🎵',
-  isPreview = false
+  isPreview = false,
+  onDelete,
+  onClose
 }: SongPlayerCardProps) {
   // Audio state
   const [isPlaying, setIsPlaying] = useState(false)
@@ -41,6 +55,10 @@ export function SongPlayerCard({
   const [isMuted, setIsMuted] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isDownloading, setIsDownloading] = useState(false)
+
+  // Delete state
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   // Refs
   const soundRef = useRef<Howl | null>(null)
@@ -261,6 +279,45 @@ export function SongPlayerCard({
     }
   }, [songId, title, isDownloading])
 
+  // Handle delete
+  const handleDelete = useCallback(async () => {
+    if (isDeleting) return
+
+    // Stop playback before deletion
+    if (soundRef.current && isPlaying) {
+      soundRef.current.stop()
+      setIsPlaying(false)
+    }
+
+    setIsDeleting(true)
+
+    try {
+      const response = await fetch(`/api/songs/${songId}`, {
+        method: 'DELETE'
+      })
+
+      if (!response.ok) {
+        throw new Error('Delete failed')
+      }
+
+      // Success: show toast, close dialog, close modal, notify parent
+      toast({
+        title: 'Sangen ble slettet'
+      })
+      setShowDeleteDialog(false)
+      onDelete?.(songId)
+      onClose?.()
+    } catch (error) {
+      // Error: show error toast, keep dialog open for retry
+      toast({
+        title: 'Kunne ikke slette sangen. Prøv igjen.',
+        variant: 'destructive'
+      })
+    } finally {
+      setIsDeleting(false)
+    }
+  }, [songId, isDeleting, isPlaying, onDelete, onClose])
+
   // Keyboard controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -416,6 +473,18 @@ export function SongPlayerCard({
           <span className="hidden sm:inline">Last ned</span>
         </Button>
 
+        {/* Delete Button */}
+        <Button
+          variant="destructive"
+          onClick={() => setShowDeleteDialog(true)}
+          disabled={isLoading}
+          className="flex items-center gap-2"
+          aria-label="Slett sang"
+        >
+          <Trash2 className="h-4 w-4" />
+          <span className="hidden sm:inline">Slett</span>
+        </Button>
+
         {/* Volume Control (Desktop Only) */}
         <div className="hidden md:flex items-center gap-2">
           <Button
@@ -436,6 +505,33 @@ export function SongPlayerCard({
           />
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Slett sang</AlertDialogTitle>
+            <AlertDialogDescription>
+              Slett &apos;{title}&apos;? Dette kan ikke angres.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>
+              Avbryt
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : null}
+              Slett
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   )
 }
