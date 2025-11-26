@@ -64,7 +64,8 @@
       "Bash(node scripts/update-genres-with-gradients.js:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\docs\\sprint-artifacts\\stories\" mkdir \"C:\\Users\\tony-\\SG-Tony\\docs\\sprint-artifacts\\stories\")"
     ],
     "deny": [],
     "ask": []
