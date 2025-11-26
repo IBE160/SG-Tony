@@ -1,0 +1,260 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>7</epicId>
+    <storyId>5</storyId>
+    <title>Implement Friendly Error Messages with Recovery Actions</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-26</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/7-5-implement-friendly-error-messages-with-recovery-actions.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>clear, actionable error messages when something goes wrong</iWant>
+    <soThat>I know what happened and how to fix it</soThat>
+    <tasks>
+      <task id="1" title="Create Error Message Dictionary (AC: #1, #4, #6)">
+        <subtask>Create /src/lib/constants/error-messages.ts</subtask>
+        <subtask>Define ErrorCode enum with all error types</subtask>
+        <subtask>Define ErrorMessage interface: { code, title, description, recoveryAction, severity }</subtask>
+        <subtask>Create ERROR_MESSAGES constant mapping codes to user-friendly Norwegian messages</subtask>
+        <subtask>Include all standard error types from AC #4</subtask>
+      </task>
+      <task id="2" title="Create Error Handler Utility (AC: #2, #5)">
+        <subtask>Create /src/lib/utils/error-handler.ts</subtask>
+        <subtask>Function handleError(error: unknown, context?: string): ErrorMessage</subtask>
+        <subtask>Parse error types: network errors, API errors, validation errors, unknown errors</subtask>
+        <subtask>Server-side logging with error context (don't expose technical details)</subtask>
+        <subtask>Return appropriate ErrorMessage from dictionary</subtask>
+      </task>
+      <task id="3" title="Create useErrorToast Hook (AC: #7)">
+        <subtask>Create /src/hooks/use-error-toast.ts</subtask>
+        <subtask>Wrapper around useToast that integrates with error-handler</subtask>
+        <subtask>Function showError(error: unknown | ErrorCode, options?: { onRetry?, onAction? })</subtask>
+        <subtask>Auto-select toast variant based on error severity</subtask>
+        <subtask>Include ToastAction for recovery button when applicable</subtask>
+      </task>
+      <task id="4" title="Define Toast Variants for Errors (AC: #3)">
+        <subtask>Check if warning variant exists in toast.tsx, add if needed</subtask>
+        <subtask>Ensure destructive variant styles match design (red background)</subtask>
+        <subtask>Create warning variant (yellow/amber background) if not present</subtask>
+        <subtask>Document variant-to-severity mapping in error-messages.ts</subtask>
+      </task>
+      <task id="5" title="Update Main Page Error Handling (AC: #1, #2, #7)">
+        <subtask>Refactor /src/app/page.tsx to use new error handler</subtask>
+        <subtask>Replace inline error messages with dictionary lookups</subtask>
+        <subtask>Add retry handlers where applicable</subtask>
+        <subtask>Test pronunciation optimization errors</subtask>
+        <subtask>Test lyric generation errors</subtask>
+        <subtask>Test song generation errors</subtask>
+      </task>
+      <task id="6" title="Update Songs Page Error Handling (AC: #1, #2, #7)">
+        <subtask>Refactor /src/app/songs/songs-page-client.tsx to use new error handler</subtask>
+        <subtask>Update download error handling</subtask>
+        <subtask>Update deletion error handling</subtask>
+        <subtask>Add appropriate recovery actions</subtask>
+      </task>
+      <task id="7" title="Update Credit Purchase Error Handling (AC: #1, #2, #7)">
+        <subtask>Refactor /src/components/credit-purchase-modal.tsx to use new error handler</subtask>
+        <subtask>Handle Stripe checkout errors</subtask>
+        <subtask>Handle insufficient funds scenarios</subtask>
+        <subtask>Add "Kontakt support" recovery for payment issues</subtask>
+      </task>
+      <task id="8" title="Build Verification and Testing (AC: #8)">
+        <subtask>Run npm run build - ensure success</subtask>
+        <subtask>Run npm run lint - no errors</subtask>
+        <subtask>Manual test: Trigger each error type to verify messages</subtask>
+        <subtask>Verify toast dismissal and recovery actions work</subtask>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1" critical="true">Error Message Dictionary: Centralized error message mapping at /src/lib/constants/error-messages.ts that maps technical error codes to user-friendly Norwegian messages</criterion>
+    <criterion id="2" critical="true">Recovery Actions: Every error message includes at least one actionable recovery option (Retry, Buy Credits, Contact Support, etc.)</criterion>
+    <criterion id="3">Error Categories with Styling:
+      - Critical errors (destructive variant - red): API failures, payment failures
+      - Warning errors (warning variant - yellow): Low credits, timeout pending
+      - Info errors (default variant): Informational messages</criterion>
+    <criterion id="4" critical="true">Standard Error Types Covered:
+      - Suno API failure: "Oops! Kunne ikke nå Suno. Sjekk internettforbindelsen?" + "Prøv igjen" button
+      - Insufficient credits: "Du trenger 10 kreditter for å generere en sang. Kjøp en pakke?" + "Kjøp kreditter" button
+      - Song generation timeout: "Generering tar lengre tid enn forventet. Vi varsler deg når den er klar!" + "OK" button
+      - Network error: "Det ser ut som du er offline. Sjekk internettforbindelsen og prøv igjen." + "Prøv igjen" button
+      - Authentication error: "Du må logge inn på nytt." + "Logg inn" button
+      - Validation error: "Vennligst fyll ut alle påkrevde felt." + "OK" button</criterion>
+    <criterion id="5">Server-Side Logging: Full technical error details logged server-side (console + optional monitoring service)</criterion>
+    <criterion id="6">User Privacy: Technical error details never exposed to user interface</criterion>
+    <criterion id="7">Toast Integration: Errors displayed via existing shadcn/ui toast with ToastAction for recovery buttons</criterion>
+    <criterion id="8" critical="true">Build Verification: Production build succeeds with no TypeScript or ESLint errors</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken Architecture Document</title>
+        <section>Error Handling (lines 441-462)</section>
+        <snippet>Try-Catch Pattern with consistent error format: { error: { code: string, message: string, details?: any } }. Client-side uses toast notifications, server-side logs full error details.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>7.1 Consistency Rules - Feedback Patterns (lines 596-610)</section>
+        <snippet>Error toast uses destructive variant (red) with top-center placement and manual dismiss. Messages should be jargon-free and include actionable next steps.</snippet>
+      </doc>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>User Experience &amp; Help - FR55 (line 327)</section>
+        <snippet>FR55: System displays clear error messages with actionable guidance when issues occur</snippet>
+      </doc>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>Error Handling &amp; Resilience - FR66-FR70 (lines 343-350)</section>
+        <snippet>System gracefully handles API failures with user-friendly error messages, implements automatic retry logic, maintains session state during downtime.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics/epic-7-user-experience-help.md</path>
+        <title>Epic 7: User Experience &amp; Help</title>
+        <section>Story 7.5 - Friendly Error Messages (lines 112-141)</section>
+        <snippet>Clear, actionable error messages with specific recovery actions. Error examples include Suno API failure, insufficient credits, timeouts. Map technical errors to user-friendly messages.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>src/components/ui/toast.tsx</path>
+        <kind>UI Component</kind>
+        <symbol>Toast, ToastAction, toastVariants</symbol>
+        <lines>1-129</lines>
+        <reason>Core toast component - needs warning variant addition. Currently only has 'default' and 'destructive' variants.</reason>
+      </artifact>
+      <artifact>
+        <path>src/hooks/use-toast.ts</path>
+        <kind>Hook</kind>
+        <symbol>useToast, toast</symbol>
+        <lines>1-195</lines>
+        <reason>Existing toast hook to wrap with error handling. Provides toast({ title, description, variant, action }) function.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/faq-data.ts</path>
+        <kind>Constants</kind>
+        <symbol>FAQ_DATA, FAQCategory, FAQItem</symbol>
+        <lines>1-150</lines>
+        <reason>Reference pattern for ERROR_MESSAGES constant structure. Follow same pattern with enums and interfaces.</reason>
+      </artifact>
+      <artifact>
+        <path>src/app/page.tsx</path>
+        <kind>Page Component</kind>
+        <symbol>Home</symbol>
+        <lines>77-96, 159-172, 282-296</lines>
+        <reason>Has ad-hoc error handling with inline messages. Needs refactoring to use centralized error dictionary.</reason>
+      </artifact>
+      <artifact>
+        <path>src/app/songs/songs-page-client.tsx</path>
+        <kind>Client Component</kind>
+        <symbol>SongsPageClient</symbol>
+        <lines>54-56</lines>
+        <reason>Has silent error handling (console.error only). Needs user-facing error toasts.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/credit-purchase-modal.tsx</path>
+        <kind>Component</kind>
+        <symbol>CreditPurchaseModal</symbol>
+        <lines>54-58</lines>
+        <reason>Uses alert() for errors - needs to use toast with proper Norwegian messages and recovery actions.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/generation-progress-modal.tsx</path>
+        <kind>Component</kind>
+        <symbol>GenerationProgressModal</symbol>
+        <lines>full</lines>
+        <reason>Song generation component - may need error handling integration for timeout scenarios.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/low-credit-warning.tsx</path>
+        <kind>Component</kind>
+        <symbol>LowCreditWarning</symbol>
+        <lines>full</lines>
+        <reason>Related warning component - ensure consistent error/warning patterns.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <ecosystem name="node">
+        <package name="next" version="^14.2.3">React framework with App Router</package>
+        <package name="react" version="^18.2.0">UI library</package>
+        <package name="@radix-ui/react-toast" version="^1.2.15">Toast primitives for shadcn/ui</package>
+        <package name="class-variance-authority" version="^0.7.1">For toast variants (cva)</package>
+        <package name="lucide-react" version="^0.554.0">Icons (AlertTriangle, RefreshCw, CreditCard, LogIn, Mail)</package>
+        <package name="tailwind-merge" version="^3.4.0">For className merging</package>
+        <package name="typescript" version="^5">Type checking</package>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint source="architecture">API Error Response Format: { error: { code: string, message: string, details?: any } }</constraint>
+    <constraint source="architecture">All user-facing text must be in Norwegian (Bokmål). Code comments and variable names in English.</constraint>
+    <constraint source="ux-design">Error toast uses destructive variant (red background), top-center on desktop, bottom on mobile</constraint>
+    <constraint source="ux-design">Error messages require manual dismiss (no auto-dismiss for errors)</constraint>
+    <constraint source="ux-design">All toast messages must include actionable next steps</constraint>
+    <constraint source="dev-notes">Follow FAQ_DATA pattern from src/lib/faq-data.ts for ERROR_MESSAGES structure</constraint>
+    <constraint source="dev-notes">Never expose technical error details (stack traces, API responses) to users</constraint>
+    <constraint source="dev-notes">Use ToastAction component for recovery buttons</constraint>
+    <constraint source="previous-stories">Constants files go in src/lib/constants/ or src/lib/ directory</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>toast()</name>
+      <kind>Function</kind>
+      <signature>toast({ title?: ReactNode, description?: ReactNode, variant?: 'default' | 'destructive', action?: ToastActionElement }): { id: string, dismiss: () => void, update: (props: ToasterToast) => void }</signature>
+      <path>src/hooks/use-toast.ts</path>
+    </interface>
+    <interface>
+      <name>ToastAction</name>
+      <kind>React Component</kind>
+      <signature>&lt;ToastAction altText={string} onClick={handler}&gt;{children}&lt;/ToastAction&gt;</signature>
+      <path>src/components/ui/toast.tsx</path>
+    </interface>
+    <interface>
+      <name>toastVariants</name>
+      <kind>CVA Function</kind>
+      <signature>toastVariants({ variant: 'default' | 'destructive' | 'warning' })</signature>
+      <path>src/components/ui/toast.tsx</path>
+    </interface>
+    <interface>
+      <name>API Error Response</name>
+      <kind>JSON Schema</kind>
+      <signature>{ error: { code: string, message: string, details?: unknown } }</signature>
+      <path>docs/architecture.md</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      No formal test framework configured yet. Manual testing required for this story.
+      Future stories may add Jest/Vitest. For now, verify via:
+      - npm run build (TypeScript compilation)
+      - npm run lint (ESLint checks)
+      - Manual browser testing of error scenarios
+    </standards>
+    <locations>
+      <location>Manual testing in browser</location>
+      <location>Build verification: npm run build</location>
+      <location>Lint verification: npm run lint</location>
+    </locations>
+    <ideas>
+      <testIdea acRef="1">Verify ERROR_MESSAGES constant exports all ErrorCode enum values</testIdea>
+      <testIdea acRef="2">Each error message has non-empty recoveryAction with label and action type</testIdea>
+      <testIdea acRef="3">Toast renders correctly for each severity level (critical/warning/info)</testIdea>
+      <testIdea acRef="4">Simulate network error by disabling network - verify correct Norwegian message</testIdea>
+      <testIdea acRef="4">Simulate insufficient credits - verify "Kjøp kreditter" button appears</testIdea>
+      <testIdea acRef="5">Console shows technical error details but toast shows friendly message</testIdea>
+      <testIdea acRef="7">Recovery button click triggers expected action (retry/navigate/dismiss)</testIdea>
+      <testIdea acRef="8">Production build completes with exit code 0</testIdea>
+    </ideas>
+  </tests>
+</story-context>

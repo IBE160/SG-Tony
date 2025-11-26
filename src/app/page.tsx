@@ -10,6 +10,7 @@ import { GenerationProgressModal } from '@/components/generation-progress-modal'
 import { OnboardingModal } from '@/components/onboarding-modal'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
+import { useErrorToast } from '@/hooks/use-error-toast'
 import { useOnboarding } from '@/hooks/use-onboarding'
 import { Loader2, Eye, Music } from 'lucide-react'
 import type { OptimizationResult, PhoneticChange } from '@/types/song'
@@ -33,6 +34,7 @@ export default function Home() {
   const [currentSongId, setCurrentSongId] = useState<string | null>(null)
   const [showGenreSpotlight, setShowGenreSpotlight] = useState(false)
   const { toast } = useToast()
+  const { showError } = useErrorToast()
   const { showOnboarding, completeOnboarding, isLoading: isOnboardingLoading } = useOnboarding()
 
   const handleGenreSelect = (genreId: string, genreName: string) => {
@@ -75,15 +77,9 @@ export default function Home() {
         description: `${result.changes.length} ord optimalisert for autentisk norsk uttale (${result.cacheHitRate}% fra cache)`
       })
     } catch (error) {
-      console.error('Pronunciation optimization error:', error)
-
-      toast({
-        variant: 'destructive',
-        title: 'Optimalisering feilet',
-        description:
-          error instanceof Error
-            ? error.message
-            : 'Kunne ikke optimalisere uttale. Bruker original tekst.'
+      showError(error, {
+        context: 'pronunciation-optimization',
+        onRetry: () => handleOptimizePronunciation(lyricsToOptimize)
       })
 
       // Fallback: use original lyrics
@@ -100,7 +96,7 @@ export default function Home() {
       toast({
         variant: 'destructive',
         title: 'Ingen sjanger valgt',
-        description: 'Vennligst velg en sjanger før du genererer tekst'
+        description: 'Vennligst velg en sjanger for du genererer tekst'
       })
       return
     }
@@ -109,7 +105,7 @@ export default function Home() {
       toast({
         variant: 'destructive',
         title: 'Konsept for kort',
-        description: 'Konseptet må være minst 10 tegn'
+        description: 'Konseptet ma vaere minst 10 tegn'
       })
       return
     }
@@ -118,7 +114,7 @@ export default function Home() {
       toast({
         variant: 'destructive',
         title: 'Konsept for langt',
-        description: 'Konseptet kan ikke være mer enn 500 tegn'
+        description: 'Konseptet kan ikke vaere mer enn 500 tegn'
       })
       return
     }
@@ -157,15 +153,9 @@ export default function Home() {
         await handleOptimizePronunciation(generatedLyrics)
       }
     } catch (error) {
-      console.error('Lyric generation error:', error)
-
-      toast({
-        variant: 'destructive',
-        title: 'Generering feilet',
-        description:
-          error instanceof Error
-            ? error.message
-            : 'Kunne ikke generere tekst. Prøv igjen.'
+      showError(error, {
+        context: 'lyric-generation',
+        onRetry: handleGenerateLyrics
       })
     } finally {
       setIsGenerating(false)
@@ -280,15 +270,9 @@ export default function Home() {
       setCurrentSongId(data.data.songId)
       setProgressModalOpen(true)
     } catch (error) {
-      console.error('Song generation error:', error)
-
-      toast({
-        variant: 'destructive',
-        title: 'Generering feilet',
-        description:
-          error instanceof Error
-            ? error.message
-            : 'Kunne ikke starte sanggenerering. Prøv igjen.'
+      showError(error, {
+        context: 'song-generation',
+        onRetry: handleGenerateSong
       })
     } finally {
       setIsGeneratingSong(false)
@@ -319,10 +303,8 @@ export default function Home() {
   }
 
   const handleSongError = (error: string) => {
-    toast({
-      variant: 'destructive',
-      title: 'Generering feilet',
-      description: error
+    showError(new Error(error), {
+      context: 'song-generation-callback'
     })
   }
 

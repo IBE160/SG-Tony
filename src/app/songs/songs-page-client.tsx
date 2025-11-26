@@ -7,6 +7,7 @@ import { SongPlayerCard } from '@/components/song-player-card'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Loader2 } from 'lucide-react'
+import { useErrorToast } from '@/hooks/use-error-toast'
 import type { Song } from '@/types/song'
 
 interface SongsPageClientProps {
@@ -24,6 +25,7 @@ export function SongsPageClient({
   const [selectedSong, setSelectedSong] = useState<Song | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const loadMoreRef = useRef<HTMLDivElement>(null)
+  const { showError } = useErrorToast()
 
   // Load more songs function
   const loadMoreSongs = useCallback(async () => {
@@ -52,11 +54,14 @@ export function SongsPageClient({
       setSongs((prev) => [...prev, ...newSongs])
       setHasMore(newSongs.length === 20)
     } catch (error) {
-      console.error('Error loading more songs:', error)
+      showError(error, {
+        context: 'load-songs',
+        onRetry: loadMoreSongs
+      })
     } finally {
       setIsLoading(false)
     }
-  }, [songs.length, hasMore, isLoading])
+  }, [songs.length, hasMore, isLoading, showError])
 
   // Intersection Observer for infinite scroll
   useEffect(() => {

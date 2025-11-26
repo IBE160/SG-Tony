@@ -19,6 +19,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge'
 import { InfoTooltip } from '@/components/info-tooltip'
 import { CREDIT_PACKAGES, TOOLTIPS, type CreditPackage } from '@/lib/constants'
+import { useErrorToast } from '@/hooks/use-error-toast'
 
 interface CreditPurchaseModalProps {
   open: boolean
@@ -27,6 +28,7 @@ interface CreditPurchaseModalProps {
 
 export function CreditPurchaseModal({ open, onOpenChange }: CreditPurchaseModalProps) {
   const [loading, setLoading] = useState<string | null>(null)
+  const { showError } = useErrorToast()
 
   const handlePurchase = async (pkg: CreditPackage) => {
     setLoading(pkg.id)
@@ -52,8 +54,13 @@ export function CreditPurchaseModal({ open, onOpenChange }: CreditPurchaseModalP
         throw new Error('No checkout URL received')
       }
     } catch (error) {
-      console.error('Purchase error:', error)
-      alert('Failed to start checkout. Please try again.')
+      showError(error, {
+        context: 'credit-purchase',
+        onRetry: () => handlePurchase(pkg),
+        onContactSupport: () => {
+          window.location.href = 'mailto:support@musikkfabrikken.no'
+        }
+      })
       setLoading(null)
     }
   }

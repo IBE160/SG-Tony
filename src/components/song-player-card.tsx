@@ -6,6 +6,8 @@ import WaveSurfer from 'wavesurfer.js'
 import { Play, Pause, Volume2, VolumeX, Volume1, Download, Loader2, Trash2 } from 'lucide-react'
 import { downloadSong } from '@/lib/utils/download'
 import { toast } from '@/hooks/use-toast'
+import { useErrorToast } from '@/hooks/use-error-toast'
+import { ErrorCode } from '@/lib/error-messages'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
@@ -61,6 +63,9 @@ export function SongPlayerCard({
   // Delete state
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+
+  // Error toast hook
+  const { showError } = useErrorToast()
 
   // Refs
   const soundRef = useRef<Howl | null>(null)
@@ -274,12 +279,12 @@ export function SongPlayerCard({
         title: 'Sangen ble lastet ned!'
       })
     } else {
-      toast({
-        title: 'Kunne ikke laste ned sangen. Prøv igjen.',
-        variant: 'destructive'
+      showError(ErrorCode.SONG_DOWNLOAD_FAILED, {
+        context: 'song-download',
+        onRetry: handleDownload
       })
     }
-  }, [songId, title, isDownloading])
+  }, [songId, title, isDownloading, showError])
 
   // Handle delete
   const handleDelete = useCallback(async () => {
@@ -311,14 +316,14 @@ export function SongPlayerCard({
       onClose?.()
     } catch (error) {
       // Error: show error toast, keep dialog open for retry
-      toast({
-        title: 'Kunne ikke slette sangen. Prøv igjen.',
-        variant: 'destructive'
+      showError(ErrorCode.SONG_DELETE_FAILED, {
+        context: 'song-delete',
+        onRetry: handleDelete
       })
     } finally {
       setIsDeleting(false)
     }
-  }, [songId, isDeleting, isPlaying, onDelete, onClose])
+  }, [songId, isDeleting, isPlaying, onDelete, onClose, showError])
 
   // Keyboard controls
   useEffect(() => {
