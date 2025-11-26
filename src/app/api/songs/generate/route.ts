@@ -17,6 +17,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import {
   deductCredits,
   refundCredits,
@@ -30,6 +31,14 @@ import { optimizeLyrics } from '@/lib/phonetic/optimizer'
 import { checkPreviewLimit } from '@/lib/preview-limits'
 
 export const dynamic = 'force-dynamic'
+
+// Admin client for server-side operations that bypass RLS
+function getAdminClient() {
+  return createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 /**
  * Request body schema
@@ -373,9 +382,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Step 7: Create song record in database with status='generating'
+    // Use admin client to bypass RLS for server-side insert
+    const adminClient = getAdminClient()
     const songTitle = title || `${concept.substring(0, 50)}`
 
-    const { data: songData, error: songError } = await supabase
+    const { data: songData, error: songError } = await adminClient
       .from('song')
       .insert({
         user_id: user.id,
@@ -438,7 +449,7 @@ export async function POST(request: NextRequest) {
 
     // Step 8: Update credit transaction with song_id (only if not preview)
     if (!previewMode && deductionTxn) {
-      await supabase
+      await adminClient
         .from('credit_transaction')
         .update({ song_id: songData.id })
         .eq('id', deductionTxn.id)
