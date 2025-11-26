@@ -32,6 +32,30 @@ Post-MVP features deferred to focus on core value proposition (Norwegian pronunc
 
 ---
 
+### Story 4.5: Song Rename Functionality (from Epic 4)
+
+**Why Deferred:** Users can set title during creation. Renaming is a nice-to-have polish feature, not core functionality for MVP.
+
+**Current State:** Songs have titles set during generation. No inline editing capability.
+
+**What This Would Add:**
+- Inline title editing in song player modal (tap title to edit)
+- PATCH API endpoint for title updates
+- Optimistic UI updates with rollback on error
+- Title validation (1-100 characters)
+- Norwegian UI: "Navnet ble oppdatert", "Sangtittel kan ikke være tom"
+
+**Implement When:**
+- After MVP launch and user feedback indicates need
+- When users request ability to organize/rename library
+- Pairs well with Story 4.2 (full player modal)
+
+**Dependencies:** Story 4.1 (My Songs page) - already done
+
+**Estimated Effort:** Small (0.5-1 day)
+
+---
+
 ## Future Feature Ideas
 
 ### UX Polish
@@ -54,11 +78,50 @@ Post-MVP features deferred to focus on core value proposition (Norwegian pronunc
 - [ ] Batch download (multiple songs as ZIP)
 - [ ] Download progress indicator for large files
 
-### Social Features (Epic 5 - Post-MVP)
-- [ ] Social share sheet (TikTok, Facebook, Instagram)
-- [ ] Shareable song links with preview
-- [ ] Musikkfabrikken watermark on free previews
-- [ ] Share analytics
+### Epic 5: Social Sharing & Viral Features (Full Epic - Post-MVP)
+
+**Why Deferred:** Social/viral features are growth optimization. The MVP must first validate the core value proposition (Norwegian pronunciation) before optimizing for sharing. Build something worth sharing first.
+
+**Stories Deferred:**
+
+#### Story 5.1: Social Share Sheet Component
+- Bottom sheet with platform icons (TikTok, Facebook, Instagram, WhatsApp, Copy Link)
+- Song preview card with artwork and "Created with Musikkfabrikken"
+- Native Web Share API for mobile, fallback URLs for desktop
+- **Effort:** Small-Medium
+
+#### Story 5.2: TikTok and Facebook Share Functionality
+- Native share intents with pre-filled captions
+- Platform SDK integration (TikTok Share SDK, Facebook Share Dialog)
+- Share count tracking in database
+- **Effort:** Medium (SDK integration complexity)
+
+#### Story 5.3: Generate Shareable Song Links
+- Public route `/songs/[id]` for shared songs (no auth required)
+- Open Graph meta tags for rich previews
+- `is_public` flag on songs table
+- "Create your own" CTA for viral acquisition
+- **Effort:** Small-Medium
+
+#### Story 5.4: Musikkfabrikken Watermark on Free Previews
+- Audio watermark on 30-second free previews
+- Visual watermark on share preview images
+- Full songs (paid) have no watermark
+- **Effort:** Medium (audio processing)
+
+#### Story 5.5: Share Analytics and Attribution
+- `song_share` tracking table
+- Referral tracking via `?ref={songId}` query param
+- Analytics dashboard for founder
+- Future: Referral rewards system
+- **Effort:** Medium
+
+**Implement When:**
+- After MVP launch validates core value proposition
+- When organic growth becomes a priority
+- User feedback indicates desire to share songs
+
+**Total Estimated Effort:** 1-2 weeks
 
 ### Premium Features (Epic 6 - Post-MVP)
 - [ ] Canvas/album art generation

@@ -90,18 +90,13 @@ development_status:
   4-2-implement-song-detail-modal-with-full-player: backlog  # Deferred post-MVP - current basic modal sufficient
   4-3-implement-song-download-functionality: review
   4-4-implement-song-deletion-with-confirmation: review
-  4-5-implement-song-rename-functionality: backlog
+  4-5-implement-song-rename-functionality: backlog  # Deferred post-MVP - users set title during creation
   epic-4-retrospective: optional
 
-  # Epic 5: Social Sharing & Viral Features (5 stories)
-  # Enables viral growth through social media sharing
-  epic-5: backlog
-  5-1-create-social-share-sheet-component: backlog
-  5-2-implement-tiktok-and-facebook-share-functionality: backlog
-  5-3-generate-shareable-song-links: backlog
-  5-4-add-musikkfabrikken-watermark-to-free-previews: backlog
-  5-5-track-share-analytics-and-attribution: backlog
-  epic-5-retrospective: optional
+  # Epic 5: Social Sharing & Viral Features
+  # DEFERRED TO POST-MVP - Moved to docs/future-enhancements.md
+  # Reason: Social/viral features are growth optimization, not core MVP functionality
+  # Decision date: 2025-11-26
 
   # Epic 6: Premium Features (6 stories)
   # Canvas generation, mastering service, extended storage
