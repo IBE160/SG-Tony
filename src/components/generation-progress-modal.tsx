@@ -15,7 +15,7 @@
  * Note: Modal cannot be closed during generation. User must wait for completion or error.
  */
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { Loader2, XCircle, CheckCircle } from 'lucide-react'
 import {
   Dialog,
@@ -100,8 +100,20 @@ export function GenerationProgressModal({
 
   const remainingSeconds = Math.max(0, estimatedTime - elapsedTime)
 
+  // Cleanup intervals
+  const cleanup = useCallback(() => {
+    if (pollingInterval.current) {
+      clearInterval(pollingInterval.current)
+      pollingInterval.current = null
+    }
+    if (elapsedInterval.current) {
+      clearInterval(elapsedInterval.current)
+      elapsedInterval.current = null
+    }
+  }, [])
+
   // Poll song status
-  const pollSongStatus = async () => {
+  const pollSongStatus = useCallback(async () => {
     if (!songId || pollingAttempts.current >= MAX_POLLING_ATTEMPTS) {
       cleanup()
       onError('Tidsavbrudd: Genereringen tok for lang tid')
@@ -161,19 +173,7 @@ export function GenerationProgressModal({
         onError('Kunne ikke hente status. Sjekk nettverksforbindelsen.')
       }
     }
-  }
-
-  // Cleanup intervals
-  const cleanup = () => {
-    if (pollingInterval.current) {
-      clearInterval(pollingInterval.current)
-      pollingInterval.current = null
-    }
-    if (elapsedInterval.current) {
-      clearInterval(elapsedInterval.current)
-      elapsedInterval.current = null
-    }
-  }
+  }, [songId, elapsedTime, estimatedTime, cleanup, onComplete, onCancel, onError])
 
   // Start polling and elapsed time tracking when modal opens
   useEffect(() => {
@@ -192,7 +192,7 @@ export function GenerationProgressModal({
     }
 
     return cleanup
-  }, [open, songId, status])
+  }, [open, songId, status, pollSongStatus, cleanup])
 
   // Trigger confetti animation
   useEffect(() => {

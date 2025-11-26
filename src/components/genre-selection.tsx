@@ -4,16 +4,30 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 
+interface GradientColors {
+  from: string
+  to: string
+}
+
 interface Genre {
   id: string
   name: string
   display_name: string
   emoji: string | null
   sort_order: number
-  gradient_colors: {
-    from: string
-    to: string
-  } | null
+  gradient_colors: GradientColors | null
+}
+
+// Type guard for gradient colors
+function isGradientColors(value: unknown): value is GradientColors {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'from' in value &&
+    'to' in value &&
+    typeof (value as GradientColors).from === 'string' &&
+    typeof (value as GradientColors).to === 'string'
+  )
 }
 
 interface GenreSelectionProps {
@@ -54,13 +68,19 @@ export function GenreSelection({
           return
         }
 
-        setGenres(data || [])
+        // Convert Supabase data to Genre type with proper gradient_colors typing
+        const convertedGenres: Genre[] = (data || []).map(row => ({
+          ...row,
+          gradient_colors: isGradientColors(row.gradient_colors) ? row.gradient_colors : null
+        }))
+
+        setGenres(convertedGenres)
         setIsLoading(false)
 
         // Auto-select first genre if none selected
-        if (!selectedId && data && data.length > 0) {
-          setSelectedId(data[0].id)
-          onGenreSelect?.(data[0].id, data[0].name)
+        if (!selectedId && convertedGenres.length > 0) {
+          setSelectedId(convertedGenres[0].id)
+          onGenreSelect?.(convertedGenres[0].id, convertedGenres[0].name)
         }
       } catch (err) {
         if (!isMounted) return

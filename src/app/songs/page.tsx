@@ -1,6 +1,15 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { SongsPageClient } from './songs-page-client'
+import { Song } from '@/types/song'
+
+// Convert Supabase null values to undefined for app-level Song type
+function convertToSong(row: Record<string, unknown>): Song {
+  const converted = Object.fromEntries(
+    Object.entries(row).map(([key, value]) => [key, value === null ? undefined : value])
+  )
+  return converted as unknown as Song
+}
 
 export const metadata = {
   title: 'Mine sanger - Musikkfabrikken',
@@ -44,5 +53,6 @@ export default async function SongsPage() {
     )
   }
 
-  return <SongsPageClient initialSongs={initialSongs || []} userId={user.id} />
+  const songs: Song[] = (initialSongs || []).map(convertToSong)
+  return <SongsPageClient initialSongs={songs} userId={user.id} />
 }
