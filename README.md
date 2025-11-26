@@ -151,6 +151,40 @@ See [DEVELOPMENT_GUIDELINES.md](./DEVELOPMENT_GUIDELINES.md) for complete guidel
 - **Commit Messages**: Use conventional commit format (e.g., `feat:`, `fix:`, `docs:`)
 - **Branch Strategy**: Feature branches merged to `main` via pull requests
 
+## Deployment
+
+### Production
+
+The application is deployed on **Vercel** with automatic deployments from the `main` branch.
+
+- **Production URL**: https://sg-tony-v2.vercel.app
+- **Platform**: Vercel (optimized for Next.js)
+- **Region**: Automatic (Edge + Serverless)
+
+### Vercel Environment Variables
+
+The following environment variables must be configured in Vercel Dashboard → Project Settings → Environment Variables:
+
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key (safe for client) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server-only) |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key |
+| `STRIPE_SECRET_KEY` | Stripe secret key |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret |
+| `OPENAI_API_KEY` | OpenAI API key for lyric generation |
+| `SUNO_API_KEY` | Suno API key for music generation |
+| `SUNO_WEBHOOK_SECRET` | Suno webhook signing secret |
+| `NEXT_PUBLIC_APP_URL` | Production URL (https://sg-tony-v2.vercel.app) |
+
+### Deployment Process
+
+1. Push to `main` branch triggers automatic deployment
+2. Vercel builds with `npm run build`
+3. Preview deployments created for pull requests
+4. Rollback available via Vercel Dashboard
+
 ## Support
 
 For questions or issues:
