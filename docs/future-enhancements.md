@@ -158,6 +158,62 @@ Post-MVP features deferred to focus on core value proposition (Norwegian pronunc
 
 **Total Estimated Effort:** 2-3 weeks
 
+### Epic 8 Deferred Stories: Operations & Monitoring (Post-MVP)
+
+**Why Deferred:** Operational infrastructure that's overkill at MVP scale. Use built-in tools (Vercel logs, Supabase Studio, Stripe Dashboard) until user volume justifies custom tooling.
+
+#### Story 8.2: Suno API Health Monitoring
+- Cron job health checks every 5 minutes
+- Dashboard with green/yellow/red status
+- Email/Slack alerts on 3 consecutive failures
+- Historical uptime tracking
+- **Use instead:** Manual monitoring, check suno.ai status
+- **Revisit when:** User complaints about generation failures increase
+
+#### Story 8.3: API Cost Monitoring and Alerts
+- Daily cost calculation across Suno, OpenAI, Google
+- Threshold alerts ($50/day, $200/week)
+- Cost dashboard with breakdown by feature/user
+- Circuit breaker for cost spikes
+- **Use instead:** Check Suno/Stripe dashboards weekly
+- **Revisit when:** Monthly API costs exceed $500
+
+#### Story 8.5: Session State Persistence During Downtime
+- Auto-save song creation state to localStorage
+- Restore progress after browser close/API failure
+- 24-hour expiration on saved drafts
+- **Use instead:** Users re-enter lyrics (form is short)
+- **Revisit when:** Users report frustration with lost work
+
+#### Story 8.8: Founder Admin Dashboard
+- Custom `/admin` page with key metrics
+- User counts, song stats, revenue, API health
+- Quick actions (refund, view user, process mastering)
+- Charts and trends visualization
+- **Use instead:** Supabase Studio + Stripe Dashboard
+- **Revisit when:** Manual querying becomes tedious (50+ daily users)
+
+**Total Estimated Effort:** 1-2 weeks
+
+---
+
+### Story 7.4: Example Songs Showcase (from Epic 7 - Post-MVP)
+
+**Why Deferred:** Requires curated content creation. MVP should launch first, then showcase best user-generated examples with permission.
+
+**What This Would Add:**
+- `/examples` page with 6-10 curated songs
+- Public access (no login required)
+- Variety of genres and pronunciation examples
+- "Create Your Own" CTA for conversion
+- Founder's songs as credibility examples
+
+**Implement When:**
+- After MVP launch has real user-generated songs worth showcasing
+- When marketing/landing page optimization becomes priority
+
+**Estimated Effort:** Small (1 day)
+
 ---
 
 _Document created: 2025-11-26_

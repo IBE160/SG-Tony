@@ -22,9 +22,9 @@ So that I understand what each feature does without leaving the page.
 **And** Tooltips are clear, concise (1-2 sentences), and jargon-free
 **And** Key tooltips:
   - "Uttalelse Bokmål": "Automatically improves Norwegian pronunciation for Suno AI"
-  - "Credits": "1 credit ≈ $0.05. Songs cost 10 credits each."
-  - "Canvas": "AI-generated album art for your song (5 credits)"
-  - "Mastering": "Professional audio enhancement by our founder (20 credits, 24h)"
+  - "Credits": "1 credit ≈ $0.50. Full songs cost 10 credits."
+  - "Free Preview": "30-second preview to hear your song before purchasing"
+  - "Download": "Download your full song as MP3 (available for 14 days)"
 **And** Tooltips dismiss when I tap outside or hover away
 
 **Prerequisites:** Story 1.4 (shadcn/ui)
@@ -85,8 +85,8 @@ So that I can find answers to common questions without contacting support.
   - Getting Started: "How do I create my first song?", "What are credits?"
   - Norwegian Pronunciation: "What is Uttalelse Bokmål?", "Can I override phonetic changes?"
   - Credits & Payments: "How do credit packages work?", "What payment methods do you accept?"
-  - Premium Features: "What is canvas generation?", "How does mastering work?"
-  - Troubleshooting: "My song generation failed, why?", "How do I download songs?"
+  - Songs & Library: "How long are songs stored?", "How do I download my songs?"
+  - Troubleshooting: "My song generation failed, why?", "Why did my preview sound different?"
 **And** Each FAQ entry is expandable (accordion) with detailed answer
 **And** Search bar filters FAQs by keyword
 **And** "Still need help? Contact us" link at bottom
@@ -103,32 +103,9 @@ So that I can find answers to common questions without contacting support.
 
 ---
 
-### Story 7.4: Add Example Songs Showcase Page
-
-As a **user**,
-I want to hear example songs created with Musikkfabrikken,
-So that I can understand the quality and possibilities before creating my own.
-
-**Acceptance Criteria:**
-
-**Given** I want to hear examples before committing
-**When** I navigate to `/examples` page (linked from home and help pages)
-**Then** I see a curated gallery of 6-10 example songs
-**And** Each example shows: Artwork, Title, Genre, Short description ("Norwegian birthday song with country rock style")
-**And** I can play each example directly on the page (no login required)
-**And** Examples demonstrate variety: Different genres, pronunciations, song types
-**And** Each example has "Create Your Own" CTA button
-**And** Examples are marked with "Example" badge to distinguish from user songs
-
-**Prerequisites:** Story 3.8 (Song Player)
-
-**Technical Notes:**
-- Create `/src/app/examples/page.tsx` for example showcase
-- Example songs: Create manually by founder, mark as `is_example=true` in database
-- Public access: No authentication required (RLS policy allows SELECT for is_example=true)
-- Curated selection: Choose best examples that showcase Norwegian pronunciation quality
-- Consider: Add founder's 80k listener songs as examples for credibility
-- Update examples periodically to keep content fresh
+### Story 7.4: DEFERRED TO POST-MVP
+<!-- Moved to docs/future-enhancements.md - Example Songs Showcase -->
+<!-- Decision date: 2025-11-26 -->
 
 ---
 

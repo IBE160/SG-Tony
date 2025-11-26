@@ -103,26 +103,27 @@ development_status:
   # Reason: Secondary revenue streams. MVP focuses on core credits → songs model.
   # Decision date: 2025-11-26
 
-  # Epic 7: User Experience & Help (5 stories)
-  # Polishes UX with tooltips, onboarding, help docs, examples
+  # Epic 7: User Experience & Help (4 stories - trimmed for MVP)
+  # Polishes UX with tooltips, onboarding, help docs, error messages
+  # Story 7.4 (Example Songs) deferred to post-MVP
   epic-7: backlog
   7-1-add-contextual-tooltips-throughout-app: backlog
   7-2-create-onboarding-flow-for-first-time-users: backlog
   7-3-create-faq-and-help-documentation-page: backlog
-  7-4-add-example-songs-showcase-page: backlog
+  7-4-add-example-songs-showcase-page: deferred  # Moved to future-enhancements.md
   7-5-implement-friendly-error-messages-with-recovery-actions: backlog
   epic-7-retrospective: optional
 
-  # Epic 8: System Resilience & Operations (8 stories)
-  # Error handling, monitoring, API health, admin dashboard
-  # NOTE: These stories should be integrated throughout sprints, not saved for end
+  # Epic 8: System Resilience & Operations (4 stories for MVP)
+  # Core reliability: error logging, retry logic, webhook fallback, double-charge prevention
+  # Stories 8.2, 8.3, 8.5, 8.8 deferred to post-MVP (see future-enhancements.md)
   epic-8: backlog
-  8-1-implement-comprehensive-error-logging: backlog
-  8-2-implement-suno-api-health-monitoring: backlog
-  8-3-implement-api-cost-monitoring-and-alerts: backlog
+  8-1-implement-basic-error-logging: backlog
+  8-2-implement-suno-api-health-monitoring: deferred  # Use manual monitoring
+  8-3-implement-api-cost-monitoring-and-alerts: deferred  # Use Suno/Stripe dashboards
   8-4-implement-automatic-retry-logic-for-api-failures: backlog
-  8-5-implement-session-state-persistence-during-downtime: backlog
+  8-5-implement-session-state-persistence-during-downtime: deferred  # UX polish
   8-6-implement-webhook-polling-fallback-mechanism: backlog
   8-7-prevent-double-charging-on-concurrent-requests: backlog
-  8-8-create-founder-admin-dashboard: backlog
+  8-8-create-founder-admin-dashboard: deferred  # Use Supabase Studio + Stripe
   epic-8-retrospective: optional
