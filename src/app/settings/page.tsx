@@ -8,7 +8,8 @@ import { useCreditsStore } from '@/stores/credits-store'
 import { useToast } from '@/hooks/use-toast'
 import { CreditPurchaseModal } from '@/components/credit-purchase-modal'
 import { TransactionHistory } from '@/components/transaction-history'
-import { Coins, LogOut } from 'lucide-react'
+import { Coins, LogOut, HelpCircle } from 'lucide-react'
+import Link from 'next/link'
 import { format } from 'date-fns'
 
 interface UserProfile {
@@ -282,6 +283,19 @@ function SettingsContent() {
               <LogOut className="w-4 h-4 mr-2" />
               {isLoggingOut ? 'Logging out...' : 'Log Out'}
             </Button>
+          </CardContent>
+        </Card>
+
+        {/* Help Link */}
+        <Card className="mt-6">
+          <CardContent className="pt-6">
+            <Link
+              href="/help"
+              className="flex items-center justify-center gap-2 w-full min-h-[48px] text-[#0F3460] hover:text-[#0F3460]/80 font-medium"
+            >
+              <HelpCircle className="w-5 h-5" />
+              Hjelp
+            </Link>
           </CardContent>
         </Card>
       </div>

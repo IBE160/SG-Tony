@@ -70,7 +70,8 @@
       "Bash(del \"C:\\Users\\tony-\\SG-Tony\\docs\\sprint-artifacts\\4-5-implement-song-rename-functionality.md\")",
       "SlashCommand(/bmad:bmm:agents:pm)",
       "Bash(del \"C:\\Users\\tony-\\SG-Tony\\docs\\epics\\epic-5-social-sharing-viral-features.md\")",
-      "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\lib\\constants\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\lib\\constants\")"
+      "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\lib\\constants\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\lib\\constants\")",
+      "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\app\\help\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\app\\help\")"
     ],
     "deny": [],
     "ask": []

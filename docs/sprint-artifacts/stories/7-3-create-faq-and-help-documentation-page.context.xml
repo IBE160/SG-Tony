@@ -1,0 +1,232 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>7</epicId>
+    <storyId>3</storyId>
+    <title>Create FAQ and Help Documentation Page</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-26</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/7-3-create-faq-and-help-documentation-page.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>access to comprehensive help documentation</iWant>
+    <soThat>I can find answers to common questions without contacting support</soThat>
+    <tasks>
+      <task id="1" name="Create Help Page Route" acs="1,7">
+        <subtask>Create /src/app/help/page.tsx</subtask>
+        <subtask>Add page metadata (title, description in Norwegian)</subtask>
+        <subtask>Basic page layout with header "Hjelp og ofte stilte sporsmal"</subtask>
+        <subtask>Mobile-responsive container (max-width 640px centered)</subtask>
+      </task>
+      <task id="2" name="Create FAQ Data Structure" acs="2,6">
+        <subtask>Create /src/lib/constants/faq-data.ts</subtask>
+        <subtask>Define FAQCategory interface: { id, title, items: FAQItem[] }</subtask>
+        <subtask>Define FAQItem interface: { id, question, answer }</subtask>
+        <subtask>Populate all 5 categories with Norwegian content</subtask>
+        <subtask>Minimum 3-4 questions per category</subtask>
+      </task>
+      <task id="3" name="Build FAQ Accordion Component" acs="3">
+        <subtask>Create /src/components/faq-accordion.tsx</subtask>
+        <subtask>Use shadcn/ui Accordion component (type="single" collapsible)</subtask>
+        <subtask>Accept FAQCategory[] as prop</subtask>
+        <subtask>Render category headers with styled section dividers</subtask>
+        <subtask>Render FAQ items as AccordionItem with question as trigger</subtask>
+      </task>
+      <task id="4" name="Implement Search Functionality" acs="4">
+        <subtask>Add search input at top of help page</subtask>
+        <subtask>Create useState for searchQuery</subtask>
+        <subtask>Filter FAQ items where question OR answer includes searchQuery (case-insensitive)</subtask>
+        <subtask>Show "Ingen resultater" empty state when no matches</subtask>
+        <subtask>Debounce search input (300ms)</subtask>
+      </task>
+      <task id="5" name="Add Contact Section" acs="5">
+        <subtask>Add section at bottom: "Trenger du fortsatt hjelp?"</subtask>
+        <subtask>Add mailto link: support@musikkfabrikken.no</subtask>
+        <subtask>Style with Card component, subtle border</subtask>
+      </task>
+      <task id="6" name="Add Navigation Link from Settings" acs="1">
+        <subtask>Update /src/app/settings/page.tsx</subtask>
+        <subtask>Add "Hjelp" link in footer section</subtask>
+        <subtask>Use Next.js Link component to /help</subtask>
+        <subtask>Add Lucide HelpCircle icon</subtask>
+      </task>
+      <task id="7" name="Polish and Accessibility" acs="7">
+        <subtask>Ensure proper heading hierarchy (h1 for page title, h2 for categories)</subtask>
+        <subtask>Add aria-labels for search input</subtask>
+        <subtask>Test keyboard navigation through accordion</subtask>
+        <subtask>Verify mobile layout (touch-friendly accordion triggers)</subtask>
+      </task>
+      <task id="8" name="Build Verification" acs="8">
+        <subtask>Run npm run build - success</subtask>
+        <subtask>Run npm run lint - no errors</subtask>
+        <subtask>No TypeScript errors</subtask>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">Help Page Route: /help page exists and is accessible from Settings page footer link</criterion>
+    <criterion id="2">FAQ Organization: FAQ organized by 5 categories (Getting Started, Norwegian Pronunciation, Credits and Payments, Songs and Library, Troubleshooting)</criterion>
+    <criterion id="3">Accordion UI: Each FAQ entry is expandable using shadcn/ui Accordion component</criterion>
+    <criterion id="4">Search Functionality: Search bar filters FAQs by keyword (client-side)</criterion>
+    <criterion id="5">Contact Link: "Still need help? Contact us" link at bottom (email: support@musikkfabrikken.no)</criterion>
+    <criterion id="6">Norwegian Content: All FAQ content in Norwegian (Bokmal) per ui_content_language config</criterion>
+    <criterion id="7">Mobile Responsive: Page works well on mobile (primary target device)</criterion>
+    <criterion id="8">Build Verification: Production build succeeds with no TypeScript or ESLint errors</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>6.1 Component Strategy</section>
+        <snippet>Standard components from shadcn/ui: Accordion component for expandable entries. Mobile-first responsive design with 48x48px touch targets minimum.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>7.1 Consistency Rules</section>
+        <snippet>Button hierarchy: Primary red #E94560, secondary navy #0F3460. Mobile layout: single column, 100% width up to 640px max centered. Toast notifications for feedback.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Project Structure</section>
+        <snippet>Pages follow Next.js App Router: /src/app/help/page.tsx. Constants in /src/lib/constants/ folder. Components use kebab-case.tsx naming.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture Document</title>
+        <section>Implementation Patterns - Language</section>
+        <snippet>Norwegian UI content (ui_content_language: Norwegian), English code. All user-facing text in Norwegian Bokmal. Variable names in English.</snippet>
+      </doc>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>FR54</section>
+        <snippet>Users can access FAQ and help documentation. System displays helpful tooltips and guidance for non-technical users (FR52).</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics/epic-7-user-experience-help.md</path>
+        <title>Epic 7: User Experience and Help</title>
+        <section>Story 7.3</section>
+        <snippet>FAQ organized by 5 categories with accordion UI. Search bar filters by keyword. Contact link at bottom.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>src/app/settings/page.tsx</path>
+        <kind>page</kind>
+        <symbol>SettingsPage</symbol>
+        <lines>1-304</lines>
+        <reason>Help link will be added to footer section of this page. Reference for layout pattern with Card components and page structure.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/info-tooltip.tsx</path>
+        <kind>component</kind>
+        <symbol>InfoTooltip</symbol>
+        <lines>1-56</lines>
+        <reason>Reference for tooltip/info icon pattern. Shows accessibility and styling conventions for tooltips.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/ui/card.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Card, CardHeader, CardContent, CardTitle</symbol>
+        <lines>1-77</lines>
+        <reason>Card component for contact section styling. Already used throughout app.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/ui/input.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Input</symbol>
+        <lines>1-23</lines>
+        <reason>Input component for search functionality.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/ui/tooltip.tsx</path>
+        <kind>ui-component</kind>
+        <symbol>Tooltip, TooltipTrigger, TooltipContent</symbol>
+        <reason>TooltipProvider already in layout.tsx. Reference for accessibility patterns.</reason>
+      </artifact>
+      <artifact>
+        <path>src/app/layout.tsx</path>
+        <kind>layout</kind>
+        <symbol>RootLayout</symbol>
+        <lines>1-41</lines>
+        <reason>TooltipProvider already wraps app. Norwegian lang="nb" set. BottomNavigation included.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <ecosystem name="node">
+        <package name="next" version="^14.2.3">Next.js App Router framework</package>
+        <package name="react" version="^18.2.0">React core</package>
+        <package name="lucide-react" version="^0.554.0">Icons: Search, HelpCircle, Mail</package>
+        <package name="@radix-ui/react-tooltip" version="^1.2.8">Tooltip primitives (already installed)</package>
+        <package name="tailwind-merge" version="^3.4.0">Utility for merging Tailwind classes</package>
+        <package name="class-variance-authority" version="^0.7.1">Component variant styling</package>
+      </ecosystem>
+      <missing>
+        <package name="@radix-ui/react-accordion">REQUIRED: Install shadcn/ui accordion component: npx shadcn@latest add accordion</package>
+      </missing>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="language">All user-facing UI text MUST be in Norwegian Bokmal. Code and variable names in English.</constraint>
+    <constraint type="styling">Follow shadcn/ui patterns. Use Tailwind CSS utility classes. Mobile-first (640px max-width centered).</constraint>
+    <constraint type="accessibility">WCAG 2.1 AA compliance. 48x48px minimum touch targets. Keyboard navigation support. ARIA labels required.</constraint>
+    <constraint type="pattern">Follow existing page patterns from settings/page.tsx. Use Card component for sections.</constraint>
+    <constraint type="dependencies">Accordion component NOT installed yet - must run: npx shadcn@latest add accordion</constraint>
+    <constraint type="directory">Constants folder does not exist yet - create /src/lib/constants/ directory</constraint>
+    <constraint type="colors">Primary: #E94560 (red), Secondary: #0F3460 (navy), Background: #F8F9FA, Surface: #FFFFFF</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>FAQItem</name>
+      <kind>TypeScript interface</kind>
+      <signature>interface FAQItem { id: string; question: string; answer: string; }</signature>
+      <path>src/lib/constants/faq-data.ts</path>
+    </interface>
+    <interface>
+      <name>FAQCategory</name>
+      <kind>TypeScript interface</kind>
+      <signature>interface FAQCategory { id: string; title: string; icon?: string; items: FAQItem[]; }</signature>
+      <path>src/lib/constants/faq-data.ts</path>
+    </interface>
+    <interface>
+      <name>FAQAccordionProps</name>
+      <kind>Component props</kind>
+      <signature>interface FAQAccordionProps { categories: FAQCategory[]; searchQuery?: string; }</signature>
+      <path>src/components/faq-accordion.tsx</path>
+    </interface>
+    <interface>
+      <name>Next.js Link</name>
+      <kind>Navigation component</kind>
+      <signature>import Link from "next/link"</signature>
+      <path>next/link</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>No formal test framework configured in package.json. Build verification via npm run build and npm run lint. Manual testing for UI functionality. Follow TypeScript strict mode for type safety.</standards>
+    <locations>
+      <location>npm run build - Verify production build succeeds</location>
+      <location>npm run lint - ESLint validation</location>
+      <location>Manual browser testing for UI</location>
+    </locations>
+    <ideas>
+      <idea acId="1">Verify /help route loads without errors. Verify link in Settings page navigates to /help.</idea>
+      <idea acId="2">Verify all 5 FAQ categories render with correct Norwegian titles and content.</idea>
+      <idea acId="3">Verify accordion expands/collapses on click. Only one item open at a time (single mode).</idea>
+      <idea acId="4">Test search filters FAQ items. Empty state shows when no matches. Search is case-insensitive.</idea>
+      <idea acId="5">Verify mailto link opens email client with correct address.</idea>
+      <idea acId="6">Verify all visible text is in Norwegian Bokmal.</idea>
+      <idea acId="7">Test on mobile viewport (375px). Verify touch targets are 48px+. Test keyboard navigation with Tab/Enter.</idea>
+      <idea acId="8">Run npm run build - expect exit code 0. Run npm run lint - expect no errors.</idea>
+    </ideas>
+  </tests>
+</story-context>
