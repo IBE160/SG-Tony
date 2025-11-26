@@ -9,6 +9,8 @@ import { createClient } from '@/lib/supabase/server'
 import { stripe } from '@/lib/stripe'
 import { CREDIT_PACKAGES } from '@/lib/constants'
 
+export const dynamic = 'force-dynamic'
+
 const purchaseSchema = z.object({
   packageId: z.enum(['starter', 'pro', 'premium']),
 })

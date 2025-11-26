@@ -29,6 +29,8 @@ import { generateSong, SunoApiError } from '@/lib/api/suno'
 import { optimizeLyrics } from '@/lib/phonetic/optimizer'
 import { checkPreviewLimit } from '@/lib/preview-limits'
 
+export const dynamic = 'force-dynamic'
+
 /**
  * Request body schema
  */

@@ -15,6 +15,8 @@ import { createClient } from '@supabase/supabase-js'
 import crypto from 'crypto'
 import { logInfo, logError } from '@/lib/utils/logger'
 
+export const dynamic = 'force-dynamic'
+
 /**
  * Suno Webhook Payload Structure
  */
