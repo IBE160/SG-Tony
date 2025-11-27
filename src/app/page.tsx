@@ -353,29 +353,27 @@ export default function Home() {
           />
         </div>
 
-        {/* Generate Song Button - Main CTA */}
-        {lyrics && !isGenerating && !isOptimizing && (
-          <div className="mb-8">
-            <Button
-              onClick={handleGenerateSong}
-              disabled={isGeneratingSong}
-              className="w-full h-14 text-lg bg-[#E94560] hover:bg-[#D62839]"
-              size="lg"
-            >
-              {isGeneratingSong ? (
-                <>
-                  <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-                  Starter generering...
-                </>
-              ) : (
-                <>
-                  <Music className="mr-2 h-6 w-6" />
-                  Generer sang med Suno (10 kreditter)
-                </>
-              )}
-            </Button>
-          </div>
-        )}
+        {/* Generate Song Button - Main CTA (always visible) */}
+        <div className="mb-8">
+          <Button
+            onClick={handleGenerateSong}
+            disabled={isGeneratingSong || isGenerating || isOptimizing}
+            className="w-full h-14 text-lg bg-[#E94560] hover:bg-[#D62839]"
+            size="lg"
+          >
+            {isGeneratingSong ? (
+              <>
+                <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                Starter generering...
+              </>
+            ) : (
+              <>
+                <Music className="mr-2 h-6 w-6" />
+                Generer sang med Suno (10 kreditter)
+              </>
+            )}
+          </Button>
+        </div>
 
         {/* My Songs Section */}
         <div className="mt-12 pt-8 border-t">
