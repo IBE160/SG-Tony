@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { SongCard } from '@/components/song-card'
 import { SongPlayerCard } from '@/components/song-player-card'
 import { Button } from '@/components/ui/button'
@@ -16,13 +16,19 @@ export function HomepageSongs() {
   const [currentPage, setCurrentPage] = useState(0)
   const [hasMore, setHasMore] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [isChangingPage, setIsChangingPage] = useState(false)
   const [selectedSong, setSelectedSong] = useState<Song | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { showError } = useErrorToast()
+  const hasFetchedRef = useRef(false)
 
   // Fetch songs for current page
-  const fetchSongs = useCallback(async () => {
-    setIsLoading(true)
+  const fetchSongs = useCallback(async (showPageLoader = false) => {
+    if (showPageLoader) {
+      setIsChangingPage(true)
+    } else {
+      setIsLoading(true)
+    }
 
     try {
       const offset = currentPage * SONGS_PER_PAGE
@@ -48,16 +54,20 @@ export function HomepageSongs() {
     } catch (error) {
       showError(error, {
         context: 'load-homepage-songs',
-        onRetry: fetchSongs
+        onRetry: () => fetchSongs(showPageLoader)
       })
     } finally {
       setIsLoading(false)
+      setIsChangingPage(false)
     }
   }, [currentPage, showError])
 
-  // Load songs when page changes
+  // Initial load only
   useEffect(() => {
-    fetchSongs()
+    if (!hasFetchedRef.current) {
+      hasFetchedRef.current = true
+      fetchSongs(false)
+    }
   }, [fetchSongs])
 
   // Handle song card click
@@ -80,13 +90,52 @@ export function HomepageSongs() {
   // Navigation handlers
   const handlePreviousPage = () => {
     if (currentPage > 0) {
-      setCurrentPage(currentPage - 1)
+      const newPage = currentPage - 1
+      setCurrentPage(newPage)
+      fetchSongsForPage(newPage)
     }
   }
 
   const handleNextPage = () => {
     if (hasMore) {
-      setCurrentPage(currentPage + 1)
+      const newPage = currentPage + 1
+      setCurrentPage(newPage)
+      fetchSongsForPage(newPage)
+    }
+  }
+
+  // Fetch for specific page (used by pagination)
+  const fetchSongsForPage = async (page: number) => {
+    setIsChangingPage(true)
+
+    try {
+      const offset = page * SONGS_PER_PAGE
+      const response = await fetch(
+        `/api/songs?offset=${offset}&limit=${SONGS_PER_PAGE}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch songs')
+      }
+
+      const data = await response.json()
+      const fetchedSongs = data.data || []
+
+      setSongs(fetchedSongs)
+      setHasMore(fetchedSongs.length === SONGS_PER_PAGE)
+    } catch (error) {
+      showError(error, {
+        context: 'load-homepage-songs',
+        onRetry: () => fetchSongsForPage(page)
+      })
+    } finally {
+      setIsChangingPage(false)
     }
   }
 
@@ -117,7 +166,7 @@ export function HomepageSongs() {
   return (
     <>
       {/* Songs grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${(hasPrevious || hasMore) ? 'mb-6' : ''}`}>
         {songs.map((song) => (
           <SongCard
             key={song.id}
@@ -127,20 +176,20 @@ export function HomepageSongs() {
         ))}
       </div>
 
-      {/* Loading overlay for page changes */}
-      {isLoading && songs.length > 0 && (
+      {/* Loading overlay for page changes only */}
+      {isChangingPage && (
         <div className="flex justify-center py-4">
           <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
         </div>
       )}
 
-      {/* Pagination controls */}
-      {(hasPrevious || hasMore) && (
+      {/* Pagination controls - only show if there are multiple pages */}
+      {(hasPrevious || hasMore) && !isChangingPage && (
         <div className="flex justify-center gap-4">
           <Button
             variant="outline"
             onClick={handlePreviousPage}
-            disabled={!hasPrevious || isLoading}
+            disabled={!hasPrevious}
             className="flex items-center gap-2"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -149,7 +198,7 @@ export function HomepageSongs() {
           <Button
             variant="outline"
             onClick={handleNextPage}
-            disabled={!hasMore || isLoading}
+            disabled={!hasMore}
             className="flex items-center gap-2"
           >
             Neste
