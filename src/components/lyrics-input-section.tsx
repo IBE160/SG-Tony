@@ -4,12 +4,15 @@ import { useState } from 'react'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
-import { Label } from '@/components/ui/label'
-import { InfoTooltip } from '@/components/info-tooltip'
 import { ConceptInput } from '@/components/concept-input'
-import { TOOLTIPS } from '@/lib/constants'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
-import { Loader2, Sparkles, ChevronDown, ChevronUp, Eye } from 'lucide-react'
+import { Loader2, Sparkles, Eye, Wand2 } from 'lucide-react'
 
 interface LyricsInputSectionProps {
   lyrics: string
@@ -44,187 +47,215 @@ export function LyricsInputSection({
   hasOriginalLyrics,
   selectedGenre
 }: LyricsInputSectionProps) {
-  const [isConceptExpanded, setIsConceptExpanded] = useState(false)
-  const lineCount = lyrics ? lyrics.split('\n').length : 0
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [generatedPreview, setGeneratedPreview] = useState('')
 
   const isConceptValid = concept.length >= 10 && concept.length <= 500
   const canGenerate = selectedGenre && isConceptValid && !isGenerating && !isOptimizing
 
-  const handleGenerateClick = async () => {
-    await onGenerateLyrics()
-    // Collapse after successful generation
-    setIsConceptExpanded(false)
+  const handleOpenModal = () => {
+    setGeneratedPreview('')
+    setIsModalOpen(true)
   }
 
-  const handleToggleConceptArea = () => {
-    setIsConceptExpanded(!isConceptExpanded)
+  const handleGenerateInModal = async () => {
+    await onGenerateLyrics()
+    // The lyrics will be set via onLyricsChange, but we want to show preview first
+    // We'll capture the generated text by checking lyrics after generation
+  }
+
+  const handleAcceptGenerated = () => {
+    // Lyrics are already set by onGenerateLyrics, just close modal
+    setIsModalOpen(false)
+    setGeneratedPreview('')
+  }
+
+  const handleCancelGenerated = () => {
+    setIsModalOpen(false)
+    setGeneratedPreview('')
   }
 
   return (
-    <div className="space-y-4">
-      {/* Main Lyrics Textarea - Always Visible */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
+    <div className="space-y-2">
+      {/* Header: Tekst label + Norsk uttale switch (inline like screenshot) */}
+      <div className="flex items-center justify-between">
+        <label
+          htmlFor="lyrics-input"
+          className="text-sm font-medium text-gray-700"
+        >
+          Tekst
+        </label>
+        <div className="flex items-center gap-2">
+          <Switch
+            id="pronunciation-toggle"
+            checked={pronunciationEnabled}
+            onCheckedChange={onPronunciationToggle}
+            disabled={isGenerating || isOptimizing}
+            className="data-[state=checked]:bg-[#06D6A0]"
+          />
           <label
-            htmlFor="lyrics-input"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Tekst
-          </label>
-          {lyrics && (
-            <span className="text-xs text-gray-500">
-              {lineCount} {lineCount === 1 ? 'linje' : 'linjer'}
-            </span>
-          )}
-        </div>
-
-        <Textarea
-          id="lyrics-input"
-          placeholder="Skriv sangteksten din her, eller bruk AI-generering nedenfor..."
-          value={lyrics}
-          onChange={(e) => onLyricsChange(e.target.value)}
-          disabled={isGenerating || isOptimizing}
-          className={cn(
-            'min-h-[200px] font-mono text-sm leading-relaxed resize-none whitespace-pre-wrap',
-            lyrics && 'bg-white',
-            !lyrics && 'bg-gray-50',
-            (isGenerating || isOptimizing) && 'opacity-50'
-          )}
-        />
-
-        {lyrics && !isGenerating && !isOptimizing && (
-          <p className="text-xs text-gray-500">
-            Du kan redigere teksten direkte
-          </p>
-        )}
-
-        {isGenerating && (
-          <p className="text-xs text-[#E94560] flex items-center gap-1">
-            <Loader2 className="h-3 w-3 animate-spin" />
-            Genererer norsk sangtekst...
-          </p>
-        )}
-
-        {isOptimizing && (
-          <p className="text-xs text-[#E94560] flex items-center gap-1">
-            <Loader2 className="h-3 w-3 animate-spin" />
-            Optimaliserer uttale...
-          </p>
-        )}
-      </div>
-
-      {/* Pronunciation Toggle */}
-      <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
-        <div className="flex items-center gap-3">
-          <Label
             htmlFor="pronunciation-toggle"
-            className="text-base font-medium cursor-pointer"
+            className="text-sm text-gray-600 cursor-pointer"
           >
             Norsk uttale
-          </Label>
-          <InfoTooltip content={TOOLTIPS.pronunciation} side="right" />
+          </label>
         </div>
-
-        <Switch
-          id="pronunciation-toggle"
-          checked={pronunciationEnabled}
-          onCheckedChange={onPronunciationToggle}
-          disabled={isGenerating || isOptimizing}
-          className="data-[state=checked]:bg-[#06D6A0]"
-        />
       </div>
 
-      {/* Action buttons for existing lyrics */}
-      {lyrics && !isGenerating && !isOptimizing && (
-        <div className="flex flex-wrap gap-3">
-          {/* Preview phonetic changes */}
-          {hasOriginalLyrics && hasPhoneticChanges && (
-            <Button
-              onClick={onOpenDiffViewer}
-              variant="outline"
-              size="sm"
-            >
-              <Eye className="mr-2 h-4 w-4" />
-              Forhåndsvis fonetiske endringer
-            </Button>
-          )}
+      {/* Main Textarea */}
+      <Textarea
+        id="lyrics-input"
+        placeholder="Skriv sangteksten din her..."
+        value={lyrics}
+        onChange={(e) => onLyricsChange(e.target.value)}
+        disabled={isGenerating || isOptimizing}
+        className={cn(
+          'min-h-[200px] font-mono text-sm leading-relaxed resize-none whitespace-pre-wrap',
+          lyrics && 'bg-white',
+          !lyrics && 'bg-gray-50',
+          (isGenerating || isOptimizing) && 'opacity-50'
+        )}
+      />
 
-          {/* Re-optimize button if lyrics were manually edited */}
-          {!hasOriginalLyrics && pronunciationEnabled && (
-            <Button
-              onClick={onOptimizeLyrics}
-              variant="outline"
-              size="sm"
-            >
-              Optimaliser uttale
-            </Button>
-          )}
-        </div>
+      {/* Status messages */}
+      {isGenerating && (
+        <p className="text-xs text-[#E94560] flex items-center gap-1">
+          <Loader2 className="h-3 w-3 animate-spin" />
+          Genererer norsk sangtekst...
+        </p>
       )}
 
-      {/* Expandable AI Generation Section */}
-      <div className="border rounded-lg overflow-hidden">
-        <button
-          type="button"
-          onClick={handleToggleConceptArea}
-          disabled={isGenerating || isOptimizing}
-          className={cn(
-            'w-full flex items-center justify-between p-4 text-left transition-colors',
-            'hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#E94560]',
-            (isGenerating || isOptimizing) && 'opacity-50 cursor-not-allowed'
-          )}
-        >
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-[#E94560]" />
-            <span className="font-medium">Generer tekst med AI</span>
-          </div>
-          {isConceptExpanded ? (
-            <ChevronUp className="h-5 w-5 text-gray-500" />
-          ) : (
-            <ChevronDown className="h-5 w-5 text-gray-500" />
-          )}
-        </button>
+      {isOptimizing && (
+        <p className="text-xs text-[#E94560] flex items-center gap-1">
+          <Loader2 className="h-3 w-3 animate-spin" />
+          Optimaliserer uttale...
+        </p>
+      )}
 
-        {/* Expanded concept input area */}
-        <div
-          className={cn(
-            'overflow-hidden transition-all duration-300 ease-in-out',
-            isConceptExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
-          )}
+      {/* Action buttons below textarea (like screenshot) */}
+      <div className="flex items-center justify-end gap-3 pt-2">
+        {/* Optimize button - show when lyrics exist and can be optimized */}
+        {lyrics && !isGenerating && !isOptimizing && !hasOriginalLyrics && pronunciationEnabled && (
+          <Button
+            onClick={onOptimizeLyrics}
+            variant="ghost"
+            size="sm"
+            className="text-gray-600 hover:text-gray-900"
+          >
+            <Wand2 className="mr-2 h-4 w-4" />
+            Optimaliser
+          </Button>
+        )}
+
+        {/* Preview phonetic changes */}
+        {lyrics && hasOriginalLyrics && hasPhoneticChanges && !isGenerating && !isOptimizing && (
+          <Button
+            onClick={onOpenDiffViewer}
+            variant="ghost"
+            size="sm"
+            className="text-gray-600 hover:text-gray-900"
+          >
+            <Eye className="mr-2 h-4 w-4" />
+            Forhåndsvis endringer
+          </Button>
+        )}
+
+        {/* Generate Lyrics button */}
+        <Button
+          onClick={handleOpenModal}
+          variant="ghost"
+          size="sm"
+          disabled={isGenerating || isOptimizing}
+          className="text-[#E94560] hover:text-[#D62839] hover:bg-pink-50"
         >
-          <div className="p-4 pt-0 space-y-4 border-t">
+          <Sparkles className="mr-2 h-4 w-4" />
+          Generer tekst
+        </Button>
+      </div>
+
+      {/* AI Generation Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-[#E94560]" />
+              Generer tekst med AI
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 pt-4">
             {!selectedGenre && (
               <p className="text-sm text-yellow-600 bg-yellow-50 p-3 rounded-lg">
-                Velg en sjanger ovenfor for å generere tekst
+                Velg en sjanger først for å generere tekst
+              </p>
+            )}
+
+            {selectedGenre && (
+              <p className="text-sm text-gray-600">
+                Sjanger: <span className="font-medium">{selectedGenre.name}</span>
               </p>
             )}
 
             <ConceptInput
               value={concept}
               onChange={onConceptChange}
-              disabled={isGenerating || isOptimizing}
+              disabled={isGenerating}
             />
 
-            <Button
-              onClick={handleGenerateClick}
-              disabled={!canGenerate}
-              className="w-full bg-[#E94560] hover:bg-[#D62839]"
-            >
-              {isGenerating ? (
-                <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Genererer...
-                </>
+            {/* Preview of generated lyrics (if any in main textarea) */}
+            {lyrics && !isGenerating && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">
+                  Forhåndsvisning
+                </label>
+                <div className="p-3 bg-gray-50 rounded-lg max-h-[200px] overflow-y-auto">
+                  <pre className="text-sm font-mono whitespace-pre-wrap text-gray-800">
+                    {lyrics}
+                  </pre>
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-3 pt-2">
+              <Button
+                onClick={handleCancelGenerated}
+                variant="outline"
+                className="flex-1"
+                disabled={isGenerating}
+              >
+                Avbryt
+              </Button>
+
+              {!lyrics || isGenerating ? (
+                <Button
+                  onClick={handleGenerateInModal}
+                  disabled={!canGenerate}
+                  className="flex-1 bg-[#E94560] hover:bg-[#D62839]"
+                >
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Genererer...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      Generer
+                    </>
+                  )}
+                </Button>
               ) : (
-                <>
-                  <Sparkles className="mr-2 h-5 w-5" />
-                  Generer tekst
-                </>
+                <Button
+                  onClick={handleAcceptGenerated}
+                  className="flex-1 bg-[#06D6A0] hover:bg-[#05C090]"
+                >
+                  Godkjenn
+                </Button>
               )}
-            </Button>
+            </div>
           </div>
-        </div>
-      </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
