@@ -8,6 +8,7 @@ import { PronunciationToggle } from '@/components/pronunciation-toggle'
 import { PhoneticDiffViewer } from '@/components/phonetic-diff-viewer'
 import { GenerationProgressModal } from '@/components/generation-progress-modal'
 import { OnboardingModal } from '@/components/onboarding-modal'
+import { HomepageSongs } from '@/components/homepage-songs'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
 import { useErrorToast } from '@/hooks/use-error-toast'
@@ -479,6 +480,14 @@ export default function Home() {
             )}
           </div>
         )}
+
+        {/* My Songs Section */}
+        <div className="mt-12 pt-8 border-t">
+          <h2 className="text-2xl font-semibold mb-6 text-center md:text-left">
+            Mine sanger
+          </h2>
+          <HomepageSongs />
+        </div>
       </div>
 
       {/* Phonetic Diff Viewer Modal */}
