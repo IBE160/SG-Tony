@@ -76,7 +76,14 @@
       "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\app\\about\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\app\\about\")",
       "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\app\\contact\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\app\\contact\")",
       "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\app\\terms\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\app\\terms\")",
-      "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\app\\privacy\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\app\\privacy\")"
+      "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\app\\privacy\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\app\\privacy\")",
+      "Bash(git -C \"C:\\Users\\tony-\\SG-Tony\" log --oneline -5)",
+      "Bash(git -C \"C:\\Users\\tony-\\SG-Tony\" branch -vv)",
+      "Bash(git -C \"C:\\Users\\tony-\\SG-Tony\" log origin/main --oneline -3)",
+      "Bash(git fetch:*)",
+      "Bash(vercel --help:*)",
+      "Bash(npx vercel --help:*)",
+      "Bash(npx vercel --prod)"
     ],
     "deny": [],
     "ask": []
