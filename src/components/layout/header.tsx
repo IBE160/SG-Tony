@@ -15,23 +15,28 @@ import { Music } from 'lucide-react'
 export function Header() {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const { balance, refreshBalance } = useCreditsStore()
+  const { balance } = useCreditsStore()
   const router = useRouter()
 
   useEffect(() => {
     const supabase = createClient()
+    let isMounted = true
 
     const getUser = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser()
+        if (!isMounted) return
         setUser(user)
         if (user) {
-          refreshBalance()
+          // Call refreshBalance directly from store to avoid dependency issues
+          useCreditsStore.getState().refreshBalance()
         }
       } catch (error) {
         console.error('Error getting user:', error)
       } finally {
-        setIsLoading(false)
+        if (isMounted) {
+          setIsLoading(false)
+        }
       }
     }
 
@@ -39,16 +44,18 @@ export function Header() {
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!isMounted) return
       setUser(session?.user ?? null)
       if (session?.user) {
-        refreshBalance()
+        useCreditsStore.getState().refreshBalance()
       }
     })
 
     return () => {
+      isMounted = false
       subscription.unsubscribe()
     }
-  }, [refreshBalance])
+  }, []) // Empty dependency array - only runs once on mount
 
   const handleSignOut = async () => {
     const supabase = createClient()

@@ -302,7 +302,7 @@ export async function POST(request: NextRequest) {
         lyrics: finalLyricsWithWatermark,
         style: genreData.suno_prompt_template,
         model: 'V4',
-        callBackUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/webhooks/suno`,
+        callBackUrl: `${(process.env.NEXT_PUBLIC_APP_URL || '').replace(/\/$/, '')}/api/webhooks/suno`,
         duration: previewMode ? 30 : undefined // 30 seconds for preview, default for full song
       })
 

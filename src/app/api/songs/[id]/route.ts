@@ -9,9 +9,18 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { logError, logInfo } from '@/lib/utils/logger'
 
 export const dynamic = 'force-dynamic'
+
+// Admin client for server-side operations that bypass RLS
+function getAdminClient() {
+  return createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 /**
  * Error response helper with Norwegian messages
@@ -159,30 +168,72 @@ export async function GET(
         response.progress = progressPercent
         response.estimatedTimeRemaining = Math.max(0, estimatedTotal - elapsedSeconds)
 
-        // Check Suno API for real status if song has been generating for a while
-        // Poll every 30 seconds after the first minute
-        if (song.suno_song_id && elapsedSeconds > 60) {
+        // Check Suno API for real status after 30 seconds (webhook fallback)
+        if (song.suno_song_id && elapsedSeconds > 30) {
           try {
             const { getSongStatus } = await import('@/lib/api/suno')
             const sunoStatus = await getSongStatus(song.suno_song_id)
 
-            logInfo('Suno API status check', {
+            logInfo('Suno API status check (polling fallback)', {
               userId: user.id,
               songId,
               taskId: song.suno_song_id,
-              sunoStatus: sunoStatus.data.status
+              sunoStatus: sunoStatus.data.status,
+              elapsedSeconds
             })
 
             // Handle completed generation
             const firstSong = sunoStatus.data.response?.sunoData?.[0]
             if (sunoStatus.data.status === 'SUCCESS' && firstSong?.audioUrl) {
-              // Update database with completed status
-              await supabase
+              // Use admin client to bypass RLS for update
+              const adminClient = getAdminClient()
+
+              // Download audio from Suno and upload to Supabase Storage
+              let finalAudioUrl = firstSong.audioUrl
+              try {
+                const audioResponse = await fetch(firstSong.audioUrl, {
+                  signal: AbortSignal.timeout(30000)
+                })
+                if (audioResponse.ok) {
+                  const audioBuffer = await audioResponse.arrayBuffer()
+                  const filePath = `${user.id}/${songId}.mp3`
+
+                  const { error: uploadError } = await adminClient.storage
+                    .from('songs')
+                    .upload(filePath, audioBuffer, {
+                      contentType: 'audio/mpeg',
+                      upsert: true
+                    })
+
+                  if (!uploadError) {
+                    // Generate signed URL
+                    const { data: signedUrlData } = await adminClient.storage
+                      .from('songs')
+                      .createSignedUrl(filePath, 86400)
+
+                    if (signedUrlData?.signedUrl) {
+                      finalAudioUrl = signedUrlData.signedUrl
+                      logInfo('Audio uploaded to Supabase Storage (polling fallback)', {
+                        songId,
+                        filePath
+                      })
+                    }
+                  } else {
+                    logError('Storage upload failed (polling fallback)', uploadError as unknown as Error, { songId })
+                  }
+                }
+              } catch (downloadError) {
+                logError('Audio download failed (polling fallback), using Suno URL', downloadError as Error, { songId })
+                // Continue with Suno's URL as fallback
+              }
+
+              // Update database with completed status using admin client
+              await adminClient
                 .from('song')
                 .update({
                   status: 'completed',
-                  audio_url: firstSong.audioUrl,
-                  duration_seconds: firstSong.duration || null,
+                  audio_url: finalAudioUrl,
+                  duration_seconds: firstSong.duration ? Math.round(firstSong.duration) : null,
                   canvas_url: firstSong.imageUrl || null,
                   updated_at: new Date().toISOString()
                 })
@@ -191,13 +242,13 @@ export async function GET(
               // Return completed status immediately
               response.status = 'completed'
               response.progress = 100
-              response.audioUrl = firstSong.audioUrl
+              response.audioUrl = finalAudioUrl
               response.duration = firstSong.duration
 
-              logInfo('Song generation completed (via Suno API check)', {
+              logInfo('Song generation completed (via polling fallback)', {
                 userId: user.id,
                 songId,
-                audioUrl: firstSong.audioUrl
+                audioUrl: finalAudioUrl
               })
               break
             }
@@ -205,8 +256,9 @@ export async function GET(
             // Handle failed generation
             if (['CREATE_TASK_FAILED', 'GENERATE_AUDIO_FAILED', 'CALLBACK_EXCEPTION', 'SENSITIVE_WORD_ERROR'].includes(sunoStatus.data.status)) {
               const errorMessage = `Generering feilet: ${sunoStatus.data.status}`
+              const adminClient = getAdminClient()
 
-              await supabase
+              await adminClient
                 .from('song')
                 .update({
                   status: 'failed',
@@ -218,7 +270,7 @@ export async function GET(
               response.status = 'failed'
               response.errorMessage = errorMessage
 
-              logError('Song generation failed (via Suno API check)', new Error(errorMessage), {
+              logError('Song generation failed (via polling fallback)', new Error(errorMessage), {
                 userId: user.id,
                 songId,
                 sunoStatus: sunoStatus.data.status
