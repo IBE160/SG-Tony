@@ -1,0 +1,296 @@
+<story-context id="3-11-implement-early-audio-playback-with-first-success" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>11</storyId>
+    <title>Implement Early Audio Playback with FIRST_SUCCESS Status</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-28</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/3-11-implement-early-audio-playback-with-first-success.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user generating a song</asA>
+    <iWant>to start listening to my song as soon as the first track is ready (FIRST_SUCCESS status)</iWant>
+    <soThat>I don't have to wait for full generation completion before hearing my creation</soThat>
+    <tasks>
+      <task id="1" ac="1">
+        <title>Update Suno API types</title>
+        <subtasks>
+          <subtask>Verify streamAudioUrl field is captured in SunoTaskStatusResponse</subtask>
+          <subtask>Add FIRST_SUCCESS to status union type if not present</subtask>
+        </subtasks>
+      </task>
+      <task id="2" ac="2">
+        <title>Update song table schema</title>
+        <subtasks>
+          <subtask>Add stream_audio_url column to song table (nullable)</subtask>
+          <subtask>Add partial to status enum (generating → partial → completed)</subtask>
+          <subtask>Create migration file</subtask>
+        </subtasks>
+      </task>
+      <task id="3" ac="1,2">
+        <title>Update polling fallback in /api/songs/[id]</title>
+        <subtasks>
+          <subtask>Handle FIRST_SUCCESS status in addition to SUCCESS</subtask>
+          <subtask>When FIRST_SUCCESS: save streamAudioUrl to stream_audio_url, set status to partial</subtask>
+          <subtask>When SUCCESS: save final audioUrl, download to storage, set status to completed</subtask>
+        </subtasks>
+      </task>
+      <task id="4" ac="1,2">
+        <title>Update webhook handler</title>
+        <subtasks>
+          <subtask>Handle FIRST_SUCCESS callback if Suno sends intermediate callbacks</subtask>
+          <subtask>Maintain idempotency (don't overwrite completed with partial)</subtask>
+        </subtasks>
+      </task>
+      <task id="5" ac="3,4">
+        <title>Update frontend polling logic</title>
+        <subtasks>
+          <subtask>In homepage-songs.tsx: detect partial status</subtask>
+          <subtask>Enable playback when partial with streamAudioUrl available</subtask>
+          <subtask>Continue polling until completed</subtask>
+          <subtask>Update progress UI to show "Ready to play!" state</subtask>
+        </subtasks>
+      </task>
+      <task id="6" ac="3,4">
+        <title>Update SongCard component</title>
+        <subtasks>
+          <subtask>Add visual state for partial (playable but still generating)</subtask>
+          <subtask>Show play button when audio available</subtask>
+          <subtask>Show subtle "finalizing..." indicator</subtask>
+        </subtasks>
+      </task>
+      <task id="7" ac="5,6,7">
+        <title>Handle audio URL transition</title>
+        <subtasks>
+          <subtask>If user started playing streamAudioUrl and SUCCESS arrives: decide approach</subtask>
+          <subtask>Option A: Let current playback continue until song ends</subtask>
+          <subtask>Option B: Seamlessly switch to final URL at current position</subtask>
+        </subtasks>
+      </task>
+      <task id="8" ac="all">
+        <title>Testing</title>
+        <subtasks>
+          <subtask>Test FIRST_SUCCESS → SUCCESS flow</subtask>
+          <subtask>Test playback during partial state</subtask>
+          <subtask>Test error handling if FIRST_SUCCESS arrives but no streamAudioUrl</subtask>
+          <subtask>Test concurrent polling with playback</subtask>
+        </subtasks>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="AC1">When polling returns FIRST_SUCCESS status, extract streamAudioUrl from response</criterion>
+    <criterion id="AC2">Update song status in database to partial (new status) with streamAudioUrl</criterion>
+    <criterion id="AC3">Frontend polling detects partial status and enables audio playback immediately</criterion>
+    <criterion id="AC4">Progress UI shows "Ready to play!" state while generation continues</criterion>
+    <criterion id="AC5">When SUCCESS status arrives, update to final audioUrl and completed status</criterion>
+    <criterion id="AC6">If user is already playing streamAudioUrl, seamlessly continue (no interruption)</criterion>
+    <criterion id="AC7">Handle case where FIRST_SUCCESS audio differs from final SUCCESS audio gracefully</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken Architecture Document</title>
+        <section>ADR-007: Async Song Generation with Webhook + Polling Fallback</section>
+        <snippet>Async pattern: Return 202 Accepted with songId, client polls /api/songs/[id]. Webhook notifies on completion OR polling fallback after 5 seconds.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics/epic-3-norwegian-song-creation-core.md</path>
+        <title>Epic 3: Norwegian Song Creation (CORE)</title>
+        <section>Story 3.5, 3.7</section>
+        <snippet>Suno webhook notifies when complete OR polling fallback after 5 seconds. Webhook downloads audio to Supabase Storage, updates song status.</snippet>
+      </doc>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>Technical Specification</title>
+        <section>Implementation Details - Inline Generation</section>
+        <snippet>Poll /api/songs/{id} for status updates. SongCard renders special "generating" variant. On completion: remove from store, song appears via refetch.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/3-11-implement-early-audio-playback-with-first-success.md</path>
+        <title>Story 3.11: Early Audio Playback</title>
+        <section>Background Research, Dev Notes</section>
+        <snippet>Suno status flow: PENDING → TEXT_SUCCESS → FIRST_SUCCESS → SUCCESS. When FIRST_SUCCESS, streamAudioUrl is available for immediate playback ~20-40 seconds earlier.</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <artifact>
+        <path>src/lib/api/suno.ts</path>
+        <kind>API wrapper</kind>
+        <symbol>SunoTaskStatusResponse</symbol>
+        <lines>303-328</lines>
+        <reason>Contains the TypeScript interface for Suno API status. Already includes FIRST_SUCCESS in status union and streamAudioUrl field. VERIFY these are correctly captured.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/api/suno.ts</path>
+        <kind>function</kind>
+        <symbol>getSongStatus</symbol>
+        <lines>337-425</lines>
+        <reason>Function that calls Suno API to get song generation status. Used by polling fallback.</reason>
+      </artifact>
+      <artifact>
+        <path>src/app/api/songs/[id]/route.ts</path>
+        <kind>API route</kind>
+        <symbol>GET</symbol>
+        <lines>53-368</lines>
+        <reason>Polling endpoint for song status. Currently handles SUCCESS and failed statuses but NOT FIRST_SUCCESS. Key file to modify for Task 3.</reason>
+      </artifact>
+      <artifact>
+        <path>src/app/api/webhooks/suno/route.ts</path>
+        <kind>webhook handler</kind>
+        <symbol>POST</symbol>
+        <lines>183-495</lines>
+        <reason>Suno webhook handler. Currently only processes SUCCESS status. May need to handle FIRST_SUCCESS if Suno sends intermediate callbacks. Key file for Task 4.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/homepage-songs.tsx</path>
+        <kind>React component</kind>
+        <symbol>HomepageSongs</symbol>
+        <lines>1-373</lines>
+        <reason>Frontend component that polls for song status. Handles generating/completed/failed/cancelled. Needs to add partial status handling for Task 5.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/homepage-songs.tsx</path>
+        <kind>function</kind>
+        <symbol>pollSongStatus</symbol>
+        <lines>84-167</lines>
+        <reason>Polling function that checks song status. Currently checks completed/failed/cancelled. Needs to handle partial status for early playback.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/song-card.tsx</path>
+        <kind>React component</kind>
+        <symbol>SongCard</symbol>
+        <lines>1-97</lines>
+        <reason>Song card UI. Has isGenerating prop for loading state. Needs new isPartial prop for "playable but still finalizing" state for Task 6.</reason>
+      </artifact>
+      <artifact>
+        <path>src/types/song.ts</path>
+        <kind>type definition</kind>
+        <symbol>Song</symbol>
+        <lines>32-52</lines>
+        <reason>Song interface. Status currently includes 'generating' | 'completed' | 'failed' | 'cancelled'. Needs 'partial' added.</reason>
+      </artifact>
+      <artifact>
+        <path>supabase/migrations/20251120_initial_schema.sql</path>
+        <kind>database schema</kind>
+        <symbol>song table</symbol>
+        <lines>28-58</lines>
+        <reason>Initial song table schema. Status CHECK constraint only allows generating/completed/failed. Needs migration to add 'partial' and stream_audio_url column.</reason>
+      </artifact>
+      <artifact>
+        <path>src/stores/generating-song-store.ts</path>
+        <kind>Zustand store</kind>
+        <symbol>useGeneratingSongStore</symbol>
+        <lines>N/A</lines>
+        <reason>Store for tracking actively generating songs. May need to track partial songs that are playable but still generating.</reason>
+      </artifact>
+    </code>
+
+    <dependencies>
+      <ecosystem name="node">
+        <package name="next" version="^14.2.3" />
+        <package name="react" version="^18.2.0" />
+        <package name="typescript" version="^5" />
+        <package name="zustand" version="^5.0.8" />
+        <package name="@supabase/supabase-js" version="^2.84.0" />
+        <package name="@supabase/ssr" version="^0.7.0" />
+        <package name="howler" version="^2.2.4" />
+        <package name="wavesurfer.js" version="^7.11.1" />
+        <package name="lucide-react" version="^0.554.0" />
+      </ecosystem>
+      <framework name="Supabase" role="database, auth, storage">PostgreSQL with RLS</framework>
+      <framework name="shadcn/ui" role="UI components">Based on Radix UI + Tailwind</framework>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint source="architecture">Follow async generation pattern (ADR-007): webhook primary, polling fallback</constraint>
+    <constraint source="architecture">Use admin client for bypassing RLS when updating song status from webhook/polling</constraint>
+    <constraint source="architecture">Store audio files in Supabase Storage bucket 'songs' with signed URLs</constraint>
+    <constraint source="dev-notes">Use Suno's streamAudioUrl directly for partial status (don't download), only download final audioUrl on SUCCESS</constraint>
+    <constraint source="dev-notes">Maintain idempotency: don't overwrite completed status with partial</constraint>
+    <constraint source="code-pattern">Norwegian UI text throughout (error messages, status labels)</constraint>
+    <constraint source="code-pattern">Use useErrorToast hook for error handling</constraint>
+    <constraint source="code-pattern">Follow existing component patterns: 'use client', cn() for className merging</constraint>
+    <constraint source="schema">Song status enum must be updated via SQL migration - CHECK constraint modification</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="SunoTaskStatusResponse" kind="TypeScript interface" path="src/lib/api/suno.ts">
+      <signature>
+{
+  code: number
+  msg: string
+  data: {
+    taskId: string
+    status: 'PENDING' | 'TEXT_SUCCESS' | 'FIRST_SUCCESS' | 'SUCCESS' | 'CREATE_TASK_FAILED' | 'GENERATE_AUDIO_FAILED' | 'CALLBACK_EXCEPTION' | 'SENSITIVE_WORD_ERROR'
+    response?: {
+      sunoData?: Array&lt;{
+        id: string
+        audioUrl: string
+        sourceAudioUrl: string
+        streamAudioUrl: string // Available at FIRST_SUCCESS
+        imageUrl: string
+        duration: number
+        // ...
+      }&gt;
+    }
+  }
+}
+      </signature>
+    </interface>
+    <interface name="GET /api/songs/[id]" kind="REST endpoint" path="src/app/api/songs/[id]/route.ts">
+      <signature>
+Response: {
+  data: {
+    id: string
+    title: string
+    genre: string
+    status: 'generating' | 'partial' | 'completed' | 'failed'  // Add 'partial'
+    progress?: number
+    audioUrl?: string  // Final audio URL
+    streamAudioUrl?: string  // New: Early playback URL
+    duration?: number
+    // ...
+  }
+}
+      </signature>
+    </interface>
+    <interface name="Song" kind="TypeScript interface" path="src/types/song.ts">
+      <signature>
+interface Song {
+  id: string
+  status: 'generating' | 'partial' | 'completed' | 'failed' | 'cancelled'  // Add 'partial'
+  audio_url?: string
+  stream_audio_url?: string  // New field
+  // ... existing fields
+}
+      </signature>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Manual testing via local dev server (npm run dev) and Vercel preview deploys. No automated test framework currently configured. ESLint with Next.js config for code quality.</standards>
+    <locations>
+      <location>Local: http://localhost:3000</location>
+      <location>Vercel preview deploys on PR</location>
+    </locations>
+    <ideas>
+      <idea ac="AC1">Verify FIRST_SUCCESS status is detected in polling - check network tab for API response containing status: FIRST_SUCCESS and streamAudioUrl field</idea>
+      <idea ac="AC2">Verify database update to partial - query Supabase song table after FIRST_SUCCESS, confirm status='partial' and stream_audio_url populated</idea>
+      <idea ac="AC3">Test frontend playback on partial - when song shows "Ready to play!" state, click play button, verify audio plays from streamAudioUrl</idea>
+      <idea ac="AC4">Verify UI state during partial - check SongCard shows playable but still generating indicator (not full spinner, but subtle finalizing text)</idea>
+      <idea ac="AC5">Test SUCCESS transition - after partial, wait for completed, verify audio_url is final Supabase Storage URL, status='completed'</idea>
+      <idea ac="AC6">Test playback continuity - start playing during partial, let SUCCESS arrive, verify no audio interruption or jarring restart</idea>
+      <idea ac="AC7">Test audio URL difference handling - if streamAudioUrl differs from final audioUrl, verify graceful transition or continued playback</idea>
+      <idea ac="all">Test timeout scenario - simulate FIRST_SUCCESS never arriving, verify timeout handling after max polling attempts</idea>
+      <idea ac="all">Test error scenario - mock FIRST_SUCCESS with missing streamAudioUrl, verify graceful error handling</idea>
+    </ideas>
+  </tests>
+</story-context>
