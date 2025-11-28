@@ -185,24 +185,25 @@ export function SongPlayerCard({
 
   // Sync waveform with Howler playback
   useEffect(() => {
-    if (!soundRef.current || !wavesurferRef.current) return
+    if (!soundRef.current) return
 
     const updateProgress = () => {
-      if (soundRef.current && soundRef.current.playing()) {
+      if (soundRef.current) {
         const seek = soundRef.current.seek()
-        setCurrentTime(typeof seek === 'number' ? seek : 0)
+        const currentSeek = typeof seek === 'number' ? seek : 0
+        setCurrentTime(currentSeek)
 
         if (wavesurferRef.current && audioDuration > 0) {
-          const progress = (typeof seek === 'number' ? seek : 0) / audioDuration
+          const progress = currentSeek / audioDuration
           wavesurferRef.current.seekTo(progress)
         }
-
-        animationFrameRef.current = requestAnimationFrame(updateProgress)
       }
+      // Continue loop as long as isPlaying is true (checked via closure)
+      animationFrameRef.current = requestAnimationFrame(updateProgress)
     }
 
     if (isPlaying) {
-      updateProgress()
+      animationFrameRef.current = requestAnimationFrame(updateProgress)
     }
 
     return () => {
@@ -236,28 +237,7 @@ export function SongPlayerCard({
       const progress = seekTime / audioDuration
       wavesurferRef.current.seekTo(progress)
     }
-
-    // If playing, restart the animation frame to sync timer
-    if (isPlaying) {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
-      }
-      const updateProgress = () => {
-        if (soundRef.current && soundRef.current.playing()) {
-          const seek = soundRef.current.seek()
-          setCurrentTime(typeof seek === 'number' ? seek : 0)
-
-          if (wavesurferRef.current && audioDuration > 0) {
-            const progress = (typeof seek === 'number' ? seek : 0) / audioDuration
-            wavesurferRef.current.seekTo(progress)
-          }
-
-          animationFrameRef.current = requestAnimationFrame(updateProgress)
-        }
-      }
-      animationFrameRef.current = requestAnimationFrame(updateProgress)
-    }
-  }, [audioDuration, isPlaying])
+  }, [audioDuration])
 
   // Handle volume change
   const handleVolumeChange = useCallback((value: number[]) => {
@@ -415,9 +395,9 @@ export function SongPlayerCard({
             {title}
           </h3>
           <div className="flex items-center gap-2 mt-1 flex-wrap">
-            <Badge variant="secondary" className="text-xs">
+            <span className="text-xs text-muted-foreground">
               {genre}
-            </Badge>
+            </span>
             {isPreview && (
               <span className="flex items-center gap-1">
                 <Badge

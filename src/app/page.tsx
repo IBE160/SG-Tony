@@ -380,7 +380,7 @@ export default function Home() {
             ) : (
               <>
                 <Music className="mr-2 h-6 w-6" />
-                Generer sang
+                Lag sang
               </>
             )}
           </Button>

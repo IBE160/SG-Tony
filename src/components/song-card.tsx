@@ -1,9 +1,12 @@
 'use client'
 
-import { PlayCircle, Loader2 } from 'lucide-react'
+import { useState } from 'react'
+import { PlayCircle, Loader2, Download } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { formatRelativeDate, formatDuration } from '@/lib/utils/date-formatter'
+import { downloadSong } from '@/lib/utils/download'
 import { cn } from '@/lib/utils'
 
 interface SongCardProps {
@@ -21,6 +24,7 @@ interface SongCardProps {
 }
 
 export function SongCard({ song, onClick, isGenerating = false, isPartial = false }: SongCardProps) {
+  const [isDownloading, setIsDownloading] = useState(false)
   const gradientFrom = song.gradient_colors?.from || '#E94560'
   const gradientTo = song.gradient_colors?.to || '#FFC93C'
 
@@ -38,6 +42,15 @@ export function SongCard({ song, onClick, isGenerating = false, isPartial = fals
       e.preventDefault()
       onClick()
     }
+  }
+
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation() // Prevent card click
+    if (isDownloading || isGenerating) return
+
+    setIsDownloading(true)
+    await downloadSong(song.id, song.title)
+    setIsDownloading(false)
   }
 
   return (
@@ -118,6 +131,27 @@ export function SongCard({ song, onClick, isGenerating = false, isPartial = fals
               : formatRelativeDate(song.created_at)}
           </p>
         </div>
+
+        {/* Download button */}
+        {!isGenerating && !isPartial && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDownload}
+            disabled={isDownloading}
+            className="flex-shrink-0 self-end"
+            aria-label="Last ned sang"
+          >
+            {isDownloading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <>
+                <Download className="h-4 w-4 mr-1" />
+                Last ned
+              </>
+            )}
+          </Button>
+        )}
       </CardContent>
     </Card>
   )
