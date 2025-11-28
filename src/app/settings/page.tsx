@@ -138,8 +138,8 @@ function SettingsContent() {
     return (
       <div className="container mx-auto p-6">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6">Settings</h1>
-          <p>Loading...</p>
+          <h1 className="text-3xl font-bold mb-6">Instillinger</h1>
+          <p>Laster...</p>
         </div>
       </div>
     )
@@ -149,8 +149,8 @@ function SettingsContent() {
     return (
       <div className="container mx-auto p-6">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6">Settings</h1>
-          <p>Failed to load profile. Please try again.</p>
+          <h1 className="text-3xl font-bold mb-6">Instillinger</h1>
+          <p>Kunne ikke laste profil. Prov igjen.</p>
         </div>
       </div>
     )
@@ -159,28 +159,28 @@ function SettingsContent() {
   return (
     <div className="container mx-auto p-6 pb-24">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Settings</h1>
+        <h1 className="text-3xl font-bold mb-6">Instillinger</h1>
 
         {/* User Profile Card */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Account Information</CardTitle>
+            <CardTitle>Kontoinformasjon</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <p className="text-sm text-muted-foreground">Display Name</p>
+              <p className="text-sm text-muted-foreground">Visningsnavn</p>
               <p className="text-lg font-medium">
-                {profile.display_name || 'Guest'}
+                {profile.display_name || 'Gjest'}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Email</p>
+              <p className="text-sm text-muted-foreground">E-post</p>
               <p className="text-lg">{profile.email}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Account Created</p>
+              <p className="text-sm text-muted-foreground">Konto opprettet</p>
               <p className="text-lg">
-                {format(new Date(profile.created_at), 'MMMM dd, yyyy')}
+                {format(new Date(profile.created_at), 'dd. MMMM yyyy')}
               </p>
             </div>
           </CardContent>
@@ -241,7 +241,7 @@ function SettingsContent() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Coins className={`w-5 h-5 ${balance < 20 ? 'text-red-600' : 'text-amber-600'}`} />
-              Credit Balance
+              Kredittsaldo
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -249,14 +249,14 @@ function SettingsContent() {
               <div className={`text-6xl font-bold mb-2 ${balance < 20 ? 'text-red-500' : 'text-amber-500'}`}>
                 {balance}
               </div>
-              <p className={`text-lg ${balance < 20 ? 'text-red-700' : 'text-amber-700'}`}>credits</p>
+              <p className={`text-lg ${balance < 20 ? 'text-red-700' : 'text-amber-700'}`}>kreditter</p>
             </div>
 
             <Button
               className="w-full mt-4 bg-red-600 hover:bg-red-700 text-white"
               onClick={() => setIsPurchaseModalOpen(true)}
             >
-              Purchase Credits
+              Kjop kreditter
             </Button>
           </CardContent>
         </Card>
@@ -281,7 +281,7 @@ function SettingsContent() {
               disabled={isLoggingOut}
             >
               <LogOut className="w-4 h-4 mr-2" />
-              {isLoggingOut ? 'Logging out...' : 'Log Out'}
+              {isLoggingOut ? 'Logger ut...' : 'Logg ut'}
             </Button>
           </CardContent>
         </Card>
@@ -311,7 +311,7 @@ function SettingsContent() {
 
 export default function SettingsPage() {
   return (
-    <Suspense fallback={<div className="container mx-auto p-6"><div className="max-w-2xl mx-auto"><h1 className="text-3xl font-bold mb-6">Settings</h1><p>Loading...</p></div></div>}>
+    <Suspense fallback={<div className="container mx-auto p-6"><div className="max-w-2xl mx-auto"><h1 className="text-3xl font-bold mb-6">Instillinger</h1><p>Laster...</p></div></div>}>
       <SettingsContent />
     </Suspense>
   )

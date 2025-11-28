@@ -151,10 +151,10 @@ export function TransactionHistory({
   return (
     <div className="space-y-4">
       {/* Filter */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <h3 className="text-lg font-semibold">Transaksjonshistorikk</h3>
         <Select value={currentFilter} onValueChange={handleFilterChange} disabled={isLoading}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Filtrer etter type" />
           </SelectTrigger>
           <SelectContent>

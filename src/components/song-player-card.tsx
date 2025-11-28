@@ -226,16 +226,39 @@ export function SongPlayerCard({
 
   // Seek to specific time
   const handleSeek = useCallback((value: number[]) => {
-    if (!soundRef.current || !wavesurferRef.current) return
+    if (!soundRef.current) return
 
     const seekTime = value[0]
     soundRef.current.seek(seekTime)
     setCurrentTime(seekTime)
 
     // Update waveform
-    const progress = seekTime / audioDuration
-    wavesurferRef.current.seekTo(progress)
-  }, [audioDuration])
+    if (wavesurferRef.current && audioDuration > 0) {
+      const progress = seekTime / audioDuration
+      wavesurferRef.current.seekTo(progress)
+    }
+
+    // If playing, restart the animation frame to sync timer
+    if (isPlaying) {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current)
+      }
+      const updateProgress = () => {
+        if (soundRef.current && soundRef.current.playing()) {
+          const seek = soundRef.current.seek()
+          setCurrentTime(typeof seek === 'number' ? seek : 0)
+
+          if (wavesurferRef.current && audioDuration > 0) {
+            const progress = (typeof seek === 'number' ? seek : 0) / audioDuration
+            wavesurferRef.current.seekTo(progress)
+          }
+
+          animationFrameRef.current = requestAnimationFrame(updateProgress)
+        }
+      }
+      animationFrameRef.current = requestAnimationFrame(updateProgress)
+    }
+  }, [audioDuration, isPlaying])
 
   // Handle volume change
   const handleVolumeChange = useCallback((value: number[]) => {

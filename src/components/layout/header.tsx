@@ -108,7 +108,7 @@ export function Header() {
           </nav>
 
           {/* User Area */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 min-w-[160px] justify-end">
             {isLoading ? (
               // Skeleton loader while auth state is loading
               <div className="flex items-center gap-2">

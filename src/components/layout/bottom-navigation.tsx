@@ -15,9 +15,9 @@ export function BottomNavigation() {
   }, [refreshBalance])
 
   const navItems = [
-    { href: '/', icon: Home, label: 'Home' },
-    { href: '/songs', icon: Music, label: 'Songs' },
-    { href: '/settings', icon: Settings, label: 'Settings', badge: balance }
+    { href: '/', icon: Home, label: 'Hjem' },
+    { href: '/songs', icon: Music, label: 'Sanger' },
+    { href: '/settings', icon: Settings, label: 'Instillinger' }
   ]
 
   return (
@@ -39,11 +39,6 @@ export function BottomNavigation() {
             >
               <div className="relative">
                 <Icon className="w-6 h-6" />
-                {item.badge !== undefined && item.badge !== null && (
-                  <span className="absolute -top-2 -right-2 bg-amber-400 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                    {item.badge > 99 ? '99+' : item.badge}
-                  </span>
-                )}
               </div>
               <span className={`text-xs mt-1 ${isActive ? 'font-semibold' : ''}`}>
                 {item.label}

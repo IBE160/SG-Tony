@@ -30,12 +30,12 @@ export function VoiceGenderSelector({
   return (
     <div className={`w-full ${className}`}>
       <h3 className="text-sm font-medium text-gray-700 mb-2">
-        Stemme <span className="text-gray-400 font-normal">(valgfritt)</span>
+        Stemme
       </h3>
       <div
         role="radiogroup"
         aria-label="Velg stemmetype"
-        className="flex gap-3"
+        className="flex justify-center gap-3"
       >
         <Button
           type="button"
@@ -44,8 +44,8 @@ export function VoiceGenderSelector({
           variant={value === 'm' ? 'default' : 'outline'}
           style={{
             background: value === 'm'
-              ? 'linear-gradient(135deg, #0F3460 0%, #4A90D9 100%)'
-              : 'white',
+              ? 'linear-gradient(135deg, #E94560 0%, #FFC93C 100%)'
+              : 'linear-gradient(135deg, #FFC93C 0%, #FFB347 100%)',
           }}
           className={`
             min-h-[48px] min-w-[100px] px-6 py-2 rounded-lg
@@ -53,10 +53,10 @@ export function VoiceGenderSelector({
             flex items-center justify-center gap-2
             ${
               value === 'm'
-                ? 'border-[3px] border-[#0F3460] text-white hover:opacity-90'
-                : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+                ? 'border-[3px] border-[#E94560] text-white hover:opacity-90'
+                : 'border border-[#FFC93C] text-gray-700 hover:opacity-90'
             }
-            focus:outline-none focus:ring-2 focus:ring-[#0F3460] focus:ring-offset-2
+            focus:outline-none focus:ring-2 focus:ring-[#E94560] focus:ring-offset-2
           `}
           role="radio"
           aria-checked={value === 'm'}
@@ -74,7 +74,7 @@ export function VoiceGenderSelector({
           style={{
             background: value === 'f'
               ? 'linear-gradient(135deg, #E94560 0%, #FFC93C 100%)'
-              : 'white',
+              : 'linear-gradient(135deg, #FFC93C 0%, #FFB347 100%)',
           }}
           className={`
             min-h-[48px] min-w-[100px] px-6 py-2 rounded-lg
@@ -83,7 +83,7 @@ export function VoiceGenderSelector({
             ${
               value === 'f'
                 ? 'border-[3px] border-[#E94560] text-white hover:opacity-90'
-                : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+                : 'border border-[#FFC93C] text-gray-700 hover:opacity-90'
             }
             focus:outline-none focus:ring-2 focus:ring-[#E94560] focus:ring-offset-2
           `}

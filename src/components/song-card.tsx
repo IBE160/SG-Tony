@@ -49,6 +49,9 @@ export function SongCard({ song, onClick, isGenerating = false, isPartial = fals
           : 'cursor-pointer hover:shadow-lg',
         isPartial && 'ring-2 ring-[#FFC93C] ring-opacity-60'  // Highlight partial songs
       )}
+      style={{
+        background: 'linear-gradient(135deg, rgba(15, 52, 96, 0.03) 0%, rgba(233, 69, 96, 0.05) 100%)'
+      }}
       onClick={handleClick}
       tabIndex={isClickable ? 0 : -1}
       role="button"
@@ -88,7 +91,7 @@ export function SongCard({ song, onClick, isGenerating = false, isPartial = fals
             {song.title}
           </h3>
           <div className="flex items-center gap-2 text-sm text-gray-600 mt-1 flex-wrap">
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="secondary" className="text-xs px-3 py-1 flex items-center justify-center">
               {song.genre}
             </Badge>
             {isGenerating && !isPartial ? (
