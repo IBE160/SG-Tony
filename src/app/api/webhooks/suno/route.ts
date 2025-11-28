@@ -334,12 +334,49 @@ export async function POST(request: Request) {
       const sunoData = response?.sunoData?.[0]
 
       if (sunoData?.streamAudioUrl) {
-        // Update song with partial status and stream URL (no download needed)
+        // Download stream audio to Supabase Storage (browser can't play Suno's stream format directly)
+        let earlyAudioUrl = sunoData.streamAudioUrl
+        try {
+          const audioResponse = await fetch(sunoData.streamAudioUrl, {
+            signal: AbortSignal.timeout(30000)
+          })
+          if (audioResponse.ok) {
+            const audioBuffer = await audioResponse.arrayBuffer()
+            const filePath = `songs/${song.user_id}/${song.id}-stream.mp3`
+
+            const { error: uploadError } = await supabase.storage
+              .from('songs')
+              .upload(filePath, audioBuffer, {
+                contentType: 'audio/mpeg',
+                upsert: true
+              })
+
+            if (!uploadError) {
+              const { data: signedUrlData } = await supabase.storage
+                .from('songs')
+                .createSignedUrl(filePath, 86400)
+
+              if (signedUrlData?.signedUrl) {
+                earlyAudioUrl = signedUrlData.signedUrl
+                logInfo('Stream audio uploaded to storage (FIRST_SUCCESS webhook)', {
+                  songId: song.id,
+                  filePath
+                })
+              }
+            } else {
+              logError('Stream audio upload failed (webhook)', uploadError as unknown as Error, { songId: song.id })
+            }
+          }
+        } catch (downloadError) {
+          logError('Stream audio download failed (webhook), using Suno URL', downloadError as Error, { songId: song.id })
+        }
+
+        // Update song with partial status and our storage URL
         await supabase
           .from('song')
           .update({
             status: 'partial',
-            stream_audio_url: sunoData.streamAudioUrl,
+            stream_audio_url: earlyAudioUrl,
             duration_seconds: sunoData.duration ? Math.round(sunoData.duration) : null,
             updated_at: new Date().toISOString(),
           })
@@ -350,7 +387,7 @@ export async function POST(request: Request) {
         logInfo('FIRST_SUCCESS webhook processed - partial status set', {
           songId: song.id,
           taskId,
-          streamAudioUrl: sunoData.streamAudioUrl,
+          audioUrl: earlyAudioUrl,
           totalTimeMs: totalTime,
         })
 
