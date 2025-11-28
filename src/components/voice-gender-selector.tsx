@@ -29,7 +29,7 @@ export function VoiceGenderSelector({
 
   return (
     <div className={`w-full ${className}`}>
-      <h3 className="text-sm font-medium text-gray-700 mb-2">
+      <h3 className="text-sm font-medium text-gray-700 mb-2 text-center">
         Stemme
       </h3>
       <div
@@ -42,19 +42,15 @@ export function VoiceGenderSelector({
           onClick={() => handleSelect('m')}
           onKeyDown={(e) => handleKeyDown(e, 'm')}
           variant={value === 'm' ? 'default' : 'outline'}
-          style={{
-            background: value === 'm'
-              ? 'linear-gradient(135deg, #E94560 0%, #FFC93C 100%)'
-              : 'linear-gradient(135deg, #FFC93C 0%, #FFB347 100%)',
-          }}
           className={`
+            group
             min-h-[48px] min-w-[100px] px-6 py-2 rounded-lg
             transition-all duration-200
             flex items-center justify-center gap-2
             ${
               value === 'm'
-                ? 'border-[3px] border-[#E94560] text-white hover:opacity-90'
-                : 'border border-[#FFC93C] text-gray-700 hover:opacity-90'
+                ? 'border-[3px] border-[#E94560] text-white hover:opacity-90 bg-gradient-to-br from-[#E94560] to-[#FFC93C]'
+                : 'border border-gray-300 text-gray-700 bg-white hover:bg-gradient-to-br hover:from-[#E94560] hover:to-[#FFC93C] hover:text-white hover:border-[#E94560]'
             }
             focus:outline-none focus:ring-2 focus:ring-[#E94560] focus:ring-offset-2
           `}
@@ -71,19 +67,15 @@ export function VoiceGenderSelector({
           onClick={() => handleSelect('f')}
           onKeyDown={(e) => handleKeyDown(e, 'f')}
           variant={value === 'f' ? 'default' : 'outline'}
-          style={{
-            background: value === 'f'
-              ? 'linear-gradient(135deg, #E94560 0%, #FFC93C 100%)'
-              : 'linear-gradient(135deg, #FFC93C 0%, #FFB347 100%)',
-          }}
           className={`
+            group
             min-h-[48px] min-w-[100px] px-6 py-2 rounded-lg
             transition-all duration-200
             flex items-center justify-center gap-2
             ${
               value === 'f'
-                ? 'border-[3px] border-[#E94560] text-white hover:opacity-90'
-                : 'border border-[#FFC93C] text-gray-700 hover:opacity-90'
+                ? 'border-[3px] border-[#E94560] text-white hover:opacity-90 bg-gradient-to-br from-[#E94560] to-[#FFC93C]'
+                : 'border border-gray-300 text-gray-700 bg-white hover:bg-gradient-to-br hover:from-[#E94560] hover:to-[#FFC93C] hover:text-white hover:border-[#E94560]'
             }
             focus:outline-none focus:ring-2 focus:ring-[#E94560] focus:ring-offset-2
           `}
@@ -96,7 +88,7 @@ export function VoiceGenderSelector({
         </Button>
       </div>
       {value === null && (
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-gray-500 mt-1 text-center">
           Ingen valgt - AI velger automatisk
         </p>
       )}

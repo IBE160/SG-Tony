@@ -8,7 +8,6 @@ import { downloadSong } from '@/lib/utils/download'
 import { toast } from '@/hooks/use-toast'
 import { useErrorToast } from '@/hooks/use-error-toast'
 import { ErrorCode } from '@/lib/error-messages'
-import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { Badge } from '@/components/ui/badge'
@@ -396,9 +395,9 @@ export function SongPlayerCard({
   const VolumeIcon = isMuted || volume === 0 ? VolumeX : volume < 50 ? Volume1 : Volume2
 
   return (
-    <Card
+    <div
       ref={cardRef}
-      className="flex flex-col md:flex-row gap-4 p-4 rounded-lg shadow-md bg-card hover:shadow-lg transition-shadow duration-200"
+      className="flex flex-col md:flex-row gap-4"
       role="region"
       aria-label="Sangavspiller"
       tabIndex={0}
@@ -578,6 +577,6 @@ export function SongPlayerCard({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </Card>
+    </div>
   )
 }

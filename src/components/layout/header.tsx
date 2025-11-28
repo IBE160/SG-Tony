@@ -142,13 +142,10 @@ export function Header() {
             ) : (
               // Logged out state
               <>
-                {/* Desktop: Auth buttons */}
-                <div className="hidden md:flex items-center gap-3">
-                  <Button variant="ghost" onClick={handleSignIn}>
-                    Logg inn
-                  </Button>
+                {/* Desktop: Auth button */}
+                <div className="hidden md:flex items-center">
                   <Button onClick={handleSignIn}>
-                    Kom i gang
+                    Logg inn
                   </Button>
                 </div>
 

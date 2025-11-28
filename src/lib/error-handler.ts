@@ -29,11 +29,16 @@ export function handleError(error: unknown, context?: string): ErrorMessage {
   // Server-side logging with full technical details
   console.error(`[Error${context ? ` in ${context}` : ''}]:`, error)
 
-  // Handle network/fetch errors
+  // Handle network/fetch errors - only if truly offline
+  // Note: "Failed to fetch" can occur for CORS, server errors, etc. - not just offline
   if (error instanceof TypeError) {
     const message = error.message.toLowerCase()
-    if (message.includes('fetch') || message.includes('network') || message.includes('failed to fetch')) {
-      return ERROR_MESSAGES[ErrorCode.NETWORK_ERROR]
+    // Only treat as network error if browser reports offline
+    if (message.includes('failed to fetch') || message.includes('network')) {
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        return ERROR_MESSAGES[ErrorCode.NETWORK_ERROR]
+      }
+      // Otherwise, it's likely a server/CORS issue - fall through to default handling
     }
   }
 
@@ -66,8 +71,11 @@ export function handleError(error: unknown, context?: string): ErrorMessage {
   if (error instanceof Error) {
     const message = error.message.toLowerCase()
 
-    // Network errors
-    if (message.includes('network') || message.includes('fetch') || message.includes('offline')) {
+    // Network errors - only if truly offline
+    if (message.includes('offline')) {
+      return ERROR_MESSAGES[ErrorCode.NETWORK_ERROR]
+    }
+    if (message.includes('network') && typeof navigator !== 'undefined' && !navigator.onLine) {
       return ERROR_MESSAGES[ErrorCode.NETWORK_ERROR]
     }
 
