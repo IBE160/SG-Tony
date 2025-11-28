@@ -45,19 +45,23 @@ Improve the song creation user experience by making songs immediately accessible
 ## Story Map - Epic 1
 
 ```
-Epic: UX Refinements (8 points)
+Epic: UX Refinements (11 points)
 │
-├── Story 1.1: Homepage Song Section (3 points)
+├── Story 1.1: Homepage Song Section (3 points) ✓ DONE
 │   Dependencies: None
 │   Delivers: Paginated song list on homepage
 │
-├── Story 1.2: Inline Generation Status (3 points)
+├── Story 1.2: Inline Generation Status (3 points) ✓ DONE
 │   Dependencies: Story 1.1 (uses HomepageSongs component)
 │   Delivers: Non-blocking generation with status in list
 │
-└── Story 1.3: Redesigned Lyrics Section (2 points)
-    Dependencies: None (can be done in parallel with 1.1)
-    Delivers: Manual-first lyrics input with optional AI
+├── Story 1.3: Redesigned Lyrics Section (2 points) ✓ DONE
+│   Dependencies: None (can be done in parallel with 1.1)
+│   Delivers: Manual-first lyrics input with optional AI
+│
+└── Story 1.4: Enhanced Lyrics Input with Dual-Mode UX (3 points) ← NEW
+    Dependencies: Story 1.3 (existing lyrics section)
+    Delivers: AI-first lyrics with custom text toggle + phonetic optimization link
 ```
 
 ---
@@ -127,13 +131,50 @@ So that **I understand how to create songs with my own text or get AI help**.
 
 ---
 
+### Story 1.4: Enhanced Lyrics Input with Dual-Mode UX
+
+As a **user**,
+I want **a dual-mode lyrics input that defaults to AI generation with an option for custom text**,
+So that **I can quickly describe what I want or paste my own lyrics with Norwegian pronunciation optimization**.
+
+**Acceptance Criteria:**
+
+**Mode 1: AI Generated (Default)**
+- AC #1: Textarea labeled "Beskriv sangen" with placeholder "F.eks: Bursdagssang til Per som alltid kommer for sent og snakker om båten sin..."
+- AC #2: User enters keywords/description of desired song
+- AC #3: "✨ Lag tekst" button below textarea generates lyrics via AI
+- AC #4: Generated lyrics appear in editable textarea
+
+**Mode 2: Custom Text (Toggle)**
+- AC #5: "Egen tekst" toggle switches to custom text mode
+- AC #6: When enabled, label changes to "Skriv sangteksten din"
+- AC #7: Placeholder changes to "Skriv eller lim inn sangteksten din her..."
+- AC #8: "Lag tekst" button is hidden in this mode
+
+**Phonetic Optimization**
+- AC #9: "Optimaliser tekst" link visible bottom-right when text exists in field
+- AC #10: Clicking runs Norwegian phonetic optimization on current text
+- AC #11: Optimized text replaces current textarea content
+
+**Prerequisites:** Story 1.3 (existing lyrics section)
+
+**Technical Notes:**
+- Refactor existing `LyricsInputSection` component with mode state
+- Reuse existing phonetic optimization API (`/api/optimize-pronunciation`)
+- AI lyrics generation uses existing GPT integration
+
+**Estimated Effort:** 3 points
+
+---
+
 ## Implementation Timeline - Epic 1
 
-**Total Story Points:** 8
+**Total Story Points:** 11
 
 **Implementation Sequence:**
-1. Story 1.1 + Story 1.3 (can be parallel)
-2. Story 1.2 (depends on 1.1)
+1. Story 1.1 + Story 1.3 (can be parallel) ✓ DONE
+2. Story 1.2 (depends on 1.1) ✓ DONE
+3. Story 1.4 (depends on 1.3) ← NEXT
 
 ---
 

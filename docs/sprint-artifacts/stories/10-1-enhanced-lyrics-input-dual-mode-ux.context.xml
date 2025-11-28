@@ -1,0 +1,207 @@
+<story-context id="10-1-enhanced-lyrics-input-dual-mode-ux" v="1.0">
+  <metadata>
+    <epicId>10</epicId>
+    <storyId>1</storyId>
+    <title>Enhanced Lyrics Input with Dual-Mode UX</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-28</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/10-1-enhanced-lyrics-input-dual-mode-ux.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>a dual-mode lyrics input that defaults to AI generation with an option for custom text</iWant>
+    <soThat>I can quickly describe what I want or paste my own lyrics with Norwegian pronunciation optimization</soThat>
+    <tasks>
+      <task id="1" ac="1-8">Refactor LyricsInputSection component state
+        <subtask id="1.1">Add `isCustomTextMode` state (default: false)</subtask>
+        <subtask id="1.2">Create mode toggle with "Egen tekst" label</subtask>
+        <subtask id="1.3">Implement dynamic label switching based on mode</subtask>
+        <subtask id="1.4">Implement dynamic placeholder switching based on mode</subtask>
+        <subtask id="1.5">Conditionally render "Lag tekst" button (hidden in custom mode)</subtask>
+      </task>
+      <task id="2" ac="3,4">Update AI Generation flow
+        <subtask id="2.1">Remove modal-based generation (use inline approach)</subtask>
+        <subtask id="2.2">Rename button to "✨ Lag tekst"</subtask>
+        <subtask id="2.3">After generation, replace textarea content with generated lyrics</subtask>
+        <subtask id="2.4">Keep textarea editable after generation</subtask>
+      </task>
+      <task id="3" ac="9-11">Implement "Optimaliser tekst" link
+        <subtask id="3.1">Add link element positioned bottom-right of textarea</subtask>
+        <subtask id="3.2">Show only when textarea has content</subtask>
+        <subtask id="3.3">Connect to existing `/api/lyrics/optimize` endpoint</subtask>
+        <subtask id="3.4">Replace textarea content with optimized text</subtask>
+      </task>
+      <task id="4" ac="1-11">Update parent component integration
+        <subtask id="4.1">Update page.tsx props if interface changes</subtask>
+        <subtask id="4.2">Ensure concept/description state flows correctly</subtask>
+      </task>
+      <task id="5" ac="1-11">Testing
+        <subtask id="5.1">Test default mode (AI generation flow)</subtask>
+        <subtask id="5.2">Test custom text mode toggle</subtask>
+        <subtask id="5.3">Test phonetic optimization</subtask>
+        <subtask id="5.4">Test mode switching with existing content</subtask>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <section name="Mode 1: AI Generated (Default)">
+      <criterion id="1">Textarea labeled "Beskriv sangen" with placeholder "F.eks: Bursdagssang til Per som alltid kommer for sent og snakker om båten sin..."</criterion>
+      <criterion id="2">User enters keywords/description of desired song</criterion>
+      <criterion id="3">"✨ Lag tekst" button below textarea generates lyrics via AI</criterion>
+      <criterion id="4">Generated lyrics appear in editable textarea (replacing description)</criterion>
+    </section>
+    <section name="Mode 2: Custom Text (Toggle)">
+      <criterion id="5">"Egen tekst" toggle switches to custom text mode</criterion>
+      <criterion id="6">When enabled, label changes to "Skriv sangteksten din"</criterion>
+      <criterion id="7">Placeholder changes to "Skriv eller lim inn sangteksten din her..."</criterion>
+      <criterion id="8">"Lag tekst" button is hidden in this mode</criterion>
+    </section>
+    <section name="Phonetic Optimization">
+      <criterion id="9">"Optimaliser tekst" link visible bottom-right when text exists in field</criterion>
+      <criterion id="10">Clicking runs Norwegian phonetic optimization on current text</criterion>
+      <criterion id="11">Optimized text replaces current textarea content</criterion>
+    </section>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/tech-spec.md" title="Technical Specification" section="Story 3: Redesigned Lyrics Section">
+        Contains existing tech spec for lyrics section redesign with component structure, state flow, and implementation details.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Implementation Patterns">
+        Defines component structure pattern, naming conventions, and API response format. Norwegian UI content with English code.
+      </doc>
+      <doc path="docs/ux-design-specification.md" title="UX Design Specification" section="Component Library - Norwegian Pronunciation Toggle">
+        Specifies toggle component anatomy, states, and behavior. Also covers form patterns and feedback patterns.
+      </doc>
+      <doc path="docs/prd.md" title="PRD" section="Norwegian Pronunciation Optimization (FR9-FR13)">
+        Core value prop: FR9 toggle, FR10 preview, FR11 per-line override, FR12 auto-apply, FR13 disclaimers.
+      </doc>
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Story 1.4">
+        Contains full story definition with ACs, prerequisites, and technical notes.
+      </doc>
+    </docs>
+
+    <code>
+      <file path="src/components/lyrics-input-section.tsx" kind="component" lines="1-261" reason="PRIMARY FILE TO MODIFY - Current implementation with modal-based AI generation, 'Norsk uttale' toggle, and 'Optimaliser' button. Needs refactor to dual-mode with 'Egen tekst' toggle.">
+        <symbols>
+          <symbol name="LyricsInputSection" type="function component" line="34"/>
+          <symbol name="LyricsInputSectionProps" type="interface" line="17"/>
+          <symbol name="handleOpenModal" type="function" line="56"/>
+          <symbol name="handleGenerateInModal" type="function" line="61"/>
+        </symbols>
+      </file>
+      <file path="src/app/page.tsx" kind="page" lines="1-417" reason="Parent component that uses LyricsInputSection. May need prop updates if interface changes. Contains handleGenerateLyrics and handleOptimizePronunciation functions.">
+        <symbols>
+          <symbol name="Home" type="function component" line="18"/>
+          <symbol name="handleGenerateLyrics" type="async function" line="94"/>
+          <symbol name="handleOptimizePronunciation" type="async function" line="44"/>
+          <symbol name="handleLyricsChange" type="function" line="181"/>
+        </symbols>
+      </file>
+      <file path="src/app/api/lyrics/optimize/route.ts" kind="api-route" lines="1-139" reason="Existing API endpoint for Norwegian phonetic optimization. Reuse for 'Optimaliser tekst' link functionality.">
+        <symbols>
+          <symbol name="POST" type="async function" line="18"/>
+          <symbol name="OptimizationRequest" type="interface" line="5"/>
+          <symbol name="OptimizationResponse" type="interface" line="9"/>
+        </symbols>
+      </file>
+      <file path="src/app/api/lyrics/generate/route.ts" kind="api-route" lines="1-125" reason="Existing API endpoint for AI lyrics generation via GPT-4. Reuse for inline '✨ Lag tekst' button.">
+        <symbols>
+          <symbol name="POST" type="async function" line="9"/>
+        </symbols>
+      </file>
+      <file path="src/components/concept-input.tsx" kind="component" reason="Existing concept input component used in modal. May be deprecated or repurposed after refactor."/>
+      <file path="src/components/ui/switch.tsx" kind="ui-component" reason="shadcn/ui Switch component - use for 'Egen tekst' toggle"/>
+      <file path="src/components/ui/textarea.tsx" kind="ui-component" reason="shadcn/ui Textarea component - already used for lyrics input"/>
+      <file path="src/components/ui/button.tsx" kind="ui-component" reason="shadcn/ui Button component - use for '✨ Lag tekst' button"/>
+    </code>
+
+    <dependencies>
+      <ecosystem name="node">
+        <package name="next" version="^14.2.3"/>
+        <package name="react" version="^18.2.0"/>
+        <package name="typescript" version="^5"/>
+        <package name="tailwindcss" version="^3.4.1"/>
+        <package name="@radix-ui/react-switch" version="^1.2.6"/>
+        <package name="@radix-ui/react-dialog" version="^1.1.15"/>
+        <package name="lucide-react" version="^0.554.0"/>
+        <package name="zustand" version="^5.0.8"/>
+        <package name="openai" version="^6.9.1"/>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <interfaces>
+    <interface name="LyricsInputSectionProps" kind="TypeScript interface" path="src/components/lyrics-input-section.tsx:17-32">
+      <signature><![CDATA[interface LyricsInputSectionProps {
+  lyrics: string
+  onLyricsChange: (lyrics: string) => void
+  pronunciationEnabled: boolean
+  onPronunciationToggle: (enabled: boolean) => void
+  concept: string
+  onConceptChange: (concept: string) => void
+  onGenerateLyrics: () => Promise<void>
+  onOptimizeLyrics: () => Promise<void>
+  onOpenDiffViewer: () => void
+  isGenerating: boolean
+  isOptimizing: boolean
+  hasPhoneticChanges: boolean
+  hasOriginalLyrics: boolean
+  selectedGenre: { id: string; name: string } | null
+}]]></signature>
+      <note>May need to simplify after refactor - consider removing modal-related props</note>
+    </interface>
+    <interface name="POST /api/lyrics/generate" kind="REST endpoint" path="src/app/api/lyrics/generate/route.ts">
+      <request><![CDATA[{ concept: string, genre: string }]]></request>
+      <response><![CDATA[{ data: { lyrics: string } } | { error: { code: string, message: string } }]]></response>
+    </interface>
+    <interface name="POST /api/lyrics/optimize" kind="REST endpoint" path="src/app/api/lyrics/optimize/route.ts">
+      <request><![CDATA[{ lyrics: string }]]></request>
+      <response><![CDATA[{ data: OptimizationResult } | { error: { code: string, message: string } }]]></response>
+    </interface>
+  </interfaces>
+
+  <constraints>
+    <constraint source="architecture">Norwegian UI text throughout - all labels, placeholders, button text in Norwegian</constraint>
+    <constraint source="architecture">Component file naming: kebab-case (e.g., lyrics-input-section.tsx)</constraint>
+    <constraint source="architecture">Component naming: PascalCase (e.g., LyricsInputSection)</constraint>
+    <constraint source="architecture">Function naming: camelCase (e.g., handleGenerateLyrics)</constraint>
+    <constraint source="architecture">Use 'use client' directive for client components</constraint>
+    <constraint source="architecture">Use cn() utility for conditional Tailwind classes</constraint>
+    <constraint source="architecture">API responses follow { data: T } or { error: { code, message } } format</constraint>
+    <constraint source="tech-spec">Follow existing SongCard, SongPlayerCard patterns for component structure</constraint>
+    <constraint source="dev-notes">Modal-based generation to be replaced with inline approach</constraint>
+    <constraint source="dev-notes">"Norsk uttale" toggle remains but positioning changes - now a link not button</constraint>
+    <constraint source="ux">Primary action button uses #E94560 (theme red) color</constraint>
+    <constraint source="ux">Success green: #06D6A0 for toggle checked state</constraint>
+    <constraint source="ux">Minimum touch target: 48x48px for mobile</constraint>
+  </constraints>
+
+  <tests>
+    <standards>
+      Manual testing via local dev server (npm run dev) and Vercel preview deploys. No automated test framework currently configured. ESLint with Next.js config for linting. Type checking via TypeScript strict mode.
+    </standards>
+    <locations>
+      <location>Manual testing at http://localhost:3000</location>
+      <location>Vercel preview deploys on PR</location>
+      <location>npm run lint for ESLint checks</location>
+      <location>npm run build for type checking</location>
+    </locations>
+    <ideas>
+      <idea ac="1,6">Verify label text changes between "Beskriv sangen" and "Skriv sangteksten din" when toggling mode</idea>
+      <idea ac="1,7">Verify placeholder text changes between AI description hint and custom text hint</idea>
+      <idea ac="5">Verify "Egen tekst" toggle renders correctly with proper styling</idea>
+      <idea ac="3,4">Test AI generation: click "✨ Lag tekst", verify lyrics appear in textarea</idea>
+      <idea ac="8">Verify "Lag tekst" button is hidden when custom mode is enabled</idea>
+      <idea ac="9">Verify "Optimaliser tekst" link appears only when textarea has content</idea>
+      <idea ac="10,11">Test phonetic optimization: click link, verify text is replaced with optimized version</idea>
+      <idea ac="1-11">Test mode switching with existing content - content should persist when switching modes</idea>
+      <idea ac="1-11">Test mobile responsiveness - all elements should have proper touch targets</idea>
+      <idea ac="1-11">Test error states: API failures should show toast notifications</idea>
+    </ideas>
+  </tests>
+</story-context>

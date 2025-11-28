@@ -139,3 +139,10 @@ development_status:
   9-2-footer-component-with-essential-links: review
   9-3-layout-integration-and-consistency: backlog
   epic-9-retrospective: optional
+
+  # Epic 10: UX Refinements Enhancement (from updated epics.md)
+  # Stories 1.1-1.3 completed outside sprint tracking
+  # This tracks new enhancement work
+  epic-10: backlog
+  10-1-enhanced-lyrics-input-dual-mode-ux: review  # Maps to epics.md Story 1.4
+  epic-10-retrospective: optional

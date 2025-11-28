@@ -84,7 +84,8 @@
       "Bash(vercel --help:*)",
       "Bash(npx vercel --help:*)",
       "Bash(npx vercel --prod)",
-      "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\stores\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\stores\")"
+      "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\stores\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\stores\")",
+      "Bash(cmd /c \"if not exist \"\"C:\\Users\\tony-\\SG-Tony\\docs\\sprint-artifacts\\stories\"\" mkdir \"\"C:\\Users\\tony-\\SG-Tony\\docs\\sprint-artifacts\\stories\"\"\")"
     ],
     "deny": [],
     "ask": []

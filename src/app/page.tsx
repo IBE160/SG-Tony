@@ -349,17 +349,12 @@ export default function Home() {
           <LyricsInputSection
             lyrics={lyrics}
             onLyricsChange={handleLyricsChange}
-            pronunciationEnabled={pronunciationEnabled}
-            onPronunciationToggle={handlePronunciationToggle}
             concept={concept}
             onConceptChange={setConcept}
             onGenerateLyrics={handleGenerateLyrics}
             onOptimizeLyrics={handleReoptimize}
-            onOpenDiffViewer={handleOpenDiffViewer}
             isGenerating={isGenerating}
             isOptimizing={isOptimizing}
-            hasPhoneticChanges={phoneticChanges.length > 0}
-            hasOriginalLyrics={!!originalLyrics && !!optimizedLyrics}
             selectedGenre={selectedGenre}
           />
         </div>
