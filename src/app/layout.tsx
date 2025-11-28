@@ -5,6 +5,7 @@ import { Footer } from "@/components/layout/footer";
 import { BottomNavigation } from "@/components/layout/bottom-navigation";
 import { LowCreditWarningWrapper } from "@/components/low-credit-warning-wrapper";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/toaster";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -43,6 +44,7 @@ export default async function RootLayout({
           </main>
           <Footer />
           <BottomNavigation />
+          <Toaster />
         </TooltipProvider>
       </body>
     </html>
