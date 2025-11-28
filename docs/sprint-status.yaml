@@ -1,0 +1,24 @@
+# Sprint Status Tracking
+# Project: ibe160
+# Generated: 2025-11-28
+#
+# STATUS DEFINITIONS:
+#   backlog   - Story in backlog, not yet drafted
+#   drafted   - Story drafted, ready for context generation
+#   ready     - Story ready for development (context generated)
+#   in-progress - Development in progress
+#   review    - Ready for code review
+#   done      - Story complete, all ACs verified
+
+development_status:
+  # Epic 1: UX Refinements
+  epic-1: backlog
+  1-1-homepage-song-section: backlog
+  1-2-inline-generation-status: backlog
+  1-3-redesigned-lyrics-section: backlog
+  epic-1-retrospective: backlog
+
+  # Epic 2: UI Polish & Bug Fixes
+  epic-2: in-progress
+  2-1-ui-polish-bug-fixes: ready-for-dev
+  epic-2-retrospective: backlog

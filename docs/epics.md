@@ -136,3 +136,106 @@ So that **I understand how to create songs with my own text or get AI help**.
 2. Story 1.2 (depends on 1.1)
 
 ---
+
+## Epic 2: UI Polish & Bug Fixes
+
+**Slug:** ui-polish-bug-fixes
+
+### Goal
+
+Improve overall UI quality through visual refinements, translation to Norwegian, and bug fixes across all pages to deliver a polished, consistent user experience.
+
+### Scope
+
+**In Scope:**
+- Main page styling and text changes
+- Mine sanger page improvements
+- Instillinger page fixes and translation
+- Mobile navigation translation
+- Footer and navbar stability fixes
+- Song player timer bug fix
+
+**Out of Scope:**
+- New features
+- Backend changes
+- API modifications
+
+### Success Criteria
+
+1. All UI text displays in Norwegian
+2. Consistent styling across all pages (colors, spacing, alignment)
+3. No layout shifts on navigation
+4. Song player timer works correctly when seeking
+
+### Dependencies
+
+- Existing component library
+- Nordic theme color palette
+
+---
+
+## Story Map - Epic 2
+
+```
+Epic: UI Polish & Bug Fixes (5 points)
+│
+└── Story 2.1: UI Polish & Bug Fixes (5 points)
+    Dependencies: None
+    Delivers: All 15 UI improvements in single pass
+```
+
+---
+
+## Stories - Epic 2
+
+### Story 2.1: UI Polish & Bug Fixes
+
+As a **user**,
+I want **a polished, consistent UI with Norwegian text and no visual bugs**,
+So that **I have a seamless, professional experience using the app**.
+
+**Acceptance Criteria:**
+
+**Main Page:**
+- AC #1: Generate song button displays "Generer sang" only
+- AC #2: Gender buttons centered, "(valgfritt)" text removed
+- AC #3: H1 elements use theme red color
+- AC #4: Both gender buttons use same orange background style
+- AC #5: Footer content centered
+- AC #6: Mobile settings icon has no notification badge
+- AC #7: Navbar does not shift when clicking profile/priser
+
+**Mine Sanger Page:**
+- AC #8: Song cards have subtle nordic theme gradient background
+- AC #9: Genre badge properly sized and text centered
+- AC #10: Song modal has single container (outer white box removed, X moved inside)
+
+**Song Player:**
+- AC #11: Timer updates correctly when seeking within a song
+
+**Instillinger Page:**
+- AC #12: (Mobile) "Alle transaksjoner" dropdown positioned below "Transaksjonshistorikk" text
+- AC #13: All content translated to Norwegian
+
+**Mobile Navigation:**
+- AC #14: Bottom nav labels in Norwegian
+
+**Footer:**
+- AC #15: Footer position stable across page navigation
+
+**Prerequisites:** None
+
+**Technical Notes:** Use existing nordic theme colors. Address layout stability issues with proper CSS.
+
+**Estimated Effort:** 5 points
+
+---
+
+## Implementation Timeline - Epic 2
+
+**Total Story Points:** 5
+
+**Implementation Sequence:**
+1. Story 2.1 (all items can be done in single pass)
+
+---

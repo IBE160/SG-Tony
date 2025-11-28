@@ -1,0 +1,222 @@
+<story-context id="2-1-ui-polish-bug-fixes" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>1</storyId>
+    <title>UI Polish &amp; Bug Fixes</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-11-28</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/2-1-ui-polish-bug-fixes.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>a polished, consistent UI with Norwegian text and no visual bugs</iWant>
+    <soThat>I have a seamless, professional experience using the app</soThat>
+    <tasks>
+      <taskGroup name="Main Page Tasks">
+        <task id="1" ac="1">Update generate button text to "Generer sang"</task>
+        <task id="2" ac="2,4">Fix gender buttons layout (center, remove valgfritt, consistent orange background)</task>
+        <task id="3" ac="3">Update H1 styling to theme red color</task>
+        <task id="4" ac="5">Center footer content</task>
+        <task id="5" ac="6">Remove mobile settings notification badge</task>
+        <task id="6" ac="7">Fix navbar layout stability</task>
+      </taskGroup>
+      <taskGroup name="Mine Sanger Page Tasks">
+        <task id="7" ac="8">Add gradient background to song cards (nordic theme)</task>
+        <task id="8" ac="9">Fix genre badge sizing and center text</task>
+        <task id="9" ac="10">Simplify song modal structure (remove outer container)</task>
+      </taskGroup>
+      <taskGroup name="Song Player Tasks">
+        <task id="10" ac="11">Fix timer sync on seek</task>
+      </taskGroup>
+      <taskGroup name="Instillinger Page Tasks">
+        <task id="11" ac="12">Fix mobile dropdown positioning</task>
+        <task id="12" ac="13">Translate Instillinger content to Norwegian</task>
+      </taskGroup>
+      <taskGroup name="Mobile Navigation Tasks">
+        <task id="13" ac="14">Translate bottom nav labels to Norwegian</task>
+      </taskGroup>
+      <taskGroup name="Footer Stability Tasks">
+        <task id="14" ac="15">Fix footer position stability across page navigation</task>
+      </taskGroup>
+      <taskGroup name="Testing Tasks">
+        <task id="15">Visual regression testing on desktop and mobile</task>
+      </taskGroup>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <group name="Main Page">
+      <ac id="1">Generate song button displays "Generer sang" only</ac>
+      <ac id="2">Gender buttons centered, "(valgfritt)" text removed</ac>
+      <ac id="3">H1 elements use theme red color</ac>
+      <ac id="4">Both gender buttons use same orange background style</ac>
+      <ac id="5">Footer content centered</ac>
+      <ac id="6">Mobile settings icon has no notification badge</ac>
+      <ac id="7">Navbar does not shift when clicking profile/priser</ac>
+    </group>
+    <group name="Mine Sanger Page">
+      <ac id="8">Song cards have subtle nordic theme gradient background</ac>
+      <ac id="9">Genre badge properly sized and text centered</ac>
+      <ac id="10">Song modal has single container (outer white box removed, X moved inside)</ac>
+    </group>
+    <group name="Song Player">
+      <ac id="11">Timer updates correctly when seeking within a song</ac>
+    </group>
+    <group name="Instillinger Page">
+      <ac id="12">(Mobile) "Alle transaksjoner" dropdown positioned below "Transaksjonshistorikk" text</ac>
+      <ac id="13">All content translated to Norwegian</ac>
+    </group>
+    <group name="Mobile Navigation">
+      <ac id="14">Bottom nav labels in Norwegian</ac>
+    </group>
+    <group name="Footer">
+      <ac id="15">Footer position stable across page navigation</ac>
+    </group>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/architecture.md" title="Architecture Document" section="Implementation Patterns / Language &amp; Localization" snippet="Norwegian UI Content, English Code - All UI text in Norwegian, code/variables in English. Use nb-NO locale for date formatting." />
+      <doc path="docs/architecture.md" title="Architecture Document" section="Project Structure" snippet="Component structure at src/components/, pages at src/app/, layout components at src/components/layout/" />
+      <doc path="docs/ux-design-specification.md" title="UX Design Specification" section="Visual Foundation / Color System" snippet="Primary Red #E94560, Secondary Navy #0F3460, Accent Yellow #FFC93C. Success #06D6A0, Error #EF476F." />
+      <doc path="docs/ux-design-specification.md" title="UX Design Specification" section="Design Direction" snippet="Card-Based Explorer pattern with horizontal genre carousel. Bottom navigation bar with 3 items (Create, My Songs, Settings)." />
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Epic 2: UI Polish &amp; Bug Fixes" snippet="15 acceptance criteria covering styling, translations, and bug fixes across all pages." />
+    </docs>
+
+    <code>
+      <!-- Main Page Components -->
+      <file path="src/app/page.tsx" kind="page" symbol="Home" lines="1-417" reason="Main page with generate button (line 369-387), H1 elements (line 322-327), gender selector, and lyrics section" />
+      <file path="src/components/voice-gender-selector.tsx" kind="component" symbol="VoiceGenderSelector" lines="1-106" reason="Gender buttons component - needs centering, remove valgfritt text (line 32-34), apply consistent orange background" />
+
+      <!-- Footer and Header -->
+      <file path="src/components/layout/footer.tsx" kind="layout" symbol="Footer" lines="1-36" reason="Footer component - needs content centering and position stability fix" />
+      <file path="src/components/layout/header.tsx" kind="layout" symbol="Header" lines="1-171" reason="Header/navbar component - needs layout stability fix when clicking profile/priser" />
+
+      <!-- Mobile Navigation -->
+      <file path="src/components/layout/bottom-navigation.tsx" kind="layout" symbol="BottomNavigation" lines="1-58" reason="Mobile bottom nav - needs Norwegian labels (Home/Songs/Settings -> Hjem/Sanger/Instillinger), remove settings badge (line 20, 42-46)" />
+
+      <!-- Songs Page -->
+      <file path="src/app/songs/page.tsx" kind="page" symbol="SongsPage" lines="1-59" reason="Songs page server component - Mine sanger page" />
+      <file path="src/components/song-card.tsx" kind="component" symbol="SongCard" lines="1-122" reason="Song card - needs subtle gradient background, genre badge sizing fix (line 91-93)" />
+      <file path="src/components/song-player-card.tsx" kind="component" symbol="SongPlayerCard" lines="1-560" reason="Song player - timer sync bug on seek (lines 168-178, 186-214, 228-238)" />
+
+      <!-- Settings Page -->
+      <file path="src/app/settings/page.tsx" kind="page" symbol="SettingsPage" lines="1-319" reason="Settings page - needs Norwegian translation (multiple English text: Settings, Account Information, Credit Balance, etc.)" />
+      <file path="src/components/transaction-history.tsx" kind="component" symbol="TransactionHistory" reason="Transaction history dropdown - needs mobile positioning fix" />
+
+      <!-- Styling -->
+      <file path="src/app/globals.css" kind="styles" lines="1-73" reason="CSS variables for theme colors: --primary (349 79% 61% = #E94560), --secondary (211 74% 22% = #0F3460)" />
+      <file path="tailwind.config.ts" kind="config" lines="1-115" reason="Tailwind theme config with color definitions, spacing scale, and font family" />
+    </code>
+
+    <dependencies>
+      <ecosystem name="node">
+        <package name="next" version="^14.2.3" />
+        <package name="react" version="^18.2.0" />
+        <package name="tailwindcss" version="^3.4.1" />
+        <package name="tailwindcss-animate" version="^1.0.7" />
+        <package name="@radix-ui/react-dialog" version="^1.1.15" />
+        <package name="@radix-ui/react-tabs" version="^1.1.13" />
+        <package name="lucide-react" version="^0.554.0" />
+        <package name="howler" version="^2.2.4" />
+        <package name="wavesurfer.js" version="^7.11.1" />
+        <package name="zustand" version="^5.0.8" />
+        <package name="class-variance-authority" version="^0.7.1" />
+        <package name="clsx" version="^2.1.1" />
+        <package name="tailwind-merge" version="^3.4.0" />
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint source="architecture.md">Norwegian UI Content, English Code - All user-facing text must be in Norwegian, code stays in English</constraint>
+    <constraint source="architecture.md">Mobile-first responsive design - test on mobile viewport first</constraint>
+    <constraint source="ux-design-specification.md">Touch targets minimum 48x48px for accessibility</constraint>
+    <constraint source="ux-design-specification.md">Use theme colors from CSS variables: --primary (#E94560), --secondary (#0F3460), --accent (#FFC93C)</constraint>
+    <constraint source="architecture.md">Date formatting uses nb-NO locale</constraint>
+    <constraint source="ux-design-specification.md">WCAG 2.1 Level AA compliance - maintain color contrast ratios</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="Theme Colors" kind="css-variables" path="src/app/globals.css">
+      --primary: 349 79% 61% (Coral Red #E94560)
+      --secondary: 211 74% 22% (Navy #0F3460)
+      --accent: 45 100% 62% (Yellow #FFC93C)
+    </interface>
+    <interface name="Tailwind Theme Colors" kind="tailwind-config" path="tailwind.config.ts">
+      success: '#06D6A0'
+      error: '#EF476F'
+      info: '#3B82F6'
+    </interface>
+    <interface name="Howl seek method" kind="audio-api" path="src/components/song-player-card.tsx">
+      soundRef.current.seek(seekTime) - Sets playback position
+      currentTime state should update when seeking
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Visual regression testing on desktop and mobile viewports. Manual testing for layout stability during navigation. Audio player seek functionality testing.</standards>
+    <locations>
+      No existing test files found - manual visual testing required
+    </locations>
+    <ideas>
+      <idea ac="1">Verify button text shows "Generer sang" only</idea>
+      <idea ac="2,4">Verify gender buttons are centered, no valgfritt text, consistent orange gradient on both</idea>
+      <idea ac="3">Verify H1 uses text-primary (red) color class</idea>
+      <idea ac="5">Verify footer content is centered on all viewports</idea>
+      <idea ac="6">Verify no badge appears on settings icon in mobile nav</idea>
+      <idea ac="7">Test navbar stability: click profile picture, click Priser - no horizontal shift</idea>
+      <idea ac="8">Verify song cards have subtle gradient background</idea>
+      <idea ac="9">Verify genre badge padding and text centering</idea>
+      <idea ac="10">Verify song modal has single container with X inside</idea>
+      <idea ac="11">Test song player: seek to different position, verify timer updates correctly</idea>
+      <idea ac="12">Test mobile settings: verify dropdown position is below heading</idea>
+      <idea ac="13">Verify all settings page text is in Norwegian</idea>
+      <idea ac="14">Verify bottom nav labels: Hjem, Sanger, Instillinger</idea>
+      <idea ac="15">Test footer: navigate between pages, verify no position change</idea>
+    </ideas>
+  </tests>
+
+  <norwegianTranslations>
+    <translation context="Bottom Navigation">
+      <from>Home</from><to>Hjem</to>
+      <from>Songs</from><to>Sanger</to>
+      <from>Settings</from><to>Instillinger</to>
+    </translation>
+    <translation context="Settings Page">
+      <from>Settings</from><to>Instillinger</to>
+      <from>Account Information</from><to>Kontoinformasjon</to>
+      <from>Display Name</from><to>Visningsnavn</to>
+      <from>Email</from><to>E-post</to>
+      <from>Account Created</from><to>Konto opprettet</to>
+      <from>Credit Balance</from><to>Kredittsaldo</to>
+      <from>credits</from><to>kreditter</to>
+      <from>Purchase Credits</from><to>Kjop kreditter</to>
+      <from>Log Out</from><to>Logg ut</to>
+      <from>Logging out...</from><to>Logger ut...</to>
+      <from>Loading...</from><to>Laster...</to>
+      <from>Failed to load profile. Please try again.</from><to>Kunne ikke laste profil. Prov igjen.</to>
+    </translation>
+    <translation context="Generate Button">
+      <from>Generer sang med Suno (10 kreditter)</from><to>Generer sang</to>
+    </translation>
+  </norwegianTranslations>
+
+  <knownIssues>
+    <issue ac="7" component="Header">
+      Navbar shifts horizontally when clicking profile or Priser link.
+      Likely cause: dynamic content width change or conditional rendering affecting layout.
+      Check UserMenu component width and nav link rendering.
+    </issue>
+    <issue ac="11" component="SongPlayerCard">
+      Timer stops updating when seeking but song continues playing.
+      Root cause: The handleSeek function (line 228-238) updates currentTime state but the animation frame loop (lines 186-214) only runs when isPlaying is true. Need to ensure timer state syncs with audio.currentTime on seek events.
+    </issue>
+    <issue ac="15" component="Footer">
+      Footer position changes when navigating between pages.
+      Likely cause: different page content heights or layout differences affecting footer positioning.
+    </issue>
+  </knownIssues>
+</story-context>
