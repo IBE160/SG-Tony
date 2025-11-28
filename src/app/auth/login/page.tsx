@@ -7,7 +7,7 @@
  * After successful authentication, users are redirected to the home page.
  *
  * UX:
- * - Centered card layout with Musikkfabrikken branding
+ * - Centered card layout with AIMusikk branding
  * - Large "Sign in with Google" button (primary red color)
  * - Google logo icon for visual recognition
  * - Loading state during OAuth redirect
@@ -63,7 +63,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center space-y-2">
           <CardTitle className="text-3xl font-bold text-gray-900 dark:text-gray-50">
-            Welcome to Musikkfabrikken
+            Welcome to AIMusikk
           </CardTitle>
           <CardDescription className="text-base">
             Sign in to create Norwegian songs with AI

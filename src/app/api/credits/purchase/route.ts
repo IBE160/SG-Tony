@@ -76,7 +76,7 @@ export async function POST(request: Request) {
             currency: 'usd',
             product_data: {
               name: `${selectedPackage.name} Credit Package`,
-              description: `${selectedPackage.credits} credits for Musikkfabrikken (${selectedPackage.description})`,
+              description: `${selectedPackage.credits} credits for AIMusikk (${selectedPackage.description})`,
             },
             unit_amount: selectedPackage.price,
           },

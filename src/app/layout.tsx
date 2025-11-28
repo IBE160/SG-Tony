@@ -9,16 +9,16 @@ import { Toaster } from "@/components/ui/toaster";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "Musikkfabrikken - Lag norske sanger med AI",
+  title: "AIMusikk - Lag norske sanger med AI",
   description: "AI-drevet norsk sanggenerator. Lag morsomme og personlige norske sanger med autentisk norsk uttale. Perfekt til fester, bursdager og sosiale medier.",
   keywords: "norsk musikk, AI sanggenerator, norske sanger, festsanger, personlige sanger, norsk uttale",
-  authors: [{ name: "Musikkfabrikken" }],
+  authors: [{ name: "AIMusikk" }],
   icons: {
     icon: "/55-558640_free-png-ios-emoji-musical-note-png-images.png",
     apple: "/55-558640_free-png-ios-emoji-musical-note-png-images.png",
   },
   openGraph: {
-    title: "Musikkfabrikken - Lag norske sanger med AI",
+    title: "AIMusikk - Lag norske sanger med AI",
     description: "Lag morsomme og personlige norske sanger med AI og autentisk norsk uttale",
     locale: "nb_NO",
     type: "website",

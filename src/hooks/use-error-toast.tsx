@@ -133,7 +133,7 @@ function getActionHandler(
     case 'contact-support':
       return options?.onContactSupport || (() => {
         // Default: open email client or help page
-        window.location.href = 'mailto:support@musikkfabrikken.no'
+        window.location.href = 'mailto:hei@aimusikk.no'
       })
 
     case 'go-home':

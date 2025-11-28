@@ -59,7 +59,7 @@ export const FAQ_DATA: FAQCategory[] = [
       {
         id: 'why-sounds-better',
         question: 'Hvorfor høres sangene mer norske ut enn andre AI-verktøy?',
-        answer: 'Musikkfabrikken bruker avansert fonetisk konvertering som er spesialtilpasset norsk språk. Vi har utviklet egne regler for hvordan norske lyder skal skrives for optimal uttale i AI-generert musikk.'
+        answer: 'AIMusikk bruker avansert fonetisk konvertering som er spesialtilpasset norsk språk. Vi har utviklet egne regler for hvordan norske lyder skal skrives for optimal uttale i AI-generert musikk.'
       },
       {
         id: 'dialects-nynorsk',
@@ -90,7 +90,7 @@ export const FAQ_DATA: FAQCategory[] = [
       {
         id: 'refunds',
         question: 'Får jeg pengene tilbake hvis noe går galt?',
-        answer: 'Hvis sanggenereringen feiler, vil kredittene automatisk bli refundert til kontoen din. Ved tekniske problemer, kontakt oss på support@musikkfabrikken.no så hjelper vi deg.'
+        answer: 'Hvis sanggenereringen feiler, vil kredittene automatisk bli refundert til kontoen din. Ved tekniske problemer, kontakt oss på hei@aimusikk.no så hjelper vi deg.'
       }
     ]
   },
@@ -142,7 +142,7 @@ export const FAQ_DATA: FAQCategory[] = [
       {
         id: 'contact-support',
         question: 'Hvordan kontakter jeg support?',
-        answer: 'Send en e-post til support@musikkfabrikken.no. Beskriv problemet så detaljert som mulig, og inkluder gjerne skjermbilder. Vi svarer vanligvis innen 24 timer.'
+        answer: 'Send en e-post til hei@aimusikk.no. Beskriv problemet så detaljert som mulig, og inkluder gjerne skjermbilder. Vi svarer vanligvis innen 24 timer.'
       }
     ]
   }

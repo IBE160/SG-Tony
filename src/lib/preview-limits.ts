@@ -1,4 +1,4 @@
-// Preview generation limit checking for Musikkfabrikken
+// Preview generation limit checking for AIMusikk
 // Enforces 1 free preview per user per 24 hours to prevent spam
 
 import { createClient } from '@supabase/supabase-js'

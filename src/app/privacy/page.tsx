@@ -11,7 +11,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-2xl font-bold mb-4">1. Introduksjon</h2>
           <p className="text-muted-foreground">
-            Musikkfabrikken tar ditt personvern på alvor. Denne personvernerklæringen
+            AIMusikk tar ditt personvern på alvor. Denne personvernerklæringen
             forklarer hvordan vi samler inn, bruker, lagrer og beskytter dine personopplysninger
             når du bruker vår tjeneste.
           </p>
@@ -20,10 +20,10 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-2xl font-bold mb-4">2. Behandlingsansvarlig</h2>
           <p className="text-muted-foreground">
-            Musikkfabrikken er behandlingsansvarlig for personopplysningene som samles inn
+            AIMusikk er behandlingsansvarlig for personopplysningene som samles inn
             gjennom tjenesten. For spørsmål om personvern, kontakt oss på{' '}
-            <a href="mailto:hei@musikkfabrikken.no" className="text-primary hover:underline">
-              hei@musikkfabrikken.no
+            <a href="mailto:hei@aimusikk.no" className="text-primary hover:underline">
+              hei@aimusikk.no
             </a>.
           </p>
         </section>
@@ -123,8 +123,8 @@ export default function PrivacyPage() {
           </ul>
           <p className="text-muted-foreground mt-4">
             For å utøve dine rettigheter, kontakt oss på{' '}
-            <a href="mailto:hei@musikkfabrikken.no" className="text-primary hover:underline">
-              hei@musikkfabrikken.no
+            <a href="mailto:hei@aimusikk.no" className="text-primary hover:underline">
+              hei@aimusikk.no
             </a>.
           </p>
         </section>
@@ -157,7 +157,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-2xl font-bold mb-4">11. Barn</h2>
           <p className="text-muted-foreground">
-            Musikkfabrikken er ikke rettet mot barn under 13 år. Vi samler ikke bevisst
+            AIMusikk er ikke rettet mot barn under 13 år. Vi samler ikke bevisst
             inn personopplysninger fra barn. Hvis du blir oppmerksom på at et barn har
             gitt oss personopplysninger, kontakt oss så vi kan slette informasjonen.
           </p>

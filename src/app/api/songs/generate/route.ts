@@ -296,7 +296,7 @@ export async function POST(request: NextRequest) {
     try {
       // Add watermark to preview lyrics
       const finalLyricsWithWatermark = previewMode
-        ? `${finalLyrics}\n\nCreated with Musikkfabrikken`
+        ? `${finalLyrics}\n\nCreated with AIMusikk`
         : finalLyrics
 
       const sunoResult = await generateSong({

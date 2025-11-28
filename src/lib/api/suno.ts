@@ -101,7 +101,7 @@ function validateApiKey(): void {
  *     lyrics: 'Norwegian lyrics here...',
  *     genrePrompt: 'Country, rock, anthem, twangy guitar',
  *     modelVersion: 'v2',
- *     webhookUrl: 'https://musikkfabrikken.no/api/webhooks/suno'
+ *     webhookUrl: 'https://aimusikk.no/api/webhooks/suno'
  *   })
  *   console.log(`Song generation started: ${result.song_id}`)
  * } catch (error) {

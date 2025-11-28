@@ -320,7 +320,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center p-8 md:p-24">
       <div className="z-10 w-full max-w-3xl">
         <h1 className="text-4xl font-bold mb-2 text-center md:text-left">
-          Musikkfabrikken
+          AIMusikk
         </h1>
         <p className="text-lg mb-8 text-center md:text-left text-gray-600">
           Lag morsomme norske sanger med AI - autentisk norsk uttale!

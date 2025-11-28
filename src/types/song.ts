@@ -1,4 +1,4 @@
-// Song-related type definitions for Musikkfabrikken
+// Song-related type definitions for AIMusikk
 
 export interface LyricGenerationRequest {
   concept: string

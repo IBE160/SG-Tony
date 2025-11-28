@@ -67,7 +67,7 @@ export function MobileNav({ user, credits, onSignOut }: MobileNavProps) {
         <SheetHeader className="px-6 py-4 border-b">
           <SheetTitle className="flex items-center gap-2">
             <Music className="h-6 w-6 text-primary" />
-            <span>Musikkfabrikken</span>
+            <span>AIMusikk</span>
           </SheetTitle>
         </SheetHeader>
 
