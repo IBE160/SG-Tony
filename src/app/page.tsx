@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
 import { useErrorToast } from '@/hooks/use-error-toast'
 import { useOnboarding } from '@/hooks/use-onboarding'
-import { useGeneratingSongStore } from '@/stores/generating-song-store'
+import { useGeneratingSongStore, MAX_CONCURRENT_SONGS } from '@/stores/generating-song-store'
 import { createClient } from '@/lib/supabase/client'
 import { Loader2, Music } from 'lucide-react'
 import type { OptimizationResult, PhoneticChange } from '@/types/song'
@@ -40,7 +40,7 @@ export default function Home() {
   const { toast } = useToast()
   const { showError } = useErrorToast()
   const { showOnboarding, completeOnboarding, isLoading: isOnboardingLoading } = useOnboarding()
-  const { setGeneratingSong } = useGeneratingSongStore()
+  const { addGeneratingSong, generatingSongs, canAddMoreSongs } = useGeneratingSongStore()
 
   // Restore pending song data from localStorage after login
   useEffect(() => {
@@ -255,6 +255,16 @@ export default function Home() {
       return
     }
 
+    // Check if at max concurrent generations
+    if (!canAddMoreSongs()) {
+      toast({
+        variant: 'destructive',
+        title: `Maks ${MAX_CONCURRENT_SONGS} sanger samtidig`,
+        description: 'Vent til en sang er ferdig før du starter en ny'
+      })
+      return
+    }
+
     if (!selectedGenre) {
       toast({
         variant: 'destructive',
@@ -318,16 +328,19 @@ export default function Home() {
       }
 
       // Add song to generating store - it will appear in the songs list with generating state
-      setGeneratingSong({
+      addGeneratingSong({
         id: data.data.songId,
         title: songTitle,
         genre: selectedGenre.name,
         startedAt: new Date()
       })
 
+      const currentCount = generatingSongs.length + 1
       toast({
         title: 'Generering startet! 🎵',
-        description: 'Sangen vil vises i listen nedenfor når den er ferdig'
+        description: currentCount < MAX_CONCURRENT_SONGS
+          ? `Sang ${currentCount} av maks ${MAX_CONCURRENT_SONGS} genererer`
+          : 'Sangen vil vises i listen nedenfor når den er ferdig'
       })
     } catch (error) {
       showError(error, {

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useErrorToast } from '@/hooks/use-error-toast'
 import { useToast } from '@/hooks/use-toast'
-import { useGeneratingSongStore } from '@/stores/generating-song-store'
+import { useGeneratingSongStore, type GeneratingSong } from '@/stores/generating-song-store'
 import type { Song } from '@/types/song'
 
 const SONGS_PER_PAGE = 10
@@ -26,9 +26,10 @@ export function HomepageSongs() {
   const { toast } = useToast()
   const hasFetchedRef = useRef(false)
 
-  // Generating song store
-  const { generatingSong, updateGeneratingSong, clearGeneratingSong } = useGeneratingSongStore()
-  const pollingAttemptsRef = useRef(0)
+  // Generating songs store (supports multiple concurrent)
+  const { generatingSongs, updateGeneratingSong, removeGeneratingSong } = useGeneratingSongStore()
+  // Track polling attempts per song
+  const pollingAttemptsRef = useRef<Map<string, number>>(new Map())
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
   // Fetch songs for current page
@@ -86,20 +87,22 @@ export function HomepageSongs() {
     }
   }, [fetchSongs])
 
-  // Poll generating song status
-  const pollSongStatus = useCallback(async () => {
-    if (!generatingSong) return
+  // Poll status for a single generating song
+  const pollSingleSongStatus = useCallback(async (generatingSong: GeneratingSong) => {
+    const songId = generatingSong.id
+    const attempts = pollingAttemptsRef.current.get(songId) || 0
 
-    if (pollingAttemptsRef.current >= MAX_POLLING_ATTEMPTS) {
-      clearGeneratingSong()
-      showError(new Error('Tidsavbrudd: Genereringen tok for lang tid'), {
+    if (attempts >= MAX_POLLING_ATTEMPTS) {
+      removeGeneratingSong(songId)
+      pollingAttemptsRef.current.delete(songId)
+      showError(new Error(`Tidsavbrudd: "${generatingSong.title}" tok for lang tid`), {
         context: 'song-generation-timeout'
       })
       return
     }
 
     try {
-      const response = await fetch(`/api/songs/${generatingSong.id}`)
+      const response = await fetch(`/api/songs/${songId}`)
       const data = await response.json()
 
       if (!response.ok) {
@@ -110,99 +113,92 @@ export function HomepageSongs() {
 
       if (song.status === 'partial') {
         // Early playback available (FIRST_SUCCESS)
-        // Update store with stream URL but KEEP polling for final audio
-        if (song.streamAudioUrl && !generatingSong?.isPartial) {
-          updateGeneratingSong({
+        if (song.streamAudioUrl && !generatingSong.isPartial) {
+          updateGeneratingSong(songId, {
             isPartial: true,
             streamAudioUrl: song.streamAudioUrl,
             duration: song.duration
           })
 
           toast({
-            title: 'Klar til avspilling! 🎵',
-            description: 'Du kan nå spille av sangen mens vi ferdigstiller'
+            title: `"${generatingSong.title}" klar! 🎵`,
+            description: 'Du kan nå spille av mens vi ferdigstiller'
           })
         }
-        // Continue polling for completed status
-        pollingAttemptsRef.current++
+        pollingAttemptsRef.current.set(songId, attempts + 1)
       } else if (song.status === 'completed') {
-        // Success - clear store and refresh list
-        if (pollingIntervalRef.current) {
-          clearInterval(pollingIntervalRef.current)
-          pollingIntervalRef.current = null
-        }
-        clearGeneratingSong()
-        pollingAttemptsRef.current = 0
+        // Success - remove from generating and refresh list
+        removeGeneratingSong(songId)
+        pollingAttemptsRef.current.delete(songId)
 
-        // Only show toast if we weren't already in partial state
-        if (!generatingSong?.isPartial) {
+        if (!generatingSong.isPartial) {
           toast({
-            title: 'Sangen er klar! 🎉',
-            description: 'Din norske sang er ferdig generert'
+            title: `"${generatingSong.title}" er klar! 🎉`,
+            description: 'Sangen er ferdig generert'
           })
         } else {
           toast({
-            title: 'Ferdigstilt! ✨',
-            description: 'Sangen er nå ferdig generert i full kvalitet'
+            title: `"${generatingSong.title}" ferdigstilt! ✨`,
+            description: 'Nå i full kvalitet'
           })
         }
 
         // Refresh songs list to show the new song
         fetchSongs(false)
       } else if (song.status === 'failed') {
-        // Failed - clear store and show error
-        if (pollingIntervalRef.current) {
-          clearInterval(pollingIntervalRef.current)
-          pollingIntervalRef.current = null
-        }
-        clearGeneratingSong()
-        pollingAttemptsRef.current = 0
-
-        // Log error silently - don't show generic error toast
-        console.warn('Song generation failed:', song.errorMessage)
+        // Failed - remove from generating
+        removeGeneratingSong(songId)
+        pollingAttemptsRef.current.delete(songId)
+        console.warn(`Song generation failed for "${generatingSong.title}":`, song.errorMessage)
       } else if (song.status === 'cancelled') {
-        // Cancelled - clear store
-        if (pollingIntervalRef.current) {
-          clearInterval(pollingIntervalRef.current)
-          pollingIntervalRef.current = null
-        }
-        clearGeneratingSong()
-        pollingAttemptsRef.current = 0
-
+        // Cancelled
+        removeGeneratingSong(songId)
+        pollingAttemptsRef.current.delete(songId)
         toast({
           title: 'Generering avbrutt',
-          description: 'Sanggenereringen ble avbrutt'
+          description: `"${generatingSong.title}" ble avbrutt`
         })
+      } else {
+        // Still generating
+        pollingAttemptsRef.current.set(songId, attempts + 1)
       }
-
-      pollingAttemptsRef.current++
     } catch (error) {
-      console.error('Polling error:', error)
-      pollingAttemptsRef.current++
+      console.error(`Polling error for song ${songId}:`, error)
+      const newAttempts = attempts + 1
+      pollingAttemptsRef.current.set(songId, newAttempts)
 
-      // After 3 consecutive failures, show error and stop
-      if (pollingAttemptsRef.current >= 3) {
-        if (pollingIntervalRef.current) {
-          clearInterval(pollingIntervalRef.current)
-          pollingIntervalRef.current = null
-        }
-        clearGeneratingSong()
-        pollingAttemptsRef.current = 0
-
-        showError(new Error('Kunne ikke hente status. Sjekk nettverksforbindelsen.'), {
+      // After 3 consecutive failures for this song, remove it
+      if (newAttempts >= 3) {
+        removeGeneratingSong(songId)
+        pollingAttemptsRef.current.delete(songId)
+        showError(new Error(`Kunne ikke hente status for "${generatingSong.title}"`), {
           context: 'song-generation-network-error'
         })
       }
     }
-  }, [generatingSong, updateGeneratingSong, clearGeneratingSong, showError, toast, fetchSongs])
+  }, [updateGeneratingSong, removeGeneratingSong, showError, toast, fetchSongs])
 
-  // Start/stop polling when generating song changes
+  // Poll all generating songs
+  const pollAllSongs = useCallback(async () => {
+    if (generatingSongs.length === 0) return
+    // Poll all songs in parallel
+    await Promise.all(generatingSongs.map(song => pollSingleSongStatus(song)))
+  }, [generatingSongs, pollSingleSongStatus])
+
+  // Start/stop polling when generating songs change
   useEffect(() => {
-    if (generatingSong) {
-      // Start polling
-      pollingAttemptsRef.current = 0
-      pollSongStatus() // Poll immediately
-      pollingIntervalRef.current = setInterval(pollSongStatus, POLLING_INTERVAL)
+    if (generatingSongs.length > 0) {
+      // Start polling if not already
+      if (!pollingIntervalRef.current) {
+        pollAllSongs() // Poll immediately
+        pollingIntervalRef.current = setInterval(pollAllSongs, POLLING_INTERVAL)
+      }
+    } else {
+      // Stop polling when no songs are generating
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current)
+        pollingIntervalRef.current = null
+      }
     }
 
     return () => {
@@ -211,7 +207,7 @@ export function HomepageSongs() {
         pollingIntervalRef.current = null
       }
     }
-  }, [generatingSong, pollSongStatus])
+  }, [generatingSongs.length, pollAllSongs])
 
   // Handle song card click - open unified player at clicked song index
   const handleSongClick = (song: Song, index: number) => {
@@ -295,8 +291,8 @@ export function HomepageSongs() {
     )
   }
 
-  // Empty state (don't show if a song is generating)
-  if (!isLoading && songs.length === 0 && currentPage === 0 && !generatingSong) {
+  // Empty state (don't show if songs are generating)
+  if (!isLoading && songs.length === 0 && currentPage === 0 && generatingSongs.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
         <div className="text-5xl mb-4">🎵</div>
@@ -308,32 +304,32 @@ export function HomepageSongs() {
     )
   }
 
-  // Check if we have content to show (songs or generating song)
-  const hasContent = songs.length > 0 || generatingSong
+  // Check if we have content to show (songs or generating songs)
+  const hasContent = songs.length > 0 || generatingSongs.length > 0
 
   return (
     <>
       {/* Songs grid */}
       <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${(hasPrevious || hasMore) ? 'mb-6' : ''}`}>
-        {/* Generating song at top (only on first page) */}
-        {generatingSong && currentPage === 0 && (
+        {/* Generating songs at top (only on first page) */}
+        {currentPage === 0 && generatingSongs.map((genSong) => (
           <SongCard
-            key={`generating-${generatingSong.id}`}
+            key={`generating-${genSong.id}`}
             song={{
-              id: generatingSong.id,
-              title: generatingSong.title,
-              genre: generatingSong.genre,
-              duration_seconds: generatingSong.duration,
-              created_at: generatingSong.startedAt.toISOString(),
+              id: genSong.id,
+              title: genSong.title,
+              genre: genSong.genre,
+              duration_seconds: genSong.duration,
+              created_at: genSong.startedAt.toISOString(),
             }}
             onClick={() => {
               // Generating songs can't be opened in player yet
               // They need to complete first
             }}
-            isGenerating={!generatingSong.isPartial}
-            isPartial={generatingSong.isPartial}
+            isGenerating={!genSong.isPartial}
+            isPartial={genSong.isPartial}
           />
-        )}
+        ))}
         {/* Regular songs */}
         {songs.map((song, index) => (
           <SongCard
