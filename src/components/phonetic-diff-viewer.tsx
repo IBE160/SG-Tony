@@ -121,7 +121,7 @@ export function PhoneticDiffViewer({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[85vh] sm:max-h-[90vh] overflow-hidden flex flex-col p-0 mx-4 my-safe">
+      <DialogContent className="w-[calc(100%-2rem)] max-w-2xl max-h-[80vh] overflow-hidden flex flex-col p-0 rounded-lg">
         {/* Header */}
         <div className="p-4 sm:p-6 pb-3 sm:pb-4">
           <div className="flex items-center gap-2 mb-1">
@@ -258,7 +258,7 @@ export function PhoneticDiffViewer({
         </div>
 
         {/* Footer */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 sm:p-6 pt-3 sm:pt-4 border-t border-gray-200 bg-gray-50 pb-safe">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 sm:p-6 pt-3 sm:pt-4 border-t border-gray-200 bg-gray-50">
           <button
             onClick={handleRevert}
             className="text-sm text-gray-600 hover:text-gray-900 font-medium order-3 sm:order-1"
