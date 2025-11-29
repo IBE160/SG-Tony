@@ -4,6 +4,8 @@ import { useState, useEffect, useMemo } from 'react'
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -122,6 +124,10 @@ export function PhoneticDiffViewer({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[calc(100%-2rem)] max-w-2xl max-h-[80vh] overflow-hidden flex flex-col p-0 rounded-lg">
+        <DialogTitle className="sr-only">Optimaliser norsk uttale</DialogTitle>
+        <DialogDescription className="sr-only">
+          Velg hvilke fonetiske optimaliseringer du vil beholde for bedre AI-sang
+        </DialogDescription>
         {/* Header */}
         <div className="p-4 sm:p-6 pb-3 sm:pb-4">
           <div className="flex items-center gap-2 mb-1">

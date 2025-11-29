@@ -22,6 +22,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -215,7 +216,13 @@ export function GenerationProgressModal({
         className="sm:max-w-[600px] w-[95%] p-8 [&>button]:hidden"
         onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
+        aria-describedby={undefined}
       >
+        <DialogTitle className="sr-only">
+          {status === 'generating' && 'Genererer din sang'}
+          {status === 'completed' && 'Sangen din er klar'}
+          {status === 'failed' && 'Generering feilet'}
+        </DialogTitle>
         {status === 'generating' && (
           <>
             <DialogHeader className="space-y-4">

@@ -159,7 +159,7 @@ export function HomepageSongs() {
         pollingAttemptsRef.current = 0
 
         // Log error silently - don't show generic error toast
-        console.warn('Song generation failed:', song.error_message)
+        console.warn('Song generation failed:', song.errorMessage)
       } else if (song.status === 'cancelled') {
         // Cancelled - clear store
         if (pollingIntervalRef.current) {
