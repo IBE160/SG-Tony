@@ -154,7 +154,7 @@ export function GenerationProgressModal({
         }, 3000)
       } else if (song.status === 'failed') {
         setStatus('failed')
-        setErrorMessage(song.errorMessage || 'Noe gikk galt under genereringen.')
+        setErrorMessage(song.errorMessage || 'Generering feilet. Prøv igjen.')
         cleanup()
       } else if (song.status === 'cancelled') {
         setStatus('cancelled')
@@ -286,10 +286,10 @@ export function GenerationProgressModal({
             <XCircle className="h-24 w-24 text-[#EF476F]" />
             <div className="text-center space-y-2">
               <h2 className="text-2xl font-bold text-gray-900">
-                Noe gikk galt
+                Generering feilet
               </h2>
               <p className="text-gray-600">
-                {errorMessage || 'Noe gikk galt under genereringen.'}
+                {errorMessage || 'Kunne ikke generere sangen. Prøv igjen.'}
               </p>
             </div>
             <div className="flex gap-3">

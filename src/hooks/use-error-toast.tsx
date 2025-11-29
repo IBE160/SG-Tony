@@ -69,6 +69,12 @@ export function useErrorToast() {
       errorMessage = handleError(error, options?.context)
     }
 
+    // Skip showing generic "unknown error" toasts - just log them
+    if (errorMessage.code === ErrorCode.UNKNOWN_ERROR) {
+      console.warn('[Error suppressed]', error, options?.context)
+      return
+    }
+
     // Get the action handler based on recovery action type
     const actionHandler = getActionHandler(
       errorMessage.recoveryAction.action,

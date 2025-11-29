@@ -390,11 +390,7 @@ export default function Home() {
         })
       } catch (error) {
         console.error('Onboarding lyrics generation error:', error)
-        toast({
-          variant: 'destructive',
-          title: 'Noe gikk galt',
-          description: 'Prøv å generere tekst manuelt'
-        })
+        // Silently fail - user can generate manually
       } finally {
         setIsGenerating(false)
       }

@@ -113,12 +113,12 @@ export function SongPlayerCard({
       },
       onloaderror: (id, error) => {
         console.error('Audio load failed:', error)
-        setError('Noe gikk galt med lydavspillingen')
+        setError('Kunne ikke laste inn lydfilen')
         setIsLoading(false)
       },
       onplayerror: (id, error) => {
         console.error('Audio play failed:', error)
-        setError('Kunne ikke spille av lyden')
+        setError('Avspilling feilet')
       }
     })
 

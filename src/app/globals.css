@@ -79,3 +79,17 @@
     padding-right: 0 !important;
   }
 }
+
+@layer utilities {
+  /* Safe area utilities for mobile devices with notches/navigation bars */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 16px);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .my-safe {
+    margin-top: env(safe-area-inset-top, 8px);
+    margin-bottom: env(safe-area-inset-bottom, 8px);
+  }
+}

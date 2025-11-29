@@ -121,9 +121,9 @@ export function PhoneticDiffViewer({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col p-0">
+      <DialogContent className="max-w-2xl max-h-[85vh] sm:max-h-[90vh] overflow-hidden flex flex-col p-0 mx-4 my-safe">
         {/* Header */}
-        <div className="p-6 pb-4">
+        <div className="p-4 sm:p-6 pb-3 sm:pb-4">
           <div className="flex items-center gap-2 mb-1">
             <Sparkles className="h-5 w-5 text-[#E94560]" />
             <h2 className="text-xl font-semibold">Optimaliser norsk uttale</h2>
@@ -179,7 +179,7 @@ export function PhoneticDiffViewer({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto px-6 pb-4">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 pb-4">
           <div className="space-y-2">
             {displayLines.map(line => {
               const lineText = line.originalSegments.map(s => s.text).join('')
@@ -258,23 +258,24 @@ export function PhoneticDiffViewer({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-6 pt-4 border-t border-gray-200 bg-gray-50">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 sm:p-6 pt-3 sm:pt-4 border-t border-gray-200 bg-gray-50 pb-safe">
           <button
             onClick={handleRevert}
-            className="text-sm text-gray-600 hover:text-gray-900 font-medium"
+            className="text-sm text-gray-600 hover:text-gray-900 font-medium order-3 sm:order-1"
           >
             Tilbakestill alle
           </button>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto order-1 sm:order-2">
             <Button
               variant="outline"
               onClick={onClose}
+              className="flex-1 sm:flex-none"
             >
               Avbryt
             </Button>
             <Button
               onClick={handleAccept}
-              className="bg-[#E94560] hover:bg-[#d63d54] text-white"
+              className="flex-1 sm:flex-none bg-[#E94560] hover:bg-[#d63d54] text-white"
             >
               Bruk {selectedCount} endringer
             </Button>

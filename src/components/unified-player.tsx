@@ -144,10 +144,7 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
       },
       onloaderror: () => {
         setIsLoading(false)
-        toast({
-          title: 'Noe gikk galt med lydavspillingen',
-          variant: 'destructive'
-        })
+        console.warn('Audio load error')
       }
     })
 
