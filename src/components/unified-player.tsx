@@ -382,14 +382,13 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
           {/* Previous song peek (top) - clickable */}
           <div
             className={`flex-shrink-0 flex items-center justify-center cursor-pointer transition-all ${
-              currentIndex > 0 ? 'h-14 bg-black/40' : 'h-4'
+              currentIndex > 0 ? 'h-10 bg-black/40' : 'h-2'
             }`}
             onClick={currentIndex > 0 ? goToPrevious : undefined}
           >
             {currentIndex > 0 && (
-              <div className="flex items-center gap-2 text-white/50">
-                <ChevronUp className="h-5 w-5" />
-                <span className="text-xs">Forrige sang</span>
+              <div className="flex items-center gap-1 text-white/50">
+                <ChevronUp className="h-4 w-4" />
               </div>
             )}
           </div>
@@ -607,14 +606,13 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
       {isMobile && (
         <div
           className={`flex-shrink-0 flex items-center justify-center cursor-pointer transition-all ${
-            currentIndex < songs.length - 1 ? 'h-14 bg-gradient-to-t from-amber-500/60 to-amber-400/30' : 'h-4'
+            currentIndex < songs.length - 1 ? 'h-10 bg-gradient-to-t from-amber-500/60 to-amber-400/30' : 'h-2'
           }`}
           onClick={currentIndex < songs.length - 1 ? goToNext : undefined}
         >
           {currentIndex < songs.length - 1 && (
-            <div className="flex items-center gap-2 text-white/80">
-              <ChevronDown className="h-5 w-5" />
-              <span className="text-xs">Neste sang</span>
+            <div className="flex items-center gap-1 text-white/80">
+              <ChevronDown className="h-4 w-4" />
             </div>
           )}
         </div>
