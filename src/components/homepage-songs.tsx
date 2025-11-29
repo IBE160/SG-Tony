@@ -52,6 +52,13 @@ export function HomepageSongs() {
         }
       )
 
+      // If not logged in (401), just show empty list - no error
+      if (response.status === 401) {
+        setSongs([])
+        setHasMore(false)
+        return
+      }
+
       if (!response.ok) {
         throw new Error('Failed to fetch songs')
       }
@@ -257,6 +264,13 @@ export function HomepageSongs() {
           }
         }
       )
+
+      // If not logged in (401), just show empty list - no error
+      if (response.status === 401) {
+        setSongs([])
+        setHasMore(false)
+        return
+      }
 
       if (!response.ok) {
         throw new Error('Failed to fetch songs')
