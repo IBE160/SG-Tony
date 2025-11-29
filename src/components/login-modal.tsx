@@ -39,7 +39,7 @@ const PENDING_SONG_KEY = 'aimusikk_pending_song'
 export function LoginModal({
   open,
   onOpenChange,
-  message = 'Du må logge inn for å lage låt',
+  message = 'Logg inn for å lage 2 sanger gratis',
   pendingSongData
 }: LoginModalProps) {
   const [isLoading, setIsLoading] = useState(false)

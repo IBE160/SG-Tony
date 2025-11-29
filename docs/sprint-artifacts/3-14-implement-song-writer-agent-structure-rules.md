@@ -1,6 +1,6 @@
 # Story 3.14: Implement Song Writer Agent Structure Rules
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -40,25 +40,25 @@ So that **the generated songs have professional structure, flow naturally, and p
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create song writer system prompt (AC: #1-#8)
-  - [ ] 1.1 Create `src/lib/prompts/song-writer-system-prompt.ts` with full prompt specification
-  - [ ] 1.2 Define structure randomization logic (A vs B)
-  - [ ] 1.3 Document Suno tag formatting rules
-  - [ ] 1.4 Define vibe detection guidelines
-  - [ ] 1.5 Document humor style adaptation rules
+- [x] Task 1: Create song writer system prompt (AC: #1-#8)
+  - [x] 1.1 Create `src/lib/prompts/song-writer-system-prompt.ts` with full prompt specification
+  - [x] 1.2 Define structure randomization logic (A vs B)
+  - [x] 1.3 Document Suno tag formatting rules
+  - [x] 1.4 Define vibe detection guidelines
+  - [x] 1.5 Document humor style adaptation rules
 
-- [ ] Task 2: Update lyric generation API (AC: #1, #2, #3)
-  - [ ] 2.1 Update `/api/lyrics/generate/route.ts` to use new system prompt
-  - [ ] 2.2 Implement structure override detection from user prompt
-  - [ ] 2.3 Ensure Suno tags are always included in output
+- [x] Task 2: Update lyric generation API (AC: #1, #2, #3)
+  - [x] 2.1 Update `/api/lyrics/generate/route.ts` to use new system prompt
+  - [x] 2.2 Implement structure override detection from user prompt
+  - [x] 2.3 Ensure Suno tags are always included in output
 
-- [ ] Task 3: Testing and validation (AC: #4-#8)
-  - [ ] 3.1 Test with humorous prompts (birthday, teasing)
-  - [ ] 3.2 Test with emotional prompts (loss, memories)
-  - [ ] 3.3 Test with party prompts (russ, celebration)
-  - [ ] 3.4 Test with romantic prompts (love, anniversary)
-  - [ ] 3.5 Verify no English words in output
-  - [ ] 3.6 Verify Suno tags present in all outputs
+- [x] Task 3: Testing and validation (AC: #4-#8)
+  - [x] 3.1 Test with humorous prompts (birthday, teasing)
+  - [x] 3.2 Test with emotional prompts (loss, memories)
+  - [x] 3.3 Test with party prompts (russ, celebration)
+  - [x] 3.4 Test with romantic prompts (love, anniversary)
+  - [x] 3.5 Verify no English words in output
+  - [x] 3.6 Verify Suno tags present in all outputs
 
 ## Dev Notes
 
@@ -237,7 +237,27 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 
 ### Debug Log References
 
+- Implemented comprehensive song writer system prompt with structure randomization, Suno formatting, vibe detection, and humor adaptation
+- Updated lyrics API to use new prompt system with structure override detection
+
 ### Completion Notes List
 
+- Created `src/lib/prompts/song-writer-system-prompt.ts` with comprehensive Norwegian song writing prompt
+- Implemented `getRandomStructure()` for 50/50 A/B structure selection
+- Implemented `detectStructureOverrides()` for user keyword detection (med bridge, uten bridge, med intro, med outro, etc.)
+- Updated `/api/lyrics/generate/route.ts` to use new system prompt and structure logic
+- Increased max_tokens from 200 to 1000 to accommodate full song output
+- All API tests verified: humorous, emotional, party, romantic prompts all produce correct Norwegian Bokmål lyrics with Suno tags
+- Structure overrides working correctly: "kort sang uten bridge" produces Structure A, "med intro og outro" adds appropriate sections
+
 ### File List
+
+**New Files:**
+- `src/lib/prompts/song-writer-system-prompt.ts` - Comprehensive song writer system prompt with structure logic
+
+**Modified Files:**
+- `src/app/api/lyrics/generate/route.ts` - Updated to use new prompt system
+
+**Test Files:**
+- `scripts/test-song-writer-prompt.js` - Test script for prompt logic validation
 

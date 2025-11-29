@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import type { LyricGenerationResponse } from '@/types/song'
+import {
+  SONG_WRITER_SYSTEM_PROMPT,
+  getRandomStructure,
+  detectStructureOverrides,
+  buildUserMessage,
+} from '@/lib/prompts/song-writer-system-prompt'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -59,24 +65,30 @@ export async function POST(request: NextRequest): Promise<NextResponse<LyricGene
       )
     }
 
-    // Generate lyrics with GPT-4
+    // Detect structure overrides from user prompt
+    const overrides = detectStructureOverrides(concept)
+
+    // Use detected structure or random selection
+    const structure = overrides.structure ?? getRandomStructure()
+
+    // Build user message with structure instructions
+    const userMessage = buildUserMessage(concept, genre, structure, overrides)
+
+    // Generate lyrics with GPT-4 using comprehensive song writer prompt
     const completion = await openai.chat.completions.create({
       model: 'gpt-4',
       temperature: 0.7,
       messages: [
         {
           role: 'system',
-          content: `Du er en norsk låtskriver som lager autentiske norske tekster i ${genre} stil.
-Skriv 4-8 korte verslinjer på norsk bokmål med referanser til norsk kultur og humor.
-Ikke bruk anførselstegn eller formatering - bare rene tekstlinjer.
-Linjene skal være morsomme, personlige og passe til sjangeren.`
+          content: SONG_WRITER_SYSTEM_PROMPT
         },
         {
           role: 'user',
-          content: `Lag en ${genre} sang om: ${concept}`
+          content: userMessage
         }
       ],
-      max_tokens: 200
+      max_tokens: 1000
     })
 
     const lyrics = completion.choices[0]?.message?.content?.trim() || ''

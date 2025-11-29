@@ -116,6 +116,7 @@ development_status:
   7-3-create-faq-and-help-documentation-page: review
   7-4-add-example-songs-showcase-page: deferred  # Moved to future-enhancements.md
   7-5-implement-friendly-error-messages-with-recovery-actions: review
+  7-6-update-onboarding-messaging-and-new-user-credits: review  # New user sees "2 gratis sanger", gets 24 credits on signup
   epic-7-retrospective: optional
 
   # Epic 8: System Resilience & Operations (4 stories for MVP)

@@ -1,0 +1,225 @@
+<story-context id="bmm/story-context" v="1.0">
+  <metadata>
+    <epicId>7</epicId>
+    <storyId>6</storyId>
+    <title>Update Onboarding Messaging and New User Credits</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-29</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/7-6-update-onboarding-messaging-and-new-user-credits.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>new visitor / new user</asA>
+    <iWant>see a clear value proposition "Logg inn for å lage 2 sanger gratis" and receive 24 free credits when I register</iWant>
+    <soThat>I understand the free trial offer, am motivated to sign up, and can create 2 full songs without paying</soThat>
+    <tasks>
+      <task id="1" ac="1">
+        <title>Update login modal default message</title>
+        <subtasks>
+          <subtask>Edit src/components/login-modal.tsx</subtask>
+          <subtask>Change default message prop from "Du må logge inn for å lage låt" to "Logg inn for å lage 2 sanger gratis"</subtask>
+        </subtasks>
+      </task>
+      <task id="2" ac="2">
+        <title>Update login page messaging</title>
+        <subtasks>
+          <subtask>Edit src/app/auth/login/page.tsx</subtask>
+          <subtask>Update subtitle text to communicate free songs value prop</subtask>
+          <subtask>Consider adding small badge or icon showing "2 gratis sanger"</subtask>
+        </subtasks>
+      </task>
+      <task id="3" ac="3,4">
+        <title>Update auth callback to grant 24 credits</title>
+        <subtasks>
+          <subtask>Edit src/app/auth/callback/route.ts</subtask>
+          <subtask>Change credit_balance: 0 to credit_balance: 24 for new profiles</subtask>
+          <subtask>Insert credit_transaction record with type 'signup_bonus'</subtask>
+          <subtask>Ensure existing users skip bonus grant</subtask>
+        </subtasks>
+      </task>
+      <task id="4" ac="3">
+        <title>Update database constraints if needed</title>
+        <subtasks>
+          <subtask>Check if 'signup_bonus' needs to be added to CHECK constraint</subtask>
+          <subtask>Create migration if constraint update required</subtask>
+        </subtasks>
+      </task>
+      <task id="5" ac="1-4">
+        <title>Testing</title>
+        <subtasks>
+          <subtask>Test login modal shows new message</subtask>
+          <subtask>Test login page shows new messaging</subtask>
+          <subtask>Test new user registration grants 24 credits</subtask>
+          <subtask>Test existing user login does not grant additional credits</subtask>
+          <subtask>Verify credit_transaction record created for signup bonus</subtask>
+        </subtasks>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="AC1" title="Login Modal Message Update">
+      <given>I am a logged-out user trying to perform a protected action</given>
+      <when>The login modal appears</when>
+      <then>I see "Logg inn for å lage 2 sanger gratis" as the primary message</then>
+      <and>I understand that signing up gives me free song credits</and>
+    </criterion>
+    <criterion id="AC2" title="Login Page Message Update">
+      <given>I navigate to /auth/login</given>
+      <when>The login page loads</when>
+      <then>I see messaging that communicates "2 free songs" value proposition</then>
+      <and>The call-to-action is compelling and clear</and>
+    </criterion>
+    <criterion id="AC3" title="New User Credit Grant">
+      <given>I am a new user completing Google OAuth for the first time</given>
+      <when>My user_profile is created in the auth callback</when>
+      <then>I receive 24 credits (exactly 2 full songs at 12 credits each)</then>
+      <and>A credit_transaction record is created with type 'signup_bonus'</and>
+      <and>The transaction description indicates it's a welcome bonus</and>
+    </criterion>
+    <criterion id="AC4" title="Existing Users Unchanged">
+      <given>I am an existing user with a user_profile already in the database</given>
+      <when>I log in again</when>
+      <then>My credit_balance is NOT modified</then>
+      <and>No duplicate signup bonus is granted</and>
+    </criterion>
+    <criterion id="AC5" title="Header/Navigation CTA" optional="true">
+      <given>I am a logged-out user viewing the site</given>
+      <when>I see the header "Logg inn" button</when>
+      <then>The button or nearby text hints at the free offer</then>
+    </criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken Architecture</title>
+        <section>Credit System Patterns</section>
+        <snippet>Atomic credit operations with transaction logging. Credit costs: SONG_GENERATION=10, FREE_PREVIEW=0. Uses stored procedures for atomic deduction/refund.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken Architecture</title>
+        <section>Language &amp; Localization</section>
+        <snippet>Norwegian UI Content required for all user-facing text: buttons, labels, messages, tooltips. Code remains in English.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics/epic-7-user-experience-help.md</path>
+        <title>Epic 7: User Experience &amp; Help</title>
+        <section>Story 7.2</section>
+        <snippet>Onboarding flow for first-time users. Store onboarding_completed in user_profile. Welcome modal with guidance.</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <file>
+        <path>src/components/login-modal.tsx</path>
+        <kind>component</kind>
+        <symbol>LoginModal</symbol>
+        <lines>39-146</lines>
+        <reason>Primary target - contains default message prop on line 42: "Du må logge inn for å lage låt"</reason>
+      </file>
+      <file>
+        <path>src/app/auth/login/page.tsx</path>
+        <kind>page</kind>
+        <symbol>LoginPage</symbol>
+        <lines>28-122</lines>
+        <reason>Login page with messaging on lines 65-69: "Welcome to AIMusikk" and subtitle in English (needs Norwegian)</reason>
+      </file>
+      <file>
+        <path>src/app/auth/callback/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>GET handler</symbol>
+        <lines>24-97</lines>
+        <reason>OAuth callback - creates user_profile with credit_balance: 0 on line 74. Must change to 24 and add transaction.</reason>
+      </file>
+      <file>
+        <path>src/components/layout/header.tsx</path>
+        <kind>component</kind>
+        <symbol>Header</symbol>
+        <lines>103,155-156</lines>
+        <reason>Contains "Logg inn" button - optional enhancement location for CTA messaging</reason>
+      </file>
+      <file>
+        <path>supabase/migrations/20251120_initial_schema.sql</path>
+        <kind>migration</kind>
+        <symbol>credit_transaction table</symbol>
+        <lines>63-77</lines>
+        <reason>Defines transaction_type CHECK constraint: ('purchase', 'deduction', 'refund') - needs 'signup_bonus' added</reason>
+      </file>
+    </code>
+
+    <dependencies>
+      <node>
+        <package>@supabase/supabase-js</package>
+        <version>^2.84.0</version>
+        <usage>Database operations for profile creation and transaction insert</usage>
+      </node>
+      <node>
+        <package>@supabase/ssr</package>
+        <version>^0.7.0</version>
+        <usage>Server-side Supabase client in auth callback</usage>
+      </node>
+      <node>
+        <package>next</package>
+        <version>^14.2.3</version>
+        <usage>App Router for pages and API routes</usage>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="language">
+      All user-facing text MUST be in Norwegian (nb-NO). Code, variables, and technical elements remain in English.
+    </constraint>
+    <constraint type="database">
+      transaction_type column has CHECK constraint limiting values. Adding 'signup_bonus' requires ALTER TABLE migration.
+    </constraint>
+    <constraint type="idempotency">
+      Auth callback must handle race conditions - existing profile check prevents duplicate signup bonuses.
+    </constraint>
+    <constraint type="credits">
+      Credit math: 12 credits = 1 full song. 24 credits = exactly 2 songs.
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>LoginModalProps</name>
+      <kind>TypeScript interface</kind>
+      <signature>interface LoginModalProps { open: boolean; onOpenChange: (open: boolean) => void; message?: string; pendingSongData?: PendingSongData; }</signature>
+      <path>src/components/login-modal.tsx:30-35</path>
+    </interface>
+    <interface>
+      <name>user_profile table</name>
+      <kind>database table</kind>
+      <signature>id UUID PK, display_name TEXT, credit_balance INTEGER DEFAULT 0, preferences JSONB, created_at, updated_at</signature>
+      <path>supabase/migrations/20251120_initial_schema.sql</path>
+    </interface>
+    <interface>
+      <name>credit_transaction table</name>
+      <kind>database table</kind>
+      <signature>id UUID PK, user_id UUID FK, amount INTEGER, balance_after INTEGER, transaction_type TEXT CHECK(...), description TEXT, stripe_session_id TEXT, song_id UUID, created_at</signature>
+      <path>supabase/migrations/20251120_initial_schema.sql:63-77</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Manual testing via development server. Verify UI changes visually. Test auth flow by logging out and creating new account (or clearing user_profile for existing Google account). Verify credit_transaction records via Supabase Studio.
+    </standards>
+    <locations>
+      <location>Browser DevTools for UI inspection</location>
+      <location>Supabase Studio for database verification</location>
+      <location>Server logs for auth callback debugging</location>
+    </locations>
+    <ideas>
+      <idea ac="AC1">Trigger login modal (try to generate song when logged out) - verify new message displayed</idea>
+      <idea ac="AC2">Navigate to /auth/login - verify Norwegian messaging with value proposition</idea>
+      <idea ac="AC3">Delete user_profile row, login with Google again - verify 24 credits granted and transaction created</idea>
+      <idea ac="AC4">Login with existing account - verify credit_balance unchanged, no new signup_bonus transaction</idea>
+    </ideas>
+  </tests>
+</story-context>

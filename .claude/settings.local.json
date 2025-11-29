@@ -91,7 +91,10 @@
       "Bash(cmd /c copy:*)",
       "SlashCommand(/bmad:bmm:workflows:story-context)",
       "Bash(npx ts-node:*)",
-      "Bash(node scripts/test-phonetic-rules.js:*)"
+      "Bash(node scripts/test-phonetic-rules.js:*)",
+      "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\lib\\prompts\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\lib\\prompts\")",
+      "Bash(cmd /c:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []

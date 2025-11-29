@@ -3,20 +3,24 @@
  *
  * Handles the OAuth callback from Google after user grants permission.
  * Exchanges the authorization code for a JWT session token and creates
- * user profile on first login.
+ * user profile on first login with welcome bonus credits.
  *
  * Flow:
  * 1. Google redirects to /auth/callback?code=<oauth_code>
  * 2. Exchange code for session using Supabase Auth
  * 3. Check if user_profile exists for this user
- * 4. If not exists: Create user_profile with credit_balance=0
- * 5. Redirect to home page (/) or next parameter if provided
+ * 4. If not exists: Create user_profile with credit_balance=24 (2 free songs)
+ * 5. Record signup_bonus transaction in credit_transaction table
+ * 6. Redirect to home page (/) or next parameter if provided
  *
  * Error Handling:
  * - Invalid code: Redirect to /auth/login?error=auth_failed
  * - Missing code: Redirect to /auth/login?error=no_code
  * - Profile creation failure: Log error, proceed with redirect (profile can be created later)
  */
+
+// Welcome bonus: 24 credits = 2 free songs (12 credits per song)
+const WELCOME_BONUS_CREDITS = 24;
 
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
@@ -62,16 +66,17 @@ export async function GET(request: Request) {
       console.error('OAuth callback: Error checking user profile', profileFetchError);
     }
 
-    // Create profile if it doesn't exist
+    // Create profile if it doesn't exist (new user registration)
     if (!profile) {
       const displayName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
 
-      const { error: profileCreateError } = await supabase
+      // Create user profile with welcome bonus credits
+      const { data: newProfile, error: profileCreateError } = await supabase
         .from('user_profile')
         .insert({
           id: user.id,
           display_name: displayName,
-          credit_balance: 0,
+          credit_balance: WELCOME_BONUS_CREDITS,
           preferences: {},
         })
         .select()
@@ -83,8 +88,27 @@ export async function GET(request: Request) {
           // 23505 = unique violation (race condition)
           console.error('OAuth callback: Failed to create user profile', profileCreateError);
         }
-      } else {
-        console.log(`OAuth callback: Created user profile for ${user.id} with 0 credits`);
+      } else if (newProfile) {
+        console.log(`OAuth callback: Created user profile for ${user.id} with ${WELCOME_BONUS_CREDITS} welcome bonus credits`);
+
+        // Record the signup bonus transaction for audit trail
+        // Note: 'signup_bonus' type added via migration 20251129_add_signup_bonus_transaction_type.sql
+        const { error: transactionError } = await supabase
+          .from('credit_transaction')
+          .insert({
+            user_id: user.id,
+            amount: WELCOME_BONUS_CREDITS,
+            balance_after: WELCOME_BONUS_CREDITS,
+            transaction_type: 'signup_bonus' as 'purchase', // Type assertion - valid after migration
+            description: 'Velkomstbonus - 2 gratis sanger',
+          });
+
+        if (transactionError) {
+          // Log error but don't fail registration - credits are already added to profile
+          console.error('OAuth callback: Failed to record signup bonus transaction', transactionError);
+        } else {
+          console.log(`OAuth callback: Recorded signup bonus transaction for ${user.id}`);
+        }
       }
     }
 
