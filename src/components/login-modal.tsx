@@ -19,16 +19,27 @@ import {
 } from '@/components/ui/dialog'
 import { Loader2 } from 'lucide-react'
 
+interface PendingSongData {
+  genre: { id: string; name: string } | null
+  concept: string
+  lyrics: string
+  isCustomTextMode: boolean
+}
+
 interface LoginModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   message?: string
+  pendingSongData?: PendingSongData
 }
+
+const PENDING_SONG_KEY = 'aimusikk_pending_song'
 
 export function LoginModal({
   open,
   onOpenChange,
-  message = 'Du må logge inn for å lage låt'
+  message = 'Du må logge inn for å lage låt',
+  pendingSongData
 }: LoginModalProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -36,6 +47,15 @@ export function LoginModal({
   const handleGoogleSignIn = async () => {
     setIsLoading(true)
     setError(null)
+
+    // Save pending song data to localStorage before redirect
+    if (pendingSongData) {
+      try {
+        localStorage.setItem(PENDING_SONG_KEY, JSON.stringify(pendingSongData))
+      } catch (e) {
+        console.warn('Could not save pending song data:', e)
+      }
+    }
 
     try {
       const supabase = createClient()

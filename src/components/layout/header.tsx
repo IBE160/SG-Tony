@@ -61,8 +61,8 @@ export function Header() {
     const supabase = createClient()
     await supabase.auth.signOut()
     setUser(null)
-    router.push('/')
-    router.refresh()
+    // Full page reload to clear all client state (songs, etc.)
+    window.location.href = '/'
   }
 
   const handleSignIn = () => {

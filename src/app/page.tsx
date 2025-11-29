@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { GenreSelection } from '@/components/genre-selection'
 import { VoiceGenderSelector, type VocalGender } from '@/components/voice-gender-selector'
 import { LyricsInputSection } from '@/components/lyrics-input-section'
@@ -40,6 +40,25 @@ export default function Home() {
   const { showError } = useErrorToast()
   const { showOnboarding, completeOnboarding, isLoading: isOnboardingLoading } = useOnboarding()
   const { setGeneratingSong } = useGeneratingSongStore()
+
+  // Restore pending song data from localStorage after login
+  useEffect(() => {
+    const PENDING_SONG_KEY = 'aimusikk_pending_song'
+    try {
+      const saved = localStorage.getItem(PENDING_SONG_KEY)
+      if (saved) {
+        const data = JSON.parse(saved)
+        if (data.genre) setSelectedGenre(data.genre)
+        if (data.concept) setConcept(data.concept)
+        if (data.lyrics) setLyrics(data.lyrics)
+        if (data.isCustomTextMode !== undefined) setIsCustomTextMode(data.isCustomTextMode)
+        // Clear after restoring
+        localStorage.removeItem(PENDING_SONG_KEY)
+      }
+    } catch (e) {
+      console.warn('Could not restore pending song data:', e)
+    }
+  }, [])
 
   const handleGenreSelect = (genreId: string, genreName: string) => {
     setSelectedGenre({ id: genreId, name: genreName })
@@ -442,6 +461,12 @@ export default function Home() {
         open={showLoginModal}
         onOpenChange={setShowLoginModal}
         message="Du må logge inn for å lage låt"
+        pendingSongData={{
+          genre: selectedGenre,
+          concept,
+          lyrics,
+          isCustomTextMode
+        }}
       />
     </main>
   )
