@@ -199,10 +199,10 @@ export function TransactionHistory({
                     )}
                     {transaction.song_id && (
                       <a
-                        href={`/songs/${transaction.song_id}`}
+                        href="/songs"
                         className="text-xs text-blue-500 hover:underline"
                       >
-                        Se sang
+                        Se sanger
                       </a>
                     )}
                   </div>
