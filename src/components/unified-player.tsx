@@ -370,18 +370,38 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
       ref={containerRef}
       className={`
         fixed inset-0 z-50 flex flex-col
-        ${isMobile ? 'h-[100dvh]' : 'items-center justify-center bg-black/80'}
+        ${isMobile ? 'h-[100dvh] bg-black/90' : 'items-center justify-center bg-black/80'}
       `}
       onTouchStart={isMobile ? onTouchStart : undefined}
       onTouchMove={isMobile ? onTouchMove : undefined}
       onTouchEnd={isMobile ? onTouchEnd : undefined}
     >
+      {/* Mobile layout with peek areas */}
+      {isMobile && (
+        <>
+          {/* Previous song peek (top) - clickable */}
+          <div
+            className={`flex-shrink-0 flex items-center justify-center cursor-pointer transition-all ${
+              currentIndex > 0 ? 'h-14 bg-black/40' : 'h-4'
+            }`}
+            onClick={currentIndex > 0 ? goToPrevious : undefined}
+          >
+            {currentIndex > 0 && (
+              <div className="flex items-center gap-2 text-white/50">
+                <ChevronUp className="h-5 w-5" />
+                <span className="text-xs">Forrige sang</span>
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
       {/* Player container */}
       <div
         className={`
           relative flex flex-col overflow-hidden
           ${isMobile
-            ? 'w-[calc(100%-16px)] h-[calc(100%-48px)] mx-2 my-6 rounded-2xl'
+            ? 'flex-1 mx-4 rounded-2xl shadow-2xl'
             : 'w-full max-w-lg h-[85vh] max-h-[700px] rounded-2xl shadow-2xl'
           }
         `}
@@ -431,8 +451,8 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
           </Button>
         </div>
 
-        {/* Lyrics area - scrollable */}
-        <div className="relative z-10 flex-1 overflow-y-auto px-4 pb-4">
+        {/* Lyrics area - scrollable with hidden scrollbar */}
+        <div className="relative z-10 flex-1 overflow-y-auto px-4 pb-4 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {lyrics ? (
             <div className="text-white text-lg leading-relaxed drop-shadow-lg whitespace-pre-line">
               {lyrics}
@@ -580,14 +600,25 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
             </Button>
           </div>
 
-          {/* Mobile swipe hint */}
-          {isMobile && songs.length > 1 && (
-            <p className="text-center text-white/60 text-xs">
-              Sveip opp/ned for neste/forrige sang
-            </p>
-          )}
         </div>
       </div>
+
+      {/* Mobile: Next song peek (bottom) - clickable */}
+      {isMobile && (
+        <div
+          className={`flex-shrink-0 flex items-center justify-center cursor-pointer transition-all ${
+            currentIndex < songs.length - 1 ? 'h-14 bg-gradient-to-t from-amber-500/60 to-amber-400/30' : 'h-4'
+          }`}
+          onClick={currentIndex < songs.length - 1 ? goToNext : undefined}
+        >
+          {currentIndex < songs.length - 1 && (
+            <div className="flex items-center gap-2 text-white/80">
+              <ChevronDown className="h-5 w-5" />
+              <span className="text-xs">Neste sang</span>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { PlayCircle, Loader2, Download } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -16,6 +17,7 @@ interface SongCardProps {
     genre: string
     duration_seconds?: number
     created_at: string
+    image_url?: string
     gradient_colors?: { from: string; to: string }
   }
   onClick: () => void
@@ -25,8 +27,10 @@ interface SongCardProps {
 
 export function SongCard({ song, onClick, isGenerating = false, isPartial = false }: SongCardProps) {
   const [isDownloading, setIsDownloading] = useState(false)
+  const [imageError, setImageError] = useState(false)
   const gradientFrom = song.gradient_colors?.from || '#E94560'
   const gradientTo = song.gradient_colors?.to || '#FFC93C'
+  const hasImage = song.image_url && !imageError
 
   // Allow click if not generating OR if partial (has audio ready)
   const isClickable = !isGenerating || isPartial
@@ -78,18 +82,33 @@ export function SongCard({ song, onClick, isGenerating = false, isPartial = fals
       onKeyDown={handleKeyDown}
     >
       <CardContent className="flex items-center gap-4 p-4">
-        {/* Gradient artwork thumbnail */}
+        {/* Artwork thumbnail - image or gradient fallback */}
         <div
-          className="w-[60px] h-[60px] rounded flex items-center justify-center flex-shrink-0 relative"
-          style={{
+          className="w-[60px] h-[60px] rounded flex items-center justify-center flex-shrink-0 relative overflow-hidden"
+          style={!hasImage ? {
             background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`
-          }}
+          } : undefined}
         >
-          {isGenerating && !isPartial ? (
-            <Loader2 className="w-8 h-8 text-white animate-spin" />
-          ) : (
-            <PlayCircle className="w-8 h-8 text-white" />
+          {/* Song image */}
+          {hasImage && (
+            <Image
+              src={song.image_url!}
+              alt={song.title}
+              fill
+              className="object-cover"
+              onError={() => setImageError(true)}
+              unoptimized
+              sizes="60px"
+            />
           )}
+          {/* Play icon overlay */}
+          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+            {isGenerating && !isPartial ? (
+              <Loader2 className="w-8 h-8 text-white animate-spin" />
+            ) : (
+              <PlayCircle className="w-8 h-8 text-white drop-shadow-md" />
+            )}
+          </div>
           {/* Small finalizing indicator for partial songs */}
           {isPartial && (
             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#FFC93C] rounded-full flex items-center justify-center">
