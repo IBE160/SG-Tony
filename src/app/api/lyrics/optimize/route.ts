@@ -58,11 +58,11 @@ export async function POST(
       )
     }
 
-    // Set timeout for optimization (100ms requirement for rule engine)
+    // Set timeout for optimization (5 seconds for GPT-4 API)
     const timeoutPromise = new Promise<never>((_, reject) => {
       setTimeout(() => {
         reject(new Error('OPTIMIZATION_TIMEOUT'))
-      }, 500) // 500ms timeout (rule engine should complete in <100ms)
+      }, 5000) // 5000ms timeout (GPT-4 API requires 1-3 seconds typical)
     })
 
     // Perform optimization with timeout

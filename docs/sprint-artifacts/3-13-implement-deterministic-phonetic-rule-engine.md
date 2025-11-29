@@ -1,6 +1,21 @@
 # Story 3.13: Implement Deterministic Norwegian Phonetic Rule Engine
 
-Status: review
+Status: superseded
+
+## Superseded Notice
+
+**Date:** 2025-11-29
+**Reason:** User testing validated that GPT-4 AI produces superior pronunciation results compared to the 6-rule deterministic approach. The complexity of Norwegian pronunciation requires AI intelligence to handle contextual nuances that rule-based systems cannot adequately address.
+
+**Active Approach:** Story 3.3 (GPT-4 Phonetic Optimizer)
+
+**Code Preservation:** All rule engine code is preserved in the codebase (marked with @deprecated) for potential future hybrid approach or improvement:
+- `src/lib/phonetic/rule-engine.ts` - Main 6-rule transformation engine
+- `src/lib/phonetic/number-converter.ts` - Norwegian number-to-words converter
+
+---
+
+## Original Story (Archived)
 
 ## Story
 

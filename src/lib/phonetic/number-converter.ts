@@ -1,5 +1,14 @@
+/**
+ * @deprecated INACTIVE - Part of superseded rule engine.
+ * Kept for potential future use in hybrid approach.
+ *
+ * Superseded: 2025-11-29
+ * See: Story 3.3 for active GPT-4 implementation
+ */
+
 // Norwegian Number-to-Words Converter
 // Converts numeric digits to Norwegian word forms for phonetic optimization
+// STATUS: INACTIVE - Part of superseded rule engine
 
 /**
  * Base word mappings for Norwegian numbers

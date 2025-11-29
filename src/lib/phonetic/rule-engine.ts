@@ -1,6 +1,17 @@
+/**
+ * @deprecated INACTIVE - This rule engine has been superseded by GPT-4-based optimization.
+ * Kept for potential future hybrid approach or improvement.
+ *
+ * Superseded: 2025-11-29
+ * Reason: User testing showed GPT-4 produces better pronunciation results
+ *         than the 6-rule deterministic approach. The complexity of Norwegian
+ *         pronunciation requires AI intelligence to handle contextual nuances.
+ * See: Story 3.3 for active implementation (src/lib/phonetic/optimizer.ts)
+ */
+
 // Norwegian Bokmål Phonetic Transformation Rule Engine
 // Deterministic rule-based pronunciation optimizer (v3.0)
-// Replaces GPT-4 API calls with consistent, predictable transformations
+// STATUS: INACTIVE - Superseded by GPT-4 approach per ADR-006
 
 import { convertNumberToNorwegian } from './number-converter'
 import { preservedWords } from './rules'
