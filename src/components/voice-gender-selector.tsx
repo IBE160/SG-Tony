@@ -87,11 +87,6 @@ export function VoiceGenderSelector({
           <span className="font-medium">Kvinne</span>
         </Button>
       </div>
-      {value === null && (
-        <p className="text-xs text-gray-500 mt-1 text-center">
-          Ingen valgt - AI velger automatisk
-        </p>
-      )}
     </div>
   )
 }

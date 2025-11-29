@@ -92,15 +92,15 @@ export default function Home() {
       setOptimizedLyrics(result.optimizedLyrics)
       setPhoneticChanges(result.changes)
 
-      // Display optimized version if pronunciation is enabled
-      if (pronunciationEnabled) {
-        setLyrics(result.optimizedLyrics)
+      // Open diff viewer so user can review and choose which changes to keep
+      if (result.changes.length > 0) {
+        setIsDiffViewerOpen(true)
+      } else {
+        toast({
+          title: 'Ingen endringer nødvendig',
+          description: 'Teksten er allerede optimalisert for norsk uttale'
+        })
       }
-
-      toast({
-        title: 'Uttale optimalisert! 🎵',
-        description: `${result.changes.length} ord optimalisert for autentisk norsk uttale (${result.cacheHitRate}% fra cache)`
-      })
     } catch (error) {
       showError(error, {
         context: 'pronunciation-optimization',

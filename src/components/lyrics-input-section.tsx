@@ -137,7 +137,7 @@ export function LyricsInputSection({
         {hasContent && !isGenerating && !isOptimizing && (
           <button
             onClick={onOptimizeLyrics}
-            className="absolute bottom-2 right-2 text-xs text-gray-500 hover:text-[#E94560] flex items-center gap-1 transition-colors"
+            className="absolute bottom-2 right-4 text-xs text-gray-500 hover:text-[#E94560] flex items-center gap-1 transition-colors"
           >
             <Wand2 className="h-3 w-3" />
             Optimaliser tekst
