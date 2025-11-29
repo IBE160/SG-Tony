@@ -125,6 +125,9 @@ claude-opus-4-5-20251101
 - Updated login page with Norwegian messaging, added gradient badge showing "2 gratis sanger ved registrering!"
 - Auth callback now grants 24 credits to new users and creates signup_bonus transaction record
 - Created database migration to add 'signup_bonus' to transaction_type CHECK constraint
+- **FIXED (user feedback)**: Updated database trigger to give 24 credits (trigger was creating profile first with 0 credits)
+- **FIXED (user feedback)**: Removed "30-second preview" text from onboarding, replaced with "Du har 2 gratis sanger!"
+- **FIXED (user feedback)**: Onboarding "Start" button now triggers automatic song generation (lyrics + song)
 - All lint and build checks pass
 - Note: AC5 (Header CTA enhancement) was optional and not implemented - current "Logg inn" button works fine
 
@@ -133,4 +136,7 @@ claude-opus-4-5-20251101
 - `src/components/login-modal.tsx` - Updated default message prop
 - `src/app/auth/login/page.tsx` - Norwegian messaging, badge, button text
 - `src/app/auth/callback/route.ts` - 24 credit bonus, transaction record
-- `supabase/migrations/20251129_add_signup_bonus_transaction_type.sql` - New migration
+- `src/components/onboarding-modal.tsx` - Updated text, changed onComplete signature to include genre object
+- `src/app/page.tsx` - handleOnboardingComplete now auto-generates lyrics + song
+- `supabase/migrations/20251129_add_signup_bonus_transaction_type.sql` - Add signup_bonus type
+- `supabase/migrations/20251129_update_trigger_with_welcome_bonus.sql` - Update trigger to give 24 credits

@@ -37,9 +37,14 @@ function isGradientColors(value: unknown): value is GradientColors {
   )
 }
 
+interface SelectedGenre {
+  id: string
+  name: string
+}
+
 interface OnboardingModalProps {
   open: boolean
-  onComplete: (selectedGenres: string[], concept: string) => void
+  onComplete: (selectedGenre: SelectedGenre | null, concept: string) => void
   onSkip: () => void
 }
 
@@ -110,7 +115,15 @@ export function OnboardingModal({ open, onComplete, onSkip }: OnboardingModalPro
   }
 
   const handleComplete = () => {
-    onComplete(selectedGenres, songConcept)
+    // Get the first selected genre with its name
+    const firstGenreId = selectedGenres[0]
+    const firstGenre = firstGenreId
+      ? genres.find(g => g.id === firstGenreId)
+      : null
+    const selectedGenre = firstGenre
+      ? { id: firstGenre.id, name: firstGenre.name }
+      : null
+    onComplete(selectedGenre, songConcept)
   }
 
   const handleSkip = () => {
@@ -296,9 +309,9 @@ export function OnboardingModal({ open, onComplete, onSkip }: OnboardingModalPro
 
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <p className="text-sm text-green-800">
-                  <strong>🎁 Gratis forhåndsvisning tilgjengelig!</strong>
+                  <strong>🎁 Du har 2 gratis sanger!</strong>
                   <br />
-                  Du kan høre en 30-sekunders forhåndsvisning helt gratis.
+                  Trykk Start for å lage din første sang nå.
                 </p>
               </div>
             </div>

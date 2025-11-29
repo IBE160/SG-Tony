@@ -336,22 +336,106 @@ export default function Home() {
     }
   }
 
-  const handleOnboardingComplete = async (selectedGenres: string[], songConcept: string) => {
+  const handleOnboardingComplete = async (
+    selectedGenre: { id: string; name: string } | null,
+    songConcept: string
+  ) => {
     await completeOnboarding()
 
-    // Pre-fill concept if provided
+    // Set the selected genre and concept
+    if (selectedGenre) {
+      setSelectedGenre(selectedGenre)
+    }
     if (songConcept) {
       setConcept(songConcept)
     }
 
-    // Trigger spotlight effect on genre carousel
-    setShowGenreSpotlight(true)
-    setTimeout(() => setShowGenreSpotlight(false), 3000)
+    // If both genre and concept are provided, start generating the song
+    if (selectedGenre && songConcept) {
+      toast({
+        title: 'Starter generering... 🎵',
+        description: 'Vi lager din første sang nå!'
+      })
 
-    toast({
-      title: 'Velkommen! 🎉',
-      description: 'Du er klar til å lage din første sang!'
-    })
+      // Generate lyrics first, then song
+      setIsGenerating(true)
+      try {
+        // Generate lyrics
+        const lyricsResponse = await fetch('/api/lyrics/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            genre: selectedGenre.name,
+            concept: songConcept
+          })
+        })
+
+        const lyricsData = await lyricsResponse.json()
+
+        if (!lyricsResponse.ok || lyricsData.error) {
+          throw new Error(lyricsData.error?.message || 'Kunne ikke generere tekst')
+        }
+
+        const generatedLyrics = lyricsData.data.lyrics
+        setLyrics(generatedLyrics)
+        setOriginalLyrics(generatedLyrics)
+        setIsGenerating(false)
+
+        // Now generate the song
+        setIsGeneratingSong(true)
+        const songResponse = await fetch('/api/songs/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: songConcept.substring(0, 50) || 'Min første sang',
+            genre: selectedGenre.name,
+            concept: songConcept,
+            lyrics: generatedLyrics,
+            optimizedLyrics: null,
+            phoneticEnabled: false,
+            vocalGender: null
+          })
+        })
+
+        const songData = await songResponse.json()
+
+        if (!songResponse.ok || songData.error) {
+          throw new Error(songData.error?.message || 'Kunne ikke starte generering')
+        }
+
+        // Add song to generating store
+        setGeneratingSong({
+          id: songData.data.songId,
+          title: songConcept.substring(0, 50) || 'Min første sang',
+          genre: selectedGenre.name,
+          startedAt: new Date()
+        })
+
+        toast({
+          title: 'Sangen lages! 🎉',
+          description: 'Den dukker opp i listen når den er ferdig'
+        })
+      } catch (error) {
+        console.error('Onboarding generation error:', error)
+        toast({
+          variant: 'destructive',
+          title: 'Noe gikk galt',
+          description: 'Prøv å lage sangen manuelt ved å trykke "Lag sang"'
+        })
+      } finally {
+        setIsGenerating(false)
+        setIsGeneratingSong(false)
+      }
+    } else {
+      // No genre/concept - just show welcome
+      setShowGenreSpotlight(true)
+      setTimeout(() => setShowGenreSpotlight(false), 3000)
+
+      toast({
+        title: 'Velkommen! 🎉',
+        description: 'Du er klar til å lage din første sang!'
+      })
+    }
   }
 
   const handleOnboardingSkip = async () => {
