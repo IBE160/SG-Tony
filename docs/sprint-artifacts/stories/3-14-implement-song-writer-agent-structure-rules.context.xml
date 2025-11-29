@@ -1,0 +1,150 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>14</storyId>
+    <title>Implement Song Writer Agent Structure Rules</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-11-29</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/3-14-implement-song-writer-agent-structure-rules.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user creating Norwegian songs</asA>
+    <iWant>AI-generated lyrics to follow proper song structure with Suno formatting</iWant>
+    <soThat>the generated songs have professional structure, flow naturally, and produce better results in Suno</soThat>
+    <tasks>
+      <task id="1" title="Create song writer system prompt" acs="1-8">
+        <subtask id="1.1">Create src/lib/prompts/song-writer-system-prompt.ts with full prompt specification</subtask>
+        <subtask id="1.2">Define structure randomization logic (A vs B)</subtask>
+        <subtask id="1.3">Document Suno tag formatting rules</subtask>
+        <subtask id="1.4">Define vibe detection guidelines</subtask>
+        <subtask id="1.5">Document humor style adaptation rules</subtask>
+      </task>
+      <task id="2" title="Update lyric generation API" acs="1,2,3">
+        <subtask id="2.1">Update /api/lyrics/generate/route.ts to use new system prompt</subtask>
+        <subtask id="2.2">Implement structure override detection from user prompt</subtask>
+        <subtask id="2.3">Ensure Suno tags are always included in output</subtask>
+      </task>
+      <task id="3" title="Testing and validation" acs="4-8">
+        <subtask id="3.1">Test with humorous prompts (birthday, teasing)</subtask>
+        <subtask id="3.2">Test with emotional prompts (loss, memories)</subtask>
+        <subtask id="3.3">Test with party prompts (russ, celebration)</subtask>
+        <subtask id="3.4">Test with romantic prompts (love, anniversary)</subtask>
+        <subtask id="3.5">Verify no English words in output</subtask>
+        <subtask id="3.6">Verify Suno tags present in all outputs</subtask>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">Song structure randomly alternates between Structure A (V-C-V-C) and Structure B (V-C-V-C-B-C)</criterion>
+    <criterion id="2">User can override structure via prompt (e.g., "med intro", "uten bridge")</criterion>
+    <criterion id="3">All lyrics include Suno formatting tags: [Verse 1], [Chorus], [Bridge], [Outro], etc.</criterion>
+    <criterion id="4">Lyrics written exclusively in Norwegian Bokmål - NO English words</criterion>
+    <criterion id="5">Tone adapts to prompt "vibe": humorous, emotional, party, romantic</criterion>
+    <criterion id="6">Lyrics balance rhyme, story, and catchiness with priority: Story > Catchy > Rhyme</criterion>
+    <criterion id="7">Humor style adapts to context: tørr humor, tullete, hverdagslig</criterion>
+    <criterion id="8">Line/verse length is flexible - prioritize story quality over rigid constraints</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Musikkfabrikken Architecture</title>
+        <section>ADR-006: Norwegian Pronunciation Optimization via GPT-4</section>
+        <snippet>GPT-4 used for lyric generation with Norwegian cultural context. Temperature 0.7 for creativity balance.</snippet>
+      </doc>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>Technical Specification</title>
+        <section>AI Integration</section>
+        <snippet>OpenAI GPT-4 for lyric generation. API routes in src/app/api/, types in src/types/.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PROMPT-TUNING-GUIDE.md</path>
+        <title>Prompt Tuning Guide</title>
+        <section>Suno API Integration</section>
+        <snippet>Suno uses tags like [Verse], [Chorus], [Bridge] for song structure. Include voice style tags for vocal characteristics.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <file>
+        <path>src/app/api/lyrics/generate/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>POST handler</symbol>
+        <lines>1-125</lines>
+        <reason>Current lyric generation - simple prompt to be replaced with comprehensive song writer system prompt</reason>
+      </file>
+      <file>
+        <path>src/types/song.ts</path>
+        <kind>type-definitions</kind>
+        <symbol>LyricGenerationResponse</symbol>
+        <lines>varies</lines>
+        <reason>Response type for lyrics API - verify compatibility with new output format</reason>
+      </file>
+      <file>
+        <path>src/components/lyrics-input-section.tsx</path>
+        <kind>component</kind>
+        <symbol>LyricsInputSection</symbol>
+        <lines>varies</lines>
+        <reason>UI component that displays generated lyrics - must handle Suno tags in output</reason>
+      </file>
+      <file>
+        <path>src/app/page.tsx</path>
+        <kind>page</kind>
+        <symbol>Home page</symbol>
+        <lines>varies</lines>
+        <reason>Main page with song creation flow - calls lyrics generation API</reason>
+      </file>
+    </code>
+    <dependencies>
+      <node>
+        <package name="openai" version="^6.9.1">OpenAI SDK for GPT-4 API calls</package>
+        <package name="next" version="^14.2.3">React framework with App Router</package>
+        <package name="typescript" version="^5">Type checking</package>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="language">All generated lyrics must be Norwegian Bokmål - NO English words</constraint>
+    <constraint type="format">All lyrics must include Suno tags: [Verse 1], [Chorus], [Bridge], etc.</constraint>
+    <constraint type="structure">Randomly select Structure A or B unless user overrides</constraint>
+    <constraint type="quality">Prioritize Story > Catchy > Rhyme - never force bad rhymes</constraint>
+    <constraint type="pattern">New file: src/lib/prompts/song-writer-system-prompt.ts</constraint>
+    <constraint type="api">Keep existing API contract - only change prompt, not request/response format</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>POST /api/lyrics/generate</name>
+      <kind>REST endpoint</kind>
+      <signature>Request: { concept: string, genre: string } Response: { data: { lyrics: string } } or { error: { code, message } }</signature>
+      <path>src/app/api/lyrics/generate/route.ts</path>
+    </interface>
+    <interface>
+      <name>OpenAI Chat Completion</name>
+      <kind>External API</kind>
+      <signature>openai.chat.completions.create({ model: 'gpt-4', messages: [...], temperature: 0.7 })</signature>
+      <path>src/app/api/lyrics/generate/route.ts</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>No test framework currently configured. Manual testing via UI with various prompt types to verify vibe detection, structure, and Bokmål-only output.</standards>
+    <locations>
+      <location>Manual UI testing</location>
+      <location>src/lib/prompts/*.test.ts (new, optional)</location>
+    </locations>
+    <ideas>
+      <idea ac="1,2">Test structure A vs B randomization, test override keywords ("med intro", "uten bridge")</idea>
+      <idea ac="3">Verify all outputs contain [Verse 1], [Chorus] tags</idea>
+      <idea ac="4">Test output for English words - should contain NONE</idea>
+      <idea ac="5">Test vibe detection with: birthday song (humorous), memorial song (emotional), russ song (party), anniversary song (romantic)</idea>
+      <idea ac="6">Review lyrics quality: does story make sense? is chorus catchy? are rhymes natural?</idea>
+      <idea ac="7">Test humor style adaptation with different prompt contexts</idea>
+    </ideas>
+  </tests>
+</story-context>

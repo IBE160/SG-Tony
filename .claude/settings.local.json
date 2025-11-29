@@ -86,7 +86,10 @@
       "Bash(npx vercel --prod)",
       "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\stores\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\stores\")",
       "Bash(cmd /c \"if not exist \"\"C:\\Users\\tony-\\SG-Tony\\docs\\sprint-artifacts\\stories\"\" mkdir \"\"C:\\Users\\tony-\\SG-Tony\\docs\\sprint-artifacts\\stories\"\"\")",
-      "SlashCommand(/bmad:core:workflows:party-mode)"
+      "SlashCommand(/bmad:core:workflows:party-mode)",
+      "Bash(copy \"C:\\Users\\tony-\\SG-Tony\\docs\\norwegian-phonetic-rules.md.backup\" \"C:\\Users\\tony-\\SG-Tony\\docs\\norwegian-phonetic-rules.md\")",
+      "Bash(cmd /c copy:*)",
+      "SlashCommand(/bmad:bmm:workflows:story-context)"
     ],
     "deny": [],
     "ask": []

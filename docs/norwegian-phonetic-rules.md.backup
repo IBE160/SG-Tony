@@ -1,0 +1,520 @@
+# Norwegian Bokmål Phonetic Transformation Rules
+
+**Purpose:** Transform Norwegian Bokmål lyrics for improved pronunciation in AI music generation (Suno API)
+
+**Last Updated:** 2025-10-28 (v3.0)
+
+---
+
+## Rule Application Order
+
+Apply transformations in this exact sequence:
+
+1. **Silent D Removal** - Remove 'd' from word endings (with special handling for "død")
+2. **ND → NN Pattern** - Change 'nd' endings to 'nn'
+3. **RD → R Pattern** - Change 'rd' endings to 'r'
+4. **OG → Å** - Replace "og" with "å"
+5. **Acronym Expansion** - Spell out uppercase abbreviations
+6. **Number Expansion** - Convert digits to Norwegian words
+
+---
+
+## Rule 1: Silent D Removal
+
+**Pattern:** Words ending in 'd' drop the 'd' sound
+
+**Common Examples:**
+- `rød` → `rø` (always)
+- `god` → `go` (always)
+- `godt` → `gott` (neuter form, drops d but keeps tt)
+- `ved` → `ve` (always)
+- `med` → `me` (always)
+- `glad` → `gla` (always)
+- `bred` → `bre` (always)
+- `blid` → `bli`
+- `hid` → `hi`
+
+**SPECIAL CASE: "død" (only word with context-dependency)**
+
+"død" requires context checking:
+
+**Adjective Use (remove D):**
+- After "er/var/blir/være": `Han er død` → `Han er dø`
+- Before adjectives: `død og kald` → `dø og kald` (becomes `dø å kall` after Rule 4)
+- Descriptive: `en død mann` → `en dø mann`
+
+**Noun Use (keep D):**
+- After quantifiers: `mye død` → `mye død` (death as a concept)
+- As subject/object: `til død` → `til død`
+
+**In Context:**
+```
+Input: "En rød bil"
+Output: "En rø bil"
+
+Input: "God morgen med deg"
+Output: "Go morgen me deg"
+
+Input: "Et godt liv"
+Output: "Et gott liv"
+
+Input: "Han er død og kald"
+Output: "Han er dø og kald"
+(Note: "og" → "å" happens in Rule 4)
+
+Input: "Det er mye død her"
+Output: "Det er mye død her"
+(Note: "død" as noun, keeps D)
+```
+
+---
+
+## Rule 2: ND → NN Pattern
+
+**Pattern:** Words ending in 'nd' change to 'nn'
+
+**Examples:**
+- `land` → `lann`
+- `and` → `ann`
+- `strand` → `strann`
+- `hand` → `hann`
+- `England` → `Englann`
+- `island` → `islann`
+- `sand` → `sann`
+- `fund` → `funn`
+
+**In Context:**
+```
+Input: "I land ved strand"
+Output: "I lann ve strann"
+
+Input: "Hand i hand"
+Output: "Hann i hann"
+```
+
+---
+
+## Rule 3: RD → R Pattern
+
+**Pattern:** Words ending in 'rd' drop the 'd' (keeps 'r')
+
+**Examples:**
+- `fjord` → `fjor`
+- `nord` → `nor`
+- `bord` → `bor`
+- `gård` → `går`
+- `hard` → `har`
+- `mord` → `mor`
+- `sord` → `sor`
+
+**In Context:**
+```
+Input: "Ved fjord i nord"
+Output: "Ve fjor i nor"
+
+Input: "Hard rock ved bord"
+Output: "Har rock ve bor"
+```
+
+---
+
+## Rule 4: OG → Å
+
+**Pattern:** Replace all instances of "og" with "å" for pronunciation
+
+**Examples:**
+- `og` → `å`
+- `mor og far` → `mor å far`
+- `rød og blå` → `rø å blå`
+- `FRP og AP` → `FRP å AP` (before acronym expansion)
+
+**Why:** Norwegian pronunciation of "og" sounds like "å" in natural speech and singing.
+
+**In Context:**
+```
+Input: "Jeg og du"
+Output: "Jeg å du"
+
+Input: "Rød og blå og grønn"
+Output: "Rø å blå å grønn"
+
+Input: "Mor og far og søster"
+Output: "Mor å far å søster"
+```
+
+---
+
+## Rule 5: Acronym Expansion
+
+**Pattern:** All-caps words (2+ letters) → Norwegian phonetic spelling
+
+**Norwegian Alphabet Reference:**
+```
+A = A          N = Enn
+B = Be         O = O
+C = Se         P = Pe
+D = De         Q = Ku
+E = E          R = Err
+F = Eff        S = Ess
+G = Ge         T = Te
+H = Hå         U = U
+I = I          V = Ve
+J = Jod        W = Dobbelt-Ve
+K = Kå         X = Ekss
+L = Ell        Y = Y
+M = Emm        Z = Sett
+Æ = Æ    Ø = Ø    Å = Å
+```
+
+**Common Examples:**
+- `FRP` → `Eff-Err-Pe`
+- `NRK` → `Enn-Err-Kå`
+- `USA` → `U-Ess-A`
+- `NATO` → `Enn-A-Te-O`
+- `DNA` → `De-Enn-A`
+- `TV` → `Te-Ve`
+- `SV` → `Ess-Ve`
+- `AP` → `A-Pe`
+
+**In Context:**
+```
+Input: "FRP vant valget"
+Output: "Eff-Err-Pe vant valget"
+
+Input: "NRK sender nyhetene"
+Output: "Enn-Err-Kå sender nyhetene"
+```
+
+---
+
+## Rule 6: Number Expansion
+
+**Pattern:** Convert digits to Norwegian words
+
+### Years (4 digits):
+- `2025` → `tjue-tjue-fem`
+- `2021` → `tjue-tjue-en`
+- `2010` → `tjue-ti`
+- `2001` → `tjue-null-en`
+- `2000` → `to-tusen`
+- `1990` → `nitten-nitti`
+- `1985` → `nitten-åtti-fem`
+
+### Two-digit numbers (count):
+- `89` → `åtti-ni`
+- `42` → `førti-to`
+- `15` → `femten`
+- `99` → `nitti-ni`
+
+### Single digits:
+- `7` → `sju`
+- `3` → `tre`
+- `5` → `fem`
+
+### Norwegian Number Reference:
+```
+0 = null          20 = tjue
+1 = en/ett        30 = tretti
+2 = to            40 = førti
+3 = tre           50 = femti
+4 = fire          60 = seksti
+5 = fem           70 = sytti
+6 = seks          80 = åtti
+7 = sju           90 = nitti
+8 = åtte          100 = hundre
+9 = ni            1000 = tusen
+10 = ti
+
+11 = elleve       16 = seksten
+12 = tolv         17 = sytten
+13 = tretten      18 = atten
+14 = fjorten      19 = nitten
+15 = femten
+```
+
+**In Context:**
+```
+Input: "I 2025 var jeg der"
+Output: "I tjue-tjue-fem var jeg der"
+
+Input: "89 kroner"
+Output: "åtti-ni kroner"
+```
+
+---
+
+## Complete Examples
+
+### Example 1: Multiple D-endings
+```
+Input:
+"God morgen rød sol
+Glad i deg ved fjord"
+
+Output:
+"Go morgen rø sol
+Gla i deg ve fjor"
+```
+
+### Example 2: Acronym + Year
+```
+Input:
+"FRP i 2025
+De var der"
+
+Output:
+"Eff-Err-Pe i tjue-tjue-fem
+De var der"
+```
+
+### Example 3: ND Pattern
+```
+Input:
+"I land ved strand
+Der står jeg under"
+
+Output:
+"I lann ve strann
+Der står jeg under"
+```
+
+### Example 4: All Rules Combined
+```
+Input:
+"God morgen FRP i 2025
+Jeg står ved fjord i nord
+Med død håp i land
+Men håper for mer"
+
+Output:
+"Go morgen Eff-Err-Pe i tjue-tjue-fem
+Jeg står ve fjor i nor
+Me dø håp i lann
+Men håper for mer"
+```
+
+### Example 5: Complex Combination with "og"
+```
+Input:
+"Ved den røde fjord står 89 år
+Hard rock fra NRK og FRP under bar
+I land med glad and
+Der står jeg ved bord"
+
+Output:
+"Ve den røde fjor står åtti-ni år
+Har rock fra Enn-Err-Kå å Eff-Err-Pe under bar
+I lann me gla ann
+Der står jeg ve bor"
+```
+
+### Example 6: "død" Contexts
+```
+Input:
+"Han er død og kald
+Det er mye død her
+Ved fjord og strand"
+
+Output:
+"Han er dø å kall
+Det er mye død her
+Ve fjor å strann"
+(Note: First "død" is adjective → "dø", second is noun → "død")
+```
+
+---
+
+## Test Cases
+
+Use these to validate implementation:
+
+### Test 1: Silent D + OG rule
+```
+Input: "Rød og død"
+Expected: "Rø å dø"
+(Note: "død" here is adjective context)
+```
+
+### Test 2: Multiple patterns
+```
+Input: "I land ved fjord"
+Expected: "I lann ve fjor"
+```
+
+### Test 3: Acronym + year
+```
+Input: "FRP i 2025"
+Expected: "Eff-Err-Pe i tjue-tjue-fem"
+```
+
+### Test 4: Multi-line
+```
+Input:
+"God morgen under bar
+Ved fjord i nord"
+
+Expected:
+"Go morgen under bar
+Ve fjor i nor"
+```
+
+### Test 5: Silent D + ND pattern
+```
+Input:
+"Med død håp står jeg der
+I dette land"
+
+Expected:
+"Me dø håp står jeg der
+I dette lann"
+```
+
+### Test 6: Acronym + number + multiple patterns
+```
+Input:
+"NRK sender i 89 år
+Fra bord til bord"
+
+Expected:
+"Enn-Err-Kå sender i åtti-ni år
+Fra bor til bor"
+```
+
+### Test 7: All rules including OG
+```
+Input:
+"Hard rock ved strand
+Glad og rød under"
+
+Expected:
+"Har rock ve strann
+Gla å rø under"
+```
+
+### Test 8: Complex real-world example
+```
+Input:
+"I 2025 ved fjord i nord
+Står FRP med god vilje
+89 år siden siste krig ved strand
+Der håper vi for mer"
+
+Expected:
+"I tjue-tjue-fem ve fjor i nor
+Står Eff-Err-Pe me go vilje
+åtti-ni år siden siste krig ve strann
+Der håper vi for mer"
+```
+
+### Test 9: "død" Context Distinction
+```
+Input:
+"Han er død og kald
+Det er mye død i verden
+Ved fjord og strand"
+
+Expected:
+"Han er dø å kall
+Det er mye død i verden
+Ve fjor å strann"
+(Note: First "død" is adjective (er død), second is noun (mye død))
+```
+
+### Test 10: Neuter forms + OG
+```
+Input:
+"Et godt liv og en god dag"
+
+Expected:
+"Et gott liv å en go dag"
+(Note: "godt" neuter keeps 'tt', "god" masculine/feminine)
+```
+
+---
+
+## Edge Cases & Clarifications
+
+### Proper Nouns
+**Cities and place names remain unchanged:**
+- `Oslo` → `Oslo` (unchanged)
+- `Bergen` → `Bergen` (unchanged)
+- `Trondheim` → `Trondheim` (unchanged)
+
+But rules still apply to surrounding words:
+```
+Input: "I Oslo ved fjord"
+Output: "I Oslo ve fjor"
+```
+
+### Already Transformed Words
+Don't double-apply rules:
+- `Herr` → `Herr` (already doubled 'r', don't change)
+
+### Compound Words
+Apply rules to the full word:
+- `morgenland` → `morgenlann` (ND rule applies)
+- `fjordbyen` → `fjorbyen` (RD rule applies)
+
+---
+
+## LLM Training Prompt
+
+```
+You are a Norwegian Bokmål phonetic transformation assistant for AI music generation.
+
+Apply these rules IN ORDER to each lyric:
+
+1. SILENT D: Remove 'd' from word endings
+   (rød→rø ALWAYS, god→go ALWAYS, godt→gott, ved→ve, med→me, glad→gla, bred→bre)
+
+   SPECIAL CASE - "død" only:
+   - Adjective use: "er død"→"er dø", "død og kald"→"dø og kald"
+   - Noun use: "mye død"→"mye død" (keep D)
+
+2. ND TO NN: Words ending 'nd' become 'nn'
+   (land→lann, and→ann, strand→strann, hand→hann)
+
+3. RD TO R: Words ending 'rd' drop the 'd'
+   (fjord→fjor, nord→nor, bord→bor, gård→går, hard→har)
+
+4. OG TO Å: Replace all "og" with "å"
+   (mor og far→mor å far, rød og blå→rø å blå)
+
+5. ACRONYMS: Spell out ALL-CAPS with Norwegian letter names
+   (FRP→Eff-Err-Pe, NRK→Enn-Err-Kå, USA→U-Ess-A, DNA→De-Enn-A)
+   Norwegian alphabet: A=A, B=Be, C=Se, D=De, E=E, F=Eff, G=Ge, H=Hå,
+   I=I, J=Jod, K=Kå, L=Ell, M=Emm, N=Enn, O=O, P=Pe, Q=Ku, R=Err,
+   S=Ess, T=Te, U=U, V=Ve, W=Dobbelt-Ve, X=Ekss, Y=Y, Z=Sett
+
+6. NUMBERS: Convert to Norwegian words
+   Years 2001+: 2025→tjue-tjue-fem, 2021→tjue-tjue-en, 2010→tjue-ti, 2001→tjue-null-en
+   Years 1900s: 1990→nitten-nitti, 1985→nitten-åtti-fem
+   Counts: 89→åtti-ni, 42→førti-to
+   Singles: 7→sju, 3→tre
+```
+
+---
+
+## Implementation Checklist
+
+- [ ] Silent D removal implemented (with "død" context detection)
+- [ ] ND → NN pattern implemented
+- [ ] RD → R pattern implemented
+- [ ] OG → Å replacement implemented
+- [ ] Acronym detection and expansion (A=A not Å)
+- [ ] Number detection and expansion (2001+ years use tjue-X-X format)
+- [ ] "død" context checking (adjective vs noun)
+- [ ] Proper noun preservation
+- [ ] All 10 test cases pass
+- [ ] Edge cases handled correctly
+
+---
+
+**Version:** 3.0
+**Author:** Tony
+**Project:** BMAD METHOD - Norwegian Song Assistant
+
+**Changelog:**
+- v3.0: Added OG→Å rule, clarified "død" as ONLY context-dependent word, added neuter form examples (godt→gott)
+- v2.0: Removed R-apostrophe rule, fixed alphabet (A=A not Å), updated year format for 2001+ (tjue-X-X)
+- v1.0: Initial ruleset
