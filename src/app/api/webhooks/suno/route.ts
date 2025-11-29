@@ -287,6 +287,7 @@ export async function POST(request: Request) {
     if (callbackType) {
       status = callbackType === 'complete' ? 'SUCCESS'
              : callbackType === 'first' ? 'FIRST_SUCCESS'
+             : callbackType === 'text' ? 'TEXT_SUCCESS'
              : callbackType === 'error' ? 'GENERATE_AUDIO_FAILED'
              : undefined
     } else {
@@ -368,7 +369,19 @@ export async function POST(request: Request) {
       )
     }
 
-    // 7. Handle FIRST_SUCCESS - early playback available
+    // 7. Handle TEXT_SUCCESS - lyrics ready, audio still generating
+    if (status === 'TEXT_SUCCESS') {
+      logInfo('TEXT_SUCCESS webhook received - text ready, waiting for audio', {
+        songId: song.id,
+        taskId,
+      })
+      return NextResponse.json({
+        received: true,
+        message: 'Text generated, waiting for audio',
+      })
+    }
+
+    // 8. Handle FIRST_SUCCESS - early playback available
     if (status === 'FIRST_SUCCESS') {
       const songData = sunoData?.[0]
       // Support both snake_case and camelCase field names
