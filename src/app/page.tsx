@@ -350,17 +350,16 @@ export default function Home() {
       setConcept(songConcept)
     }
 
-    // If both genre and concept are provided, start generating the song
+    // If both genre and concept are provided, auto-generate lyrics (but not the song)
     if (selectedGenre && songConcept) {
       toast({
-        title: 'Starter generering... 🎵',
-        description: 'Vi lager din første sang nå!'
+        title: 'Genererer tekst... 🎵',
+        description: 'Vi lager sangtekst basert på konseptet ditt!'
       })
 
-      // Generate lyrics first, then song
+      // Generate lyrics only - let user review before generating song
       setIsGenerating(true)
       try {
-        // Generate lyrics
         const lyricsResponse = await fetch('/api/lyrics/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -379,52 +378,20 @@ export default function Home() {
         const generatedLyrics = lyricsData.data.lyrics
         setLyrics(generatedLyrics)
         setOriginalLyrics(generatedLyrics)
-        setIsGenerating(false)
-
-        // Now generate the song
-        setIsGeneratingSong(true)
-        const songResponse = await fetch('/api/songs/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title: songConcept.substring(0, 50) || 'Min første sang',
-            genre: selectedGenre.name,
-            concept: songConcept,
-            lyrics: generatedLyrics,
-            optimizedLyrics: null,
-            phoneticEnabled: false,
-            vocalGender: null
-          })
-        })
-
-        const songData = await songResponse.json()
-
-        if (!songResponse.ok || songData.error) {
-          throw new Error(songData.error?.message || 'Kunne ikke starte generering')
-        }
-
-        // Add song to generating store
-        setGeneratingSong({
-          id: songData.data.songId,
-          title: songConcept.substring(0, 50) || 'Min første sang',
-          genre: selectedGenre.name,
-          startedAt: new Date()
-        })
 
         toast({
-          title: 'Sangen lages! 🎉',
-          description: 'Den dukker opp i listen når den er ferdig'
+          title: 'Tekst generert! ✨',
+          description: 'Se over teksten og trykk "Lag sang" når du er klar'
         })
       } catch (error) {
-        console.error('Onboarding generation error:', error)
+        console.error('Onboarding lyrics generation error:', error)
         toast({
           variant: 'destructive',
           title: 'Noe gikk galt',
-          description: 'Prøv å lage sangen manuelt ved å trykke "Lag sang"'
+          description: 'Prøv å generere tekst manuelt'
         })
       } finally {
         setIsGenerating(false)
-        setIsGeneratingSong(false)
       }
     } else {
       // No genre/concept - just show welcome
