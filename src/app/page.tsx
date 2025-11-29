@@ -42,9 +42,10 @@ export default function Home() {
   const { showOnboarding, completeOnboarding, isLoading: isOnboardingLoading } = useOnboarding()
   const { addGeneratingSong, generatingSongs, canAddMoreSongs } = useGeneratingSongStore()
 
+  const PENDING_SONG_KEY = 'aimusikk_pending_song'
+
   // Restore pending song data from localStorage after login
   useEffect(() => {
-    const PENDING_SONG_KEY = 'aimusikk_pending_song'
     try {
       const saved = localStorage.getItem(PENDING_SONG_KEY)
       if (saved) {
@@ -61,6 +62,32 @@ export default function Home() {
       console.warn('Could not restore pending song data:', e)
     }
   }, [])
+
+  // Auto-save form state to localStorage (for when user logs in via header/nav)
+  // This ensures state is preserved regardless of how user navigates to login
+  useEffect(() => {
+    // Only save if there's meaningful data to preserve
+    const hasData = selectedGenre || concept || lyrics || isCustomTextMode || vocalGender
+    if (!hasData) return
+
+    // Debounce save to avoid excessive writes
+    const timeoutId = setTimeout(() => {
+      try {
+        const dataToSave = {
+          genre: selectedGenre,
+          concept,
+          lyrics,
+          isCustomTextMode,
+          vocalGender
+        }
+        localStorage.setItem(PENDING_SONG_KEY, JSON.stringify(dataToSave))
+      } catch (e) {
+        console.warn('Could not auto-save pending song data:', e)
+      }
+    }, 500) // 500ms debounce
+
+    return () => clearTimeout(timeoutId)
+  }, [selectedGenre, concept, lyrics, isCustomTextMode, vocalGender])
 
   const handleGenreSelect = (genreId: string, genreName: string) => {
     setSelectedGenre({ id: genreId, name: genreName })
@@ -334,6 +361,13 @@ export default function Home() {
         genre: selectedGenre.name,
         startedAt: new Date()
       })
+
+      // Clear pending song data after successful generation start
+      try {
+        localStorage.removeItem(PENDING_SONG_KEY)
+      } catch (e) {
+        // Ignore localStorage errors
+      }
 
       const currentCount = generatingSongs.length + 1
       toast({
