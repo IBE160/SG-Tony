@@ -138,7 +138,7 @@ function SettingsContent() {
     return (
       <div className="container mx-auto p-6">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6">Instillinger</h1>
+          <h1 className="text-3xl font-bold mb-6">Innstillinger</h1>
           <p>Laster...</p>
         </div>
       </div>
@@ -149,7 +149,7 @@ function SettingsContent() {
     return (
       <div className="container mx-auto p-6">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6">Instillinger</h1>
+          <h1 className="text-3xl font-bold mb-6">Innstillinger</h1>
           <p>Kunne ikke laste profil. Prov igjen.</p>
         </div>
       </div>
@@ -159,7 +159,7 @@ function SettingsContent() {
   return (
     <div className="container mx-auto p-6 pb-24">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Instillinger</h1>
+        <h1 className="text-3xl font-bold mb-6">Innstillinger</h1>
 
         {/* User Profile Card */}
         <Card className="mb-6">

@@ -382,14 +382,14 @@ export async function POST(request: Request) {
     }
 
     // 8. Handle FIRST_SUCCESS - early playback available
-    // Use Suno URL directly for faster preview (skip re-upload, saves ~15-20 seconds)
+    // Store Suno URL in DB (polling endpoint will wrap it in proxy URL for browser playback)
     if (status === 'FIRST_SUCCESS') {
       const songData = sunoData?.[0]
       // Support both snake_case and camelCase field names
       const streamAudioUrl = songData?.stream_audio_url || songData?.streamAudioUrl
 
       if (streamAudioUrl) {
-        // Update song with partial status using Suno's stream URL directly
+        // Update song with partial status - store original Suno URL
         await supabase
           .from('song')
           .update({
@@ -402,7 +402,7 @@ export async function POST(request: Request) {
 
         const totalTime = Date.now() - startTime
 
-        logInfo('FIRST_SUCCESS webhook processed - using Suno URL directly', {
+        logInfo('FIRST_SUCCESS webhook processed - stream URL stored', {
           songId: song.id,
           taskId,
           audioUrl: streamAudioUrl,

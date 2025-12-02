@@ -184,12 +184,15 @@ export async function GET(
             })
 
             // Handle FIRST_SUCCESS - early playback available
-            // Use Suno URL directly for faster preview (skip re-upload, saves ~15-20 seconds)
+            // Use proxy URL to bypass CORS (fast, no storage upload needed)
             const firstSong = sunoStatus.data.response?.sunoData?.[0]
             if (sunoStatus.data.status === 'FIRST_SUCCESS' && firstSong?.streamAudioUrl) {
               const adminClient = getAdminClient()
 
-              // Update database with partial status using Suno's stream URL directly
+              // Create proxy URL for the stream audio
+              const proxyUrl = `/api/audio-proxy?url=${encodeURIComponent(firstSong.streamAudioUrl)}`
+
+              // Update database with partial status (store original Suno URL for reference)
               await adminClient
                 .from('song')
                 .update({
@@ -200,16 +203,16 @@ export async function GET(
                 })
                 .eq('id', songId)
 
-              // Return partial status with Suno's playable URL
+              // Return partial status with proxy URL for browser playback
               response.status = 'partial'
               response.progress = 75
-              response.streamAudioUrl = firstSong.streamAudioUrl
+              response.streamAudioUrl = proxyUrl
               response.duration = firstSong.duration
 
-              logInfo('Song partially ready (FIRST_SUCCESS via polling, using Suno URL directly)', {
+              logInfo('Song partially ready (FIRST_SUCCESS via polling, using proxy URL)', {
                 userId: user.id,
                 songId,
-                audioUrl: firstSong.streamAudioUrl
+                originalUrl: firstSong.streamAudioUrl
               })
               break
             }
@@ -330,8 +333,10 @@ export async function GET(
 
       case 'partial':
         // Song has early playback available (FIRST_SUCCESS)
-        // Use streamAudioUrl for immediate playback while waiting for final audio
-        response.streamAudioUrl = song.stream_audio_url
+        // Use proxy URL for immediate playback while waiting for final audio
+        if (song.stream_audio_url) {
+          response.streamAudioUrl = `/api/audio-proxy?url=${encodeURIComponent(song.stream_audio_url)}`
+        }
         response.duration = song.duration_seconds
         response.progress = 85 // Show good progress but not complete
         response.originalLyrics = song.original_lyrics
