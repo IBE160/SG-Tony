@@ -77,6 +77,15 @@ export function UnifiedPlayer({ songs, initialIndex, onClose }: UnifiedPlayerPro
   const audioUrl = currentSong?.audio_url || currentSong?.stream_audio_url || ''
   const lyrics = currentSong?.optimized_lyrics || currentSong?.original_lyrics || ''
 
+  // Debug logging
+  console.log('[UnifiedPlayer] Current song:', {
+    id: currentSong?.id,
+    title: currentSong?.title,
+    audio_url: currentSong?.audio_url,
+    stream_audio_url: currentSong?.stream_audio_url,
+    resolvedAudioUrl: audioUrl
+  })
+
   // Genre gradient for fallback
   const genreGradient = GENRE_GRADIENTS[currentSong?.genre] || DEFAULT_GRADIENT
 
