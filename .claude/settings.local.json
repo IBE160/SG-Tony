@@ -94,7 +94,8 @@
       "Bash(node scripts/test-phonetic-rules.js:*)",
       "Bash(if not exist \"C:\\Users\\tony-\\SG-Tony\\src\\lib\\prompts\" mkdir \"C:\\Users\\tony-\\SG-Tony\\src\\lib\\prompts\")",
       "Bash(cmd /c:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npx vercel:*)"
     ],
     "deny": [],
     "ask": []

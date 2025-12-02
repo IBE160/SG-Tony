@@ -169,8 +169,9 @@ export async function GET(
         response.progress = progressPercent
         response.estimatedTimeRemaining = Math.max(0, estimatedTotal - elapsedSeconds)
 
-        // Check Suno API for real status after 30 seconds (webhook fallback)
-        if (song.suno_song_id && elapsedSeconds > 30) {
+        // Check Suno API for real status after 10 seconds (webhook fallback)
+        // Suno typically has FIRST_SUCCESS ready after 15-20 seconds
+        if (song.suno_song_id && elapsedSeconds > 10) {
           try {
             const { getSongStatus } = await import('@/lib/api/suno')
             const sunoStatus = await getSongStatus(song.suno_song_id)
