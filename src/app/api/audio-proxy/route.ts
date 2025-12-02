@@ -12,20 +12,16 @@ import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
 
-// Allowed domains for security (prevent open proxy abuse)
-const ALLOWED_DOMAINS = [
-  'cdn1.suno.ai',
-  'cdn2.suno.ai',
-  'cdn.suno.ai',
-  'audiopipe.suno.ai',
-  'suno.ai',
-  // Additional CDN domains Suno might use
-  'suno.com',
-  'cdn.suno.com',
-  'audio.suno.ai',
-  'stream.suno.ai',
-  's3.amazonaws.com', // Suno might use AWS S3
-  'cloudfront.net',   // Suno might use CloudFront
+// Allowed domain patterns for security (prevent open proxy abuse)
+// Suno uses various subdomains like musicfile.api.suno.ai, cdn1.suno.ai, etc.
+const ALLOWED_DOMAIN_PATTERNS = [
+  /\.suno\.ai$/,      // Any subdomain of suno.ai
+  /^suno\.ai$/,       // suno.ai itself
+  /\.suno\.com$/,     // Any subdomain of suno.com
+  /^suno\.com$/,      // suno.com itself
+  /\.sunoapi\.org$/,  // sunoapi.org domains
+  /\.amazonaws\.com$/,// AWS S3
+  /\.cloudfront\.net$/,// CloudFront CDN
 ]
 
 /**
@@ -34,9 +30,8 @@ const ALLOWED_DOMAINS = [
 function isAllowedUrl(url: string): boolean {
   try {
     const parsed = new URL(url)
-    return ALLOWED_DOMAINS.some(domain =>
-      parsed.hostname === domain || parsed.hostname.endsWith('.' + domain)
-    )
+    const hostname = parsed.hostname
+    return ALLOWED_DOMAIN_PATTERNS.some(pattern => pattern.test(hostname))
   } catch {
     return false
   }
