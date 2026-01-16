@@ -58,7 +58,6 @@ export function VoiceGenderSelector({
           aria-checked={value === 'm'}
           tabIndex={0}
         >
-          <span className="text-xl" role="img" aria-label="Mann"></span>
           <span className="font-medium">Mann</span>
         </Button>
 
@@ -83,7 +82,6 @@ export function VoiceGenderSelector({
           aria-checked={value === 'f'}
           tabIndex={0}
         >
-          <span className="text-xl" role="img" aria-label="Kvinne"></span>
           <span className="font-medium">Kvinne</span>
         </Button>
       </div>

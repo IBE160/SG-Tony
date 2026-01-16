@@ -16,7 +16,7 @@
  */
 
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { Loader2, XCircle, CheckCircle, Play } from 'lucide-react'
+import { Loader2, XCircle, CheckCircle, Play, Music, Mic, Guitar, Headphones, PartyPopper } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -54,9 +54,9 @@ interface SongResponse {
 
 // Generation stages with Norwegian text
 const GENERATION_STAGES = [
-  { min: 0, max: 30, emoji: '🎵', text: 'AI skriver norske tekster...' },
-  { min: 30, max: 50, emoji: '🎤', text: 'Optimerer uttale...' },
-  { min: 50, max: 100, emoji: '🎸', text: 'Genererer musikk med Suno...' },
+  { min: 0, max: 30, Icon: Music, text: 'AI skriver norske tekster...' },
+  { min: 30, max: 50, Icon: Mic, text: 'Optimerer uttale...' },
+  { min: 50, max: 100, Icon: Guitar, text: 'Genererer musikk med Suno...' },
 ]
 
 const MAX_POLLING_ATTEMPTS = 100 // 100 × 3s = 5 minutes max
@@ -279,7 +279,7 @@ export function GenerationProgressModal({
 
               {/* Stage Message */}
               <div className="text-center space-y-2">
-                <div className="text-6xl">{currentStage.emoji}</div>
+                <currentStage.Icon className="w-16 h-16 mx-auto text-primary" />
                 <p className="text-lg font-semibold text-gray-800">
                   {currentStage.text}
                 </p>
@@ -316,7 +316,7 @@ export function GenerationProgressModal({
             </div>
 
             <div className="text-center space-y-2">
-              <div className="text-6xl">🎧</div>
+              <Headphones className="w-16 h-16 mx-auto text-success" />
               <h2 className="text-xl font-bold text-gray-900">Forhåndsvisning klar!</h2>
               <p className="text-gray-600">Lytt til sangen mens vi ferdigstiller den</p>
             </div>
@@ -350,7 +350,10 @@ export function GenerationProgressModal({
           <div className="flex flex-col items-center space-y-6 py-8">
             <CheckCircle className="h-24 w-24 text-[#06D6A0]" />
             <div className="text-center space-y-2">
-              <h2 className="text-3xl font-bold">🎉 Sangen din er klar!</h2>
+              <h2 className="text-3xl font-bold flex items-center justify-center gap-2">
+                <PartyPopper className="w-8 h-8 text-primary" />
+                Sangen din er klar!
+              </h2>
               <p className="text-gray-600">Din norske sang er nå ferdig generert</p>
             </div>
             <Button

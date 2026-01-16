@@ -177,9 +177,6 @@ export function GenreSelection({
               aria-checked={isSelected}
               tabIndex={0}
             >
-              <span className="text-xl" role="img" aria-label={genre.display_name}>
-                {genre.emoji}
-              </span>
               <span className="font-medium text-sm truncate">{genre.display_name}</span>
             </Button>
           )

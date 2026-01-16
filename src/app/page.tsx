@@ -198,7 +198,7 @@ export default function Home() {
       setGeneratedTitle(aiTitle || '')
 
       toast({
-        title: 'Tekst generert! ✨',
+        title: 'Tekst generert!',
         description: 'Klikk "Optimaliser tekst" for å forbedre uttalen'
       })
     } catch (error) {
@@ -371,7 +371,7 @@ export default function Home() {
 
       const currentCount = generatingSongs.length + 1
       toast({
-        title: 'Generering startet! 🎵',
+        title: 'Generering startet!',
         description: currentCount < MAX_CONCURRENT_SONGS
           ? `Sang ${currentCount} av maks ${MAX_CONCURRENT_SONGS} genererer`
           : 'Sangen vil vises i listen nedenfor når den er ferdig'
@@ -403,7 +403,7 @@ export default function Home() {
     // If both genre and concept are provided, auto-generate lyrics (but not the song)
     if (selectedGenre && songConcept) {
       toast({
-        title: 'Genererer tekst... 🎵',
+        title: 'Genererer tekst...',
         description: 'Vi lager sangtekst basert på konseptet ditt!'
       })
 
@@ -432,7 +432,7 @@ export default function Home() {
         setGeneratedTitle(aiTitle || '')
 
         toast({
-          title: 'Tekst generert! ✨',
+          title: 'Tekst generert!',
           description: 'Se over teksten og trykk "Lag sang" når du er klar'
         })
       } catch (error) {
@@ -447,7 +447,7 @@ export default function Home() {
       setTimeout(() => setShowGenreSpotlight(false), 3000)
 
       toast({
-        title: 'Velkommen! 🎉',
+        title: 'Velkommen!',
         description: 'Du er klar til å lage din første sang!'
       })
     }
