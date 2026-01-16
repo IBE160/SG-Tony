@@ -3,6 +3,10 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+
+// Default genres to display in 2x2 grid (reduces decision paralysis)
+const DEFAULT_GENRES = ['Country', 'Norsk pop', 'Rap/Hip-Hop', 'Dans/Elektronisk']
 
 interface GradientColors {
   from: string
@@ -47,6 +51,7 @@ export function GenreSelection({
   const [selectedId, setSelectedId] = useState<string | null>(defaultSelectedId || null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [showAllGenres, setShowAllGenres] = useState(false)
 
   // Sync with parent's selectedGenreId (controlled mode)
   useEffect(() => {
@@ -86,10 +91,11 @@ export function GenreSelection({
         setGenres(convertedGenres)
         setIsLoading(false)
 
-        // Auto-select first genre if none selected
-        if (!selectedId && convertedGenres.length > 0) {
-          setSelectedId(convertedGenres[0].id)
-          onGenreSelect?.(convertedGenres[0].id, convertedGenres[0].name)
+        // Auto-select first DEFAULT genre if none selected
+        const defaultGenresList = convertedGenres.filter(g => DEFAULT_GENRES.includes(g.name)).slice(0, 4)
+        if (!selectedId && defaultGenresList.length > 0) {
+          setSelectedId(defaultGenresList[0].id)
+          onGenreSelect?.(defaultGenresList[0].id, defaultGenresList[0].name)
         }
       } catch (err) {
         if (!isMounted) return
@@ -122,12 +128,12 @@ export function GenreSelection({
   if (isLoading) {
     return (
       <div className={`w-full ${className}`}>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-          {/* Loading skeleton */}
-          {[...Array(8)].map((_, i) => (
+        <div className="grid grid-cols-2 gap-3">
+          {/* Loading skeleton - 4 items in 2x2 grid */}
+          {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="h-[52px] rounded-lg bg-gray-200 animate-pulse"
+              className="h-[70px] rounded-lg bg-gray-200 animate-pulse"
             />
           ))}
         </div>
@@ -143,44 +149,62 @@ export function GenreSelection({
     )
   }
 
+  // Filter to show only 4 default genres (2x2 grid)
+  const displayGenres = showAllGenres
+    ? genres
+    : genres.filter(g => DEFAULT_GENRES.includes(g.name)).slice(0, 4)
+
   return (
     <div role="radiogroup" aria-label="Velg sjanger" className={`w-full ${className}`}>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-        {genres.map((genre) => {
-          const isSelected = selectedId === genre.id
-          const gradientFrom = genre.gradient_colors?.from || '#E94560'
-          const gradientTo = genre.gradient_colors?.to || '#FFC93C'
+      <div className="space-y-3">
+        {/* Genre Grid - Fixed 2x2 */}
+        <div className="grid grid-cols-2 gap-3">
+          {displayGenres.map((genre) => {
+            const isSelected = selectedId === genre.id
+            const gradientFrom = genre.gradient_colors?.from || '#FF6B35'
+            const gradientTo = genre.gradient_colors?.to || '#FF006E'
 
-          return (
-            <Button
-              key={genre.id}
-              onClick={() => handleGenreClick(genre)}
-              onKeyDown={(e) => handleKeyDown(e, genre)}
-              variant={isSelected ? 'default' : 'outline'}
-              style={{
-                background: isSelected
-                  ? `linear-gradient(135deg, ${gradientFrom} 0%, ${gradientTo} 100%)`
-                  : 'white',
-              }}
-              className={`
-                h-[52px] w-full px-3 py-2 rounded-lg
-                transition-all duration-200
-                flex items-center justify-center gap-2
-                ${
+            return (
+              <Button
+                key={genre.id}
+                onClick={() => handleGenreClick(genre)}
+                onKeyDown={(e) => handleKeyDown(e, genre)}
+                variant={isSelected ? 'default' : 'outline'}
+                style={{
+                  background: isSelected
+                    ? `linear-gradient(135deg, ${gradientFrom} 0%, ${gradientTo} 100%)`
+                    : 'white',
+                }}
+                className={cn(
+                  "h-[70px] w-full px-4 py-5 rounded-lg",
+                  "text-[15px] font-bold",
+                  "transition-all duration-200",
+                  "flex items-center justify-center",
                   isSelected
-                    ? 'border-[3px] border-[#E94560] text-white hover:opacity-90'
-                    : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
-                }
-                focus:outline-none focus:ring-2 focus:ring-[#E94560] focus:ring-offset-2
-              `}
-              role="radio"
-              aria-checked={isSelected}
-              tabIndex={0}
-            >
-              <span className="font-medium text-sm truncate">{genre.display_name}</span>
-            </Button>
-          )
-        })}
+                    ? 'border-[3px] border-primary text-white hover:opacity-90'
+                    : 'border border-gray-300 text-gray-800 hover:border-primary/50 hover:bg-gray-50',
+                  "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                )}
+                role="radio"
+                aria-checked={isSelected}
+                tabIndex={0}
+              >
+                <span className="truncate">{genre.display_name}</span>
+              </Button>
+            )
+          })}
+        </div>
+
+        {/* Add Genre Button */}
+        {!showAllGenres && (
+          <Button
+            variant="outline"
+            onClick={() => setShowAllGenres(true)}
+            className="w-full h-[52px] border-2 border-dashed border-border-focus hover:bg-surface hover:border-primary/50 transition-all"
+          >
+            + Legg til sjanger
+          </Button>
+        )}
       </div>
     </div>
   )
