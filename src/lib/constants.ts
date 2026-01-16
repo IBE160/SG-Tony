@@ -58,3 +58,17 @@ export const TOOLTIPS = {
 } as const
 
 export type TooltipKey = keyof typeof TOOLTIPS
+
+/**
+ * Feature Flags
+ * Control feature availability throughout the app
+ * Change these values to enable/disable features without code changes
+ */
+export const FEATURES = {
+  ENABLE_PHONETIC_OPTIMIZATION: false, // Disabled for simplified UX per customer feedback
+  // Future flags can be added here:
+  // ENABLE_GENRE_LIBRARY: false,
+  // ENABLE_EDIT_MODE: false,
+} as const
+
+export type FeatureFlags = typeof FEATURES

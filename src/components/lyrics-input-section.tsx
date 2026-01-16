@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
 import { Loader2, Sparkles, Wand2, Info } from 'lucide-react'
+import { FEATURES } from '@/lib/constants'
 
 interface LyricsInputSectionProps {
   lyrics: string
@@ -229,8 +230,8 @@ export function LyricsInputSection({
                   )}
                 />
 
-                {/* "Optimaliser tekst" link */}
-                {hasContent && !isGenerating && !isOptimizing && (
+                {/* "Optimaliser tekst" link - hidden when phonetic optimization disabled */}
+                {FEATURES.ENABLE_PHONETIC_OPTIMIZATION && hasContent && !isGenerating && !isOptimizing && (
                   <button
                     onClick={onOptimizeLyrics}
                     className="absolute bottom-2 right-4 text-xs text-gray-500 hover:text-primary flex items-center gap-1 transition-colors"
@@ -296,8 +297,8 @@ Du er min...`}
               )}
             />
 
-            {/* "Optimaliser tekst" link */}
-            {hasContent && !isGenerating && !isOptimizing && (
+            {/* "Optimaliser tekst" link - hidden when phonetic optimization disabled */}
+            {FEATURES.ENABLE_PHONETIC_OPTIMIZATION && hasContent && !isGenerating && !isOptimizing && (
               <button
                 onClick={onOptimizeLyrics}
                 className="absolute bottom-2 right-4 text-xs text-gray-500 hover:text-primary flex items-center gap-1 transition-colors"

@@ -16,6 +16,7 @@ import { useGeneratingSongStore, MAX_CONCURRENT_SONGS } from '@/stores/generatin
 import { createClient } from '@/lib/supabase/client'
 import { Loader2, Music } from 'lucide-react'
 import type { OptimizationResult, PhoneticChange } from '@/types/song'
+import { FEATURES } from '@/lib/constants'
 
 export default function Home() {
   const [selectedGenre, setSelectedGenre] = useState<{
@@ -342,8 +343,8 @@ export default function Home() {
           genre: selectedGenre.name,
           concept: songConcept,
           lyrics: baseLyrics,
-          optimizedLyrics: optimizedLyrics || null,
-          phoneticEnabled: !!optimizedLyrics, // Only if user optimized
+          optimizedLyrics: FEATURES.ENABLE_PHONETIC_OPTIMIZATION ? (optimizedLyrics || null) : null,
+          phoneticEnabled: FEATURES.ENABLE_PHONETIC_OPTIMIZATION && !!optimizedLyrics, // Only if feature enabled and user optimized
           vocalGender: vocalGender
         })
       })

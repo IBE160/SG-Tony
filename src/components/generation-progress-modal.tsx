@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
+import { FEATURES } from '@/lib/constants'
 
 interface GenerationProgressModalProps {
   open: boolean
@@ -53,11 +54,17 @@ interface SongResponse {
 }
 
 // Generation stages with Norwegian text
-const GENERATION_STAGES = [
-  { min: 0, max: 30, Icon: Music, text: 'AI skriver norske tekster...' },
-  { min: 30, max: 50, Icon: Mic, text: 'Optimerer uttale...' },
-  { min: 50, max: 100, Icon: Guitar, text: 'Genererer musikk med Suno...' },
-]
+// Conditionally include phonetic optimization stage based on feature flag
+const GENERATION_STAGES = FEATURES.ENABLE_PHONETIC_OPTIMIZATION
+  ? [
+      { min: 0, max: 30, Icon: Music, text: 'AI skriver norske tekster...' },
+      { min: 30, max: 50, Icon: Mic, text: 'Optimerer uttale...' },
+      { min: 50, max: 100, Icon: Guitar, text: 'Genererer musikk med Suno...' },
+    ]
+  : [
+      { min: 0, max: 50, Icon: Music, text: 'AI skriver norske tekster...' },
+      { min: 50, max: 100, Icon: Guitar, text: 'Genererer musikk med Suno...' },
+    ]
 
 const MAX_POLLING_ATTEMPTS = 100 // 100 × 3s = 5 minutes max
 const POLLING_INTERVAL = 3000 // 3 seconds - faster detection
