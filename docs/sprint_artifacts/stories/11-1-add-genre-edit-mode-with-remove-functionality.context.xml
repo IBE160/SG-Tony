@@ -1,0 +1,244 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>11</epicId>
+    <storyId>genre-management-1</storyId>
+    <title>Add Genre Edit Mode with Remove Functionality</title>
+    <status>drafted</status>
+    <generatedAt>2026-01-16</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint_artifacts/story-genre-management-1.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user managing my music genres</asA>
+    <iWant>to enter an edit mode where I can remove genres from the main grid</iWant>
+    <soThat>I can customize my genre selection and remove genres I don't use</soThat>
+    <tasks>
+      1. Add edit mode state management in genre-selection.tsx
+      2. Add "Rediger" toggle button in section header (top-right)
+      3. Add X remove buttons with conditional rendering (only show in edit mode)
+      4. Implement genre removal with archive logic (soft delete)
+      5. Add CSS styles for edit button and remove button in globals.css
+      6. Disable genre selection when in edit mode
+      7. Test on all screen sizes (mobile, tablet, desktop)
+      8. Verify no console errors or warnings
+      9. Commit changes and mark story ready for review
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    AC-1: "Rediger" button appears in genre section header (top-right)
+    AC-2: Clicking "Rediger" toggles edit mode ON
+    AC-3: In edit mode - Button text changes to "Ferdig", background becomes orange (active state), Red X button appears on each genre chip, Genre chips cannot be selected, Cursor shows "not-allowed" on hover
+    AC-4: Clicking X button removes genre from grid
+    AC-5: Removed genre is archived (not permanently deleted)
+    AC-6: Clicking "Ferdig" exits edit mode
+    AC-7: Edit mode state persists until manually toggled off
+    AC-8: X buttons have smooth hover states (scale up, darker red)
+    AC-9: No console errors or warnings
+    AC-10: Works on mobile, tablet, and desktop
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/tech-spec-ui-modernization.md</path>
+        <title>Tech-Spec: UI Modernization & Visual Refresh</title>
+        <section>Project Context</section>
+        <snippet>Comprehensive tech-spec for previous UI modernization epic (CR-001, CR-002, CR-007, CR-008, CR-009). Documents the orange/purple color scheme, simplified 2x2 genre grid, Lucide icons, and overall design system. Current story builds upon this foundation.</snippet>
+      </doc>
+      <doc>
+        <path>docs/tech-spec-ui-modernization.md</path>
+        <title>Tech-Spec: UI Modernization & Visual Refresh</title>
+        <section>Existing Patterns to Follow</section>
+        <snippet>Component Structure: Functional components with TypeScript, Props interfaces, "use client" directive, kebab-case files. Styling: Tailwind utility classes, cn() for conditional classes, CSS variables for theme colors. State: React hooks for local state.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epic-ui-modernization.md</path>
+        <title>Epic: UI Modernization & Visual Refresh</title>
+        <section>Implementation Complete</section>
+        <snippet>All 5 stories completed (Color scheme, emoji removal, 2x2 genre grid, lyrics tabs, phonetic disable). Genre grid now shows 4 default genres with "+ Legg til sjanger" button. Status: COMPLETE.</snippet>
+      </doc>
+      <doc>
+        <path>.bmad/docs/AIMusikk_Change_Requests.md</path>
+        <title>Change Requests Document</title>
+        <section>CR-003: Add Genre Edit Mode</section>
+        <snippet>User request for ability to remove genres from main grid. Requires "Rediger" toggle button, red X buttons on chips in edit mode, soft delete/archive functionality. Part of Epic 11 (Genre Management & AI Assistant).</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>src/components/genre-selection.tsx</path>
+        <kind>component</kind>
+        <symbol>GenreSelection</symbol>
+        <lines>1-212</lines>
+        <reason>Current implementation of genre grid. Already modernized with 2x2 layout and "+ Legg til sjanger" button. Need to add edit mode state, "Rediger" button, and X remove buttons to this component.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/genre-selection.tsx</path>
+        <kind>state-management</kind>
+        <symbol>useState hooks</symbol>
+        <lines>50-54</lines>
+        <reason>Existing state: genres, selectedId, isLoading, error, showAllGenres. Need to add editMode state and removeGenre handler function.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/genre-selection.tsx</path>
+        <kind>component</kind>
+        <symbol>Genre grid rendering</symbol>
+        <lines>160-196</lines>
+        <reason>2x2 genre grid with gradient buttons. Need to add conditional X button rendering inside each genre button, disable selection when editMode is true.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/constants.ts</path>
+        <kind>configuration</kind>
+        <symbol>FEATURES</symbol>
+        <lines>67-72</lines>
+        <reason>Feature flags object. Can optionally add ENABLE_GENRE_EDIT_MODE flag (though story says to implement directly, not behind flag).</reason>
+      </artifact>
+      <artifact>
+        <path>src/app/globals.css</path>
+        <kind>stylesheet</kind>
+        <symbol>CSS variables</symbol>
+        <lines>1-100</lines>
+        <reason>Theme CSS variables for colors. Primary orange (#FF6B35), destructive red for X button. Use hsl(var(--primary)) for edit button active state, hsl(var(--destructive)) for remove button.</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/ui/button.tsx</path>
+        <kind>component</kind>
+        <symbol>Button</symbol>
+        <lines>all</lines>
+        <reason>shadcn/ui Button component used throughout. Use for "Rediger" button and as base for X remove button styling.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/utils.ts</path>
+        <kind>utility</kind>
+        <symbol>cn</symbol>
+        <lines>all</lines>
+        <reason>Class name merger utility (clsx + tailwind-merge). Use for conditional styling of edit button active state and genre chip disabled state.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <package>react</package>
+        <version>18.2.0</version>
+        <usage>useState for edit mode state, useEffect for existing logic</usage>
+      </node>
+      <node>
+        <package>next</package>
+        <version>14.2.3</version>
+        <usage>Next.js 14 App Router, "use client" directive for interactive component</usage>
+      </node>
+      <node>
+        <package>lucide-react</package>
+        <version>0.554.0</version>
+        <usage>X icon for remove button (import { X } from 'lucide-react')</usage>
+      </node>
+      <node>
+        <package>@radix-ui/react-*</package>
+        <version>1.x</version>
+        <usage>Existing Radix UI components for buttons, dialogs (not needed for this story)</usage>
+      </node>
+      <node>
+        <package>@supabase/supabase-js</package>
+        <version>2.84.0</version>
+        <usage>Database client for genre CRUD (existing usage, may need update for archive logic)</usage>
+      </node>
+      <node>
+        <package>tailwindcss</package>
+        <version>3.4.1</version>
+        <usage>Utility classes for styling edit button, X button, disabled states</usage>
+      </node>
+      <node>
+        <package>class-variance-authority</package>
+        <version>0.7.1</version>
+        <usage>CVA for button variants (existing pattern)</usage>
+      </node>
+      <node>
+        <package>clsx + tailwind-merge</package>
+        <version>latest</version>
+        <usage>cn() utility for conditional class merging</usage>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Use existing genre-selection.tsx component structure - functional component with TypeScript</constraint>
+    <constraint>Follow established patterns: "use client" directive, useState hooks, cn() for class merging</constraint>
+    <constraint>Use orange color scheme from globals.css: --primary (15 100% 61%) for edit button active state</constraint>
+    <constraint>Use red for X button: rgba(239, 71, 111, 0.9) or hsl(var(--destructive))</constraint>
+    <constraint>Maintain 2x2 grid layout (do not change grid structure)</constraint>
+    <constraint>Archive genres (soft delete) - do NOT permanently delete from database</constraint>
+    <constraint>No database schema changes required (genre table already has is_active field for archiving)</constraint>
+    <constraint>Keep all existing functionality intact (genre selection, showAllGenres, gradients)</constraint>
+    <constraint>No new dependencies needed - use existing lucide-react X icon</constraint>
+    <constraint>Story 2 (Undo Snackbar) and Story 4 (Genre Library) will enhance this feature - leave hooks for future integration</constraint>
+    <constraint>No feature flag needed for this story (implement directly, unlike phonetic optimization)</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>GenreSelection Component Props</name>
+      <kind>React Component Interface</kind>
+      <signature>
+        interface GenreSelectionProps {
+          onGenreSelect?: (genreId: string, genreName: string) => void
+          defaultSelectedId?: string
+          selectedGenreId?: string | null
+          className?: string
+        }
+      </signature>
+      <path>src/components/genre-selection.tsx</path>
+      <notes>Do not modify props interface. All edit mode logic is internal state.</notes>
+    </interface>
+    <interface>
+      <name>Genre Type</name>
+      <kind>TypeScript Interface</kind>
+      <signature>
+        interface Genre {
+          id: string
+          name: string
+          display_name: string
+          emoji: string | null
+          sort_order: number
+          gradient_colors: GradientColors | null
+        }
+      </signature>
+      <path>src/components/genre-selection.tsx</path>
+      <notes>Existing interface. Do not modify. Use id field for identifying genres to remove.</notes>
+    </interface>
+    <interface>
+      <name>Supabase Genre Table Query</name>
+      <kind>Database Query</kind>
+      <signature>
+        supabase
+          .from('genre')
+          .select('id, name, display_name, emoji, sort_order, gradient_colors')
+          .eq('is_active', true)
+          .order('sort_order', { ascending: true })
+      </signature>
+      <path>src/components/genre-selection.tsx:69-74</path>
+      <notes>Existing query. For archive logic, consider updating is_active to false instead of deleting row.</notes>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      No test framework currently exists in codebase (confirmed via glob search). Manual testing required. Tech-spec notes: "⚠️ No test framework detected (no Jest, Vitest, etc. in package.json)" and "📝 Note: Tests should be added as part of best practices". For now, use manual testing checklist provided in story document.
+    </standards>
+    <locations>
+      No test directories exist. If tests are added in future: src/components/__tests__/ would be recommended location for component tests.
+    </locations>
+    <ideas>
+      <test id="AC-1" desc="Test that 'Rediger' button appears in header">Verify button renders in genre section header, positioned top-right, with pill shape and proper styling</test>
+      <test id="AC-2" desc="Test clicking 'Rediger' toggles edit mode">Click button, verify state changes, text updates to 'Ferdig', background becomes orange</test>
+      <test id="AC-3" desc="Test edit mode active state">Verify all AC-3 conditions: button text/color change, X buttons visible, selection disabled, cursor not-allowed</test>
+      <test id="AC-4" desc="Test X button removes genre">Click X, verify genre disappears from displayGenres array, grid updates</test>
+      <test id="AC-5" desc="Test soft delete/archive">Verify removed genre is archived (filter logic) not deleted from database, can be restored later (Story 4)</test>
+      <test id="AC-6" desc="Test exiting edit mode">Click 'Ferdig', verify X buttons disappear, selection re-enabled, button reverts</test>
+      <test id="AC-7" desc="Test edit mode persistence">Toggle on, navigate away (if applicable), verify state persists during session (until manually toggled off)</test>
+      <test id="AC-8" desc="Test X button hover states">Hover over X, verify scale-up animation and darker red color transition</test>
+      <test id="AC-9" desc="Test no console errors">Open DevTools, perform all actions, verify no errors or warnings logged</test>
+      <test id="AC-10" desc="Test responsive design">Test on 375px mobile, 768px tablet, 1440px desktop widths, verify layout and buttons work</test>
+    </ideas>
+  </tests>
+</story-context>

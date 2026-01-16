@@ -1,0 +1,186 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>11</epicId>
+    <storyId>genre-management-2</storyId>
+    <title>Add Undo Snackbar for Genre Deletions</title>
+    <status>backlog</status>
+    <generatedAt>2026-01-16</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint_artifacts/story-genre-management-2.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user who accidentally removes a genre</asA>
+    <iWant>to see an undo notification with a quick action button</iWant>
+    <soThat>I can restore the genre within 5 seconds without going to the library</soThat>
+    <tasks>
+      1. Create reusable Snackbar component (src/components/snackbar.tsx)
+      2. Create useSnackbar hook for state management (src/hooks/use-snackbar.ts)
+      3. Integrate snackbar with genre-selection.tsx
+      4. Implement restore genre logic for undo
+      5. Add CSS animations if needed (already have Tailwind transitions)
+      6. Test undo within 5-second window
+      7. Test auto-dismiss after 5 seconds
+      8. Test multiple removals (only one snackbar visible)
+      9. Test on mobile, tablet, desktop
+      10. Commit and mark ready for review
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    AC-1: Snackbar appears at bottom-center of screen
+    AC-2: Snackbar slides up from bottom: -80px to bottom: 24px
+    AC-3: Message shows: "{Genre Name} arkivert"
+    AC-4: Orange "Angre" button is visible and clickable
+    AC-5: Clicking "Angre" immediately restores the genre to grid
+    AC-6: Snackbar auto-dismisses after 5 seconds
+    AC-7: Only one snackbar visible at a time (new one replaces old)
+    AC-8: Smooth slide-down animation when dismissing
+    AC-9: Snackbar is above all other content (z-index: 150)
+    AC-10: Works on mobile (doesn't block important UI)
+    AC-11: No console errors or warnings
+    AC-12: Restored genre appears in same position it was removed from
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/tech-spec-ui-modernization.md</path>
+        <title>Tech-Spec: UI Modernization</title>
+        <section>Component Patterns</section>
+        <snippet>Functional components with TypeScript, "use client" directive, useState/useEffect hooks, cn() utility for conditional classes, Tailwind CSS for styling</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint_artifacts/story-genre-management-1.md</path>
+        <title>Story 11-1: Genre Edit Mode</title>
+        <section>Implementation Complete</section>
+        <snippet>Edit mode with X remove buttons implemented. removeGenre() function filters genre from array. Ready for snackbar integration with undo callback.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>src/components/genre-selection.tsx</path>
+        <kind>component</kind>
+        <symbol>removeGenre</symbol>
+        <lines>127-138</lines>
+        <reason>Current implementation filters genres array on removal. Need to add snackbar trigger here with undo callback. Must store removed genre reference for restoration.</reason>
+      </artifact>
+      <artifact>
+        <path>src/app/globals.css</path>
+        <kind>stylesheet</kind>
+        <symbol>CSS variables and utilities</symbol>
+        <lines>1-100</lines>
+        <reason>Orange primary color for "Angre" button, elevated surface for snackbar background, border colors. Already has Tailwind transitions.</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/utils.ts</path>
+        <kind>utility</kind>
+        <symbol>cn</symbol>
+        <lines>all</lines>
+        <reason>Use for conditional styling of snackbar visibility states and animations.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <package>react</package>
+        <version>18.2.0</version>
+        <usage>useState for snackbar state, useEffect for auto-dismiss timer, useCallback for memoized functions, useRef for timeout cleanup</usage>
+      </node>
+      <node>
+        <package>tailwindcss</package>
+        <version>3.4.1</version>
+        <usage>Utility classes for positioning, animations, transitions (no custom keyframes needed)</usage>
+      </node>
+      <node>
+        <package>lucide-react</package>
+        <version>0.554.0</version>
+        <usage>Optional: CheckCircle or Undo icon for snackbar (not required, text only is fine)</usage>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Use existing component patterns: "use client", functional components, TypeScript interfaces</constraint>
+    <constraint>5-second auto-dismiss timeout (industry standard - Material Design)</constraint>
+    <constraint>Only one snackbar visible at a time - new snackbar replaces old</constraint>
+    <constraint>Bottom-center positioning: fixed, left-1/2, -translate-x-1/2</constraint>
+    <constraint>Z-index: 150 (above genre grid, below modals if any)</constraint>
+    <constraint>Orange "Angre" button using hsl(var(--primary)) color</constraint>
+    <constraint>Snackbar width: 90% on mobile, max-width: 400px on desktop</constraint>
+    <constraint>Use Tailwind transitions (transition-all duration-300) - no custom @keyframes needed unless required</constraint>
+    <constraint>Clear timeout on component unmount to prevent memory leaks</constraint>
+    <constraint>Genre restoration: Add back to genres array (Story 4 will add position tracking)</constraint>
+    <constraint>No new npm dependencies - use existing React hooks and Tailwind</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>SnackbarProps</name>
+      <kind>React Component Interface</kind>
+      <signature>
+        interface SnackbarProps {
+          visible: boolean
+          message: string
+          onUndo: () => void
+          onDismiss: () => void
+        }
+      </signature>
+      <path>src/components/snackbar.tsx</path>
+      <notes>Snackbar component accepts visibility state, message text, undo callback, and dismiss callback</notes>
+    </interface>
+    <interface>
+      <name>useSnackbar return type</name>
+      <kind>React Hook Interface</kind>
+      <signature>
+        {
+          visible: boolean
+          message: string
+          show: (message: string, onUndo: () => void) => void
+          hide: () => void
+          handleUndo: () => void
+        }
+      </signature>
+      <path>src/hooks/use-snackbar.ts</path>
+      <notes>Hook manages snackbar state, show/hide functions, and undo handler</notes>
+    </interface>
+    <interface>
+      <name>Genre Type (existing)</name>
+      <kind>TypeScript Interface</kind>
+      <signature>
+        interface Genre {
+          id: string
+          name: string
+          display_name: string
+          emoji: string | null
+          sort_order: number
+          gradient_colors: GradientColors | null
+        }
+      </signature>
+      <path>src/components/genre-selection.tsx</path>
+      <notes>Existing interface. Use to store removed genre reference for undo restoration.</notes>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      No test framework exists (manual testing only). Use browser DevTools console to verify no errors. Test undo within 5-second window, auto-dismiss behavior, and multiple removal scenarios.
+    </standards>
+    <locations>
+      No test directories. Manual testing via npm run dev.
+    </locations>
+    <ideas>
+      <test id="AC-1" desc="Snackbar appears at bottom-center">Remove genre, verify snackbar position is fixed bottom-center with proper transform</test>
+      <test id="AC-2" desc="Slide-up animation">Verify smooth transition from opacity-0 to opacity-100, bottom position animated</test>
+      <test id="AC-3" desc="Correct message">Verify message shows "{display_name} arkivert" with correct genre name</test>
+      <test id="AC-4" desc="Angre button visible">Verify orange button with correct text, clickable, proper hover state</test>
+      <test id="AC-5" desc="Undo restores genre">Click Angre within 5 seconds, verify genre reappears in grid immediately</test>
+      <test id="AC-6" desc="Auto-dismiss">Wait 5 seconds, verify snackbar disappears automatically</test>
+      <test id="AC-7" desc="Only one snackbar">Remove genre A, then genre B within 5 seconds, verify only genre B snackbar visible</test>
+      <test id="AC-8" desc="Slide-down animation">Watch snackbar dismiss, verify smooth opacity and position transition</test>
+      <test id="AC-9" desc="Z-index correct">Verify snackbar appears above all genre grid content</test>
+      <test id="AC-10" desc="Mobile responsive">Test on 375px width, verify snackbar doesn't block genre grid, Angre button tappable</test>
+      <test id="AC-11" desc="No console errors">Open DevTools, perform all actions, verify no errors or warnings</test>
+      <test id="AC-12" desc="Restored position">Remove and restore genre, verify it appears in grid (Story 4 will track exact position)</test>
+    </ideas>
+  </tests>
+</story-context>

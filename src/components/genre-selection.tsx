@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { X } from 'lucide-react'
+import { useSnackbar } from '@/hooks/use-snackbar'
+import { Snackbar } from '@/components/snackbar'
 
 // Default genres to display in 2x2 grid (reduces decision paralysis)
 const DEFAULT_GENRES = ['Country', 'Norsk pop', 'Rap/Hip-Hop', 'Dans/Elektronisk']
@@ -52,6 +55,10 @@ export function GenreSelection({
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [showAllGenres, setShowAllGenres] = useState(false)
+  const [editMode, setEditMode] = useState(false)
+  const [removedGenre, setRemovedGenre] = useState<Genre | null>(null)
+
+  const snackbar = useSnackbar()
 
   // Sync with parent's selectedGenreId (controlled mode)
   useEffect(() => {
@@ -125,6 +132,40 @@ export function GenreSelection({
     }
   }
 
+  const toggleEditMode = () => {
+    setEditMode(!editMode)
+  }
+
+  const removeGenre = (genreId: string) => {
+    if (!editMode) return
+
+    const genreToRemove = genres.find(g => g.id === genreId)
+    if (!genreToRemove) return
+
+    // Store reference for undo
+    setRemovedGenre(genreToRemove)
+
+    // Archive genre (soft delete - remove from display)
+    const updatedGenres = genres.filter(g => g.id !== genreId)
+    setGenres(updatedGenres)
+
+    // Show snackbar with undo callback
+    snackbar.show(
+      `${genreToRemove.display_name} arkivert`,
+      () => restoreGenre(genreToRemove)
+    )
+
+    // TODO: In Story 4, archived genres will be stored for restore
+    console.log(`Genre ${genreId} archived`)
+  }
+
+  const restoreGenre = (genre: Genre) => {
+    // Restore genre to array
+    setGenres([...genres, genre])
+    setRemovedGenre(null)
+    console.log(`Genre ${genre.id} restored`)
+  }
+
   if (isLoading) {
     return (
       <div className={`w-full ${className}`}>
@@ -157,6 +198,25 @@ export function GenreSelection({
   return (
     <div role="radiogroup" aria-label="Velg sjanger" className={`w-full ${className}`}>
       <div className="space-y-3">
+        {/* Header with Edit Button */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="text-sm font-bold text-text-secondary uppercase tracking-wide">
+            Velg sjanger
+          </div>
+          <button
+            onClick={toggleEditMode}
+            className={cn(
+              "px-4 py-1.5 text-[13px] font-semibold rounded-full transition-all",
+              "border border-border hover:border-border-focus",
+              editMode
+                ? "bg-primary text-white border-primary"
+                : "bg-transparent text-text-secondary"
+            )}
+          >
+            {editMode ? 'Ferdig' : 'Rediger'}
+          </button>
+        </div>
+
         {/* Genre Grid - Fixed 2x2 */}
         <div className="grid grid-cols-2 gap-3">
           {displayGenres.map((genre) => {
@@ -167,22 +227,24 @@ export function GenreSelection({
             return (
               <Button
                 key={genre.id}
-                onClick={() => handleGenreClick(genre)}
+                onClick={() => !editMode && handleGenreClick(genre)}
                 onKeyDown={(e) => handleKeyDown(e, genre)}
                 variant={isSelected ? 'default' : 'outline'}
+                disabled={editMode}
                 style={{
                   background: isSelected
                     ? `linear-gradient(135deg, ${gradientFrom} 0%, ${gradientTo} 100%)`
                     : 'white',
                 }}
                 className={cn(
-                  "h-[70px] w-full px-4 py-5 rounded-lg",
+                  "relative h-[70px] w-full px-4 py-5 rounded-lg",
                   "text-[15px] font-bold",
                   "transition-all duration-200",
                   "flex items-center justify-center",
                   isSelected
                     ? 'border-[3px] border-primary text-white hover:opacity-90'
                     : 'border border-gray-300 text-gray-800 hover:border-primary/50 hover:bg-gray-50',
+                  editMode && "cursor-not-allowed opacity-75",
                   "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                 )}
                 role="radio"
@@ -190,6 +252,24 @@ export function GenreSelection({
                 tabIndex={0}
               >
                 <span className="truncate">{genre.display_name}</span>
+
+                {/* Remove Button (X) - Only shown in edit mode */}
+                {editMode && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      removeGenre(genre.id)
+                    }}
+                    className={cn(
+                      "absolute top-2 right-2 w-6 h-6 rounded-full",
+                      "bg-red-600 hover:bg-red-700 flex items-center justify-center",
+                      "transition-all hover:scale-110"
+                    )}
+                    aria-label={`Fjern ${genre.display_name}`}
+                  >
+                    <X className="w-4 h-4 text-white" />
+                  </button>
+                )}
               </Button>
             )
           })}
@@ -206,6 +286,14 @@ export function GenreSelection({
           </Button>
         )}
       </div>
+
+      {/* Undo Snackbar */}
+      <Snackbar
+        visible={snackbar.visible}
+        message={snackbar.message}
+        onUndo={snackbar.handleUndo}
+        onDismiss={snackbar.hide}
+      />
     </div>
   )
 }
