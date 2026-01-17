@@ -10,7 +10,7 @@ import { Snackbar } from '@/components/snackbar'
 import { AIAssistantModal } from '@/components/ai-assistant/modal'
 import { EditPromptModal } from '@/components/ai-assistant/edit-prompt-modal'
 import { GenreLibraryModal } from '@/components/genre-library/modal'
-import type { LibraryGenre } from '@/lib/standard-genres'
+import { STANDARD_GENRES, type LibraryGenre } from '@/lib/standard-genres'
 import {
   getCustomGenres,
   saveCustomGenre,
@@ -484,6 +484,37 @@ export function GenreSelection({
             )
           })}
         </div>
+
+        {/* Standard Genre Quick-Add Buttons */}
+        {!showAllGenres && (
+          <div className="grid grid-cols-4 gap-2">
+            {STANDARD_GENRES.slice(0, 4).map((stdGenre) => {
+              const isAlreadyAdded = genres.some(g =>
+                g.name === stdGenre.name || g.display_name === stdGenre.display_name
+              )
+              return (
+                <button
+                  key={stdGenre.id}
+                  onClick={() => {
+                    if (!isAlreadyAdded) {
+                      handleLibraryGenreAdded(stdGenre)
+                    }
+                  }}
+                  disabled={isAlreadyAdded}
+                  className={cn(
+                    "py-2 px-2 text-xs font-medium rounded-lg transition-all truncate",
+                    isAlreadyAdded
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "bg-white border border-gray-300 text-gray-700 hover:border-primary hover:text-primary"
+                  )}
+                  title={isAlreadyAdded ? 'Allerede lagt til' : `Legg til ${stdGenre.display_name}`}
+                >
+                  + {stdGenre.display_name}
+                </button>
+              )
+            })}
+          </div>
+        )}
 
         {/* Add Genre Button */}
         {!showAllGenres && (

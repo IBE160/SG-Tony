@@ -9,7 +9,9 @@ import {
 } from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
-import { Search } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Search, PenLine } from 'lucide-react'
 import { GenreCard } from './genre-card'
 import { useGenreLibrary } from '@/hooks/use-genre-library'
 import { STANDARD_GENRES, type LibraryGenre } from '@/lib/standard-genres'
@@ -32,6 +34,15 @@ export function GenreLibraryModal({
   const library = useGenreLibrary()
   const [activeTab, setActiveTab] = useState('active')
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+
+  // State for adding genre with custom name
+  const [addingGenre, setAddingGenre] = useState<LibraryGenre | null>(null)
+  const [customName, setCustomName] = useState('')
+
+  // State for custom prompt creation
+  const [showCustomPrompt, setShowCustomPrompt] = useState(false)
+  const [customPromptName, setCustomPromptName] = useState('')
+  const [customPromptText, setCustomPromptText] = useState('')
 
   const filteredActive = library.filterGenres(library.activeGenres, library.searchQuery)
   const filteredArchived = library.filterGenres(library.archivedGenres, library.searchQuery)
@@ -61,18 +72,71 @@ export function GenreLibraryModal({
   }
 
   const handleAddStandard = (genre: LibraryGenre) => {
-    const added = library.addStandardGenre(genre)
-    if (added) {
-      onGenreAdded?.(genre)
+    // Show naming form instead of adding directly
+    setAddingGenre(genre)
+    setCustomName(genre.display_name)
+  }
+
+  const handleConfirmAdd = () => {
+    if (!addingGenre || !customName.trim()) return
+
+    const genreWithCustomName: LibraryGenre = {
+      ...addingGenre,
+      id: `custom-${Date.now()}`, // New ID so it's treated as custom
+      name: customName.trim(),
+      display_name: customName.trim(),
+      isCustom: true
     }
+
+    const added = library.addStandardGenre(genreWithCustomName)
+    if (added) {
+      onGenreAdded?.(genreWithCustomName)
+    }
+
+    // Reset form
+    setAddingGenre(null)
+    setCustomName('')
+  }
+
+  const handleCancelAdd = () => {
+    setAddingGenre(null)
+    setCustomName('')
+  }
+
+  const handleCreateCustomPrompt = () => {
+    if (!customPromptName.trim() || !customPromptText.trim()) return
+
+    const customGenre: LibraryGenre = {
+      id: `custom-${Date.now()}`,
+      name: customPromptName.trim(),
+      display_name: customPromptName.trim(),
+      sunoPrompt: customPromptText.trim(),
+      isCustom: true,
+      createdAt: new Date().toISOString()
+    }
+
+    const added = library.addStandardGenre(customGenre)
+    if (added) {
+      onGenreAdded?.(customGenre)
+    }
+
+    // Reset form
+    setShowCustomPrompt(false)
+    setCustomPromptName('')
+    setCustomPromptText('')
   }
 
   const handleOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
       onClose()
-      // Reset state when closing
+      // Reset all state when closing
       library.setSearchQuery('')
       setConfirmDeleteId(null)
+      setAddingGenre(null)
+      setCustomName('')
+      setShowCustomPrompt(false)
+      setCustomPromptName('')
+      setCustomPromptText('')
     }
   }
 
@@ -90,10 +154,77 @@ export function GenreLibraryModal({
               placeholder="Sok etter sjanger eller stil..."
               value={library.searchQuery}
               onChange={(e) => library.setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="pl-10 text-gray-900 placeholder:text-gray-400"
             />
           </div>
         </div>
+
+        {/* Naming Form - shown when adding a genre */}
+        {addingGenre && (
+          <div className="px-6 py-4 bg-orange-50 border-y border-orange-200">
+            <p className="text-sm font-medium text-gray-700 mb-2">
+              Gi sjangeren et navn:
+            </p>
+            <div className="flex gap-2">
+              <Input
+                value={customName}
+                onChange={(e) => setCustomName(e.target.value)}
+                placeholder="Sjangernavn..."
+                className="flex-1 text-gray-900 placeholder:text-gray-400"
+                autoFocus
+              />
+              <Button onClick={handleConfirmAdd} className="bg-primary hover:bg-primary/90">
+                Legg til
+              </Button>
+              <Button variant="outline" onClick={handleCancelAdd}>
+                Avbryt
+              </Button>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              Prompt: {addingGenre.sunoPrompt}
+            </p>
+          </div>
+        )}
+
+        {/* Custom Prompt Creation Form */}
+        {showCustomPrompt && (
+          <div className="px-6 py-4 bg-purple-50 border-y border-purple-200">
+            <p className="text-sm font-medium text-gray-700 mb-2">
+              Lag din egen sjanger:
+            </p>
+            <div className="space-y-3">
+              <Input
+                value={customPromptName}
+                onChange={(e) => setCustomPromptName(e.target.value)}
+                placeholder="Sjangernavn (f.eks. Min Rock)"
+                className="text-gray-900 placeholder:text-gray-400"
+                autoFocus
+              />
+              <Textarea
+                value={customPromptText}
+                onChange={(e) => setCustomPromptText(e.target.value)}
+                placeholder="Beskriv stilen for Suno AI (f.eks. rock, electric guitar, energetic, 120 bpm)"
+                className="text-gray-900 placeholder:text-gray-400 min-h-[80px]"
+              />
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleCreateCustomPrompt}
+                  className="bg-primary hover:bg-primary/90"
+                  disabled={!customPromptName.trim() || !customPromptText.trim()}
+                >
+                  Opprett sjanger
+                </Button>
+                <Button variant="outline" onClick={() => {
+                  setShowCustomPrompt(false)
+                  setCustomPromptName('')
+                  setCustomPromptText('')
+                }}>
+                  Avbryt
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
           <TabsList className="mx-6 mt-4 grid w-auto grid-cols-3">
@@ -164,6 +295,17 @@ export function GenreLibraryModal({
             </TabsContent>
 
             <TabsContent value="standard" className="mt-0 space-y-3">
+              {/* Custom Prompt Button */}
+              {!showCustomPrompt && (
+                <button
+                  onClick={() => setShowCustomPrompt(true)}
+                  className="w-full p-4 border-2 border-dashed border-purple-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors flex items-center justify-center gap-2 text-purple-600"
+                >
+                  <PenLine className="w-5 h-5" />
+                  <span className="font-medium">Egendefinert prompt</span>
+                </button>
+              )}
+
               {filteredStandard.length === 0 ? (
                 <div className="text-center py-12 text-gray-500">
                   Ingen standard sjangere matchet soket
