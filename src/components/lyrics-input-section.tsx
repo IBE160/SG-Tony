@@ -116,7 +116,7 @@ export function LyricsInputSection({
                 <Button
                   onClick={handleGenerateLyrics}
                   disabled={!canGenerate}
-                  className="w-full h-12 rounded-t-none bg-purple-600 hover:bg-purple-700 text-white font-medium"
+                  className="w-full h-12 rounded-t-none bg-[#E94560] hover:bg-[#D62839] text-white font-medium"
                 >
                   {isGenerating ? (
                     <>
