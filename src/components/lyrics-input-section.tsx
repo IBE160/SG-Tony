@@ -106,7 +106,7 @@ export function LyricsInputSection({
           {/* Show concept input BEFORE lyrics generated */}
           {!showGeneratedLyricsInAIMode && (
             <>
-              {/* Concept Input */}
+              {/* Concept Input with Generate Button */}
               <div className="space-y-2">
                 <Label htmlFor="concept-input" className="text-sm font-medium text-text-primary">
                   Beskriv hva sangen skal handle om
@@ -120,10 +120,28 @@ export function LyricsInputSection({
                   maxLength={500}
                   disabled={isGenerating || isOptimizing}
                   className={cn(
-                    "font-mono text-sm resize-none",
+                    "font-mono text-sm resize-none rounded-b-none border-b-0",
                     (isGenerating || isOptimizing) && 'opacity-50'
                   )}
                 />
+                {/* Generate Button - connected to textarea */}
+                <Button
+                  onClick={handleGenerateLyrics}
+                  disabled={!canGenerate}
+                  className="w-full h-12 rounded-t-none bg-purple-600 hover:bg-purple-700 text-white font-medium"
+                >
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Genererer tekst...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="mr-2 h-5 w-5" />
+                      Lag tekst med KI
+                    </>
+                  )}
+                </Button>
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-text-secondary">
                     {concept.length}/500 tegn
@@ -172,33 +190,13 @@ export function LyricsInputSection({
                 </div>
               </div>
 
-              {/* Info Box with Generate Button */}
-              <div className="flex items-center justify-between gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
-                <div className="flex items-start gap-2">
-                  <Info className="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0" />
-                  <p className="text-xs text-purple-700">
-                    AI lager både melodi og tekst basert på din beskrivelse.
-                    Jo mer detaljer, jo bedre resultat!
-                  </p>
-                </div>
-                <Button
-                  onClick={handleGenerateLyrics}
-                  disabled={!canGenerate}
-                  size="sm"
-                  className="bg-purple-600 hover:bg-purple-700 text-white flex-shrink-0"
-                >
-                  {isGenerating ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Genererer...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="mr-2 h-4 w-4" />
-                      Lag tekst
-                    </>
-                  )}
-                </Button>
+              {/* Info Box */}
+              <div className="flex items-start gap-2 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                <Info className="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-purple-700">
+                  KI lager både melodi og tekst basert på din beskrivelse.
+                  Jo mer detaljer, jo bedre resultat!
+                </p>
               </div>
             </>
           )}
