@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
-import { BottomNavigation } from "@/components/layout/bottom-navigation";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -39,11 +38,10 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col">
         <TooltipProvider delayDuration={400}>
           <Header />
-          <main className="flex-1 pt-16 pb-16 md:pb-0">
+          <main className="flex-1 pt-16">
             {children}
           </main>
           <Footer />
-          <BottomNavigation />
           <Toaster />
         </TooltipProvider>
       </body>
