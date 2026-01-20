@@ -22,14 +22,6 @@ interface LyricsInputSectionProps {
   onCustomTextModeChange: (enabled: boolean) => void
 }
 
-// Lyric template starters for quick concept generation
-const LYRIC_TEMPLATES = {
-  birthday: 'En morsom bursdagssang til en venn som...',
-  love: 'En romantisk kjærlighetssang om...',
-  party: 'En energisk festlåt som handler om...',
-  motivation: 'En inspirerende sang som motiverer til...'
-} as const
-
 export function LyricsInputSection({
   lyrics,
   onLyricsChange,
@@ -62,10 +54,6 @@ export function LyricsInputSection({
 
   const handleGenerateLyrics = async () => {
     await onGenerateLyrics()
-  }
-
-  const fillTemplate = (template: string) => {
-    onConceptChange(template)
   }
 
   const hasContent = lyrics.trim().length > 0
@@ -146,47 +134,6 @@ export function LyricsInputSection({
                   <span className="text-xs text-text-secondary">
                     {concept.length}/500 tegn
                   </span>
-                </div>
-              </div>
-
-              {/* Template Buttons */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-text-primary">
-                  Eller velg en mal:
-                </Label>
-                <div className="grid grid-cols-2 gap-3">
-                  <Button
-                    variant="outline"
-                    onClick={() => fillTemplate(LYRIC_TEMPLATES.birthday)}
-                    disabled={isGenerating || isOptimizing}
-                    className="h-[56px] text-[15px] font-bold rounded-lg border border-gray-300 text-gray-800 bg-white hover:border-primary/50 hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                  >
-                    Bursdagssang
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => fillTemplate(LYRIC_TEMPLATES.love)}
-                    disabled={isGenerating || isOptimizing}
-                    className="h-[56px] text-[15px] font-bold rounded-lg border border-gray-300 text-gray-800 bg-white hover:border-primary/50 hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                  >
-                    Kjærlighetssang
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => fillTemplate(LYRIC_TEMPLATES.party)}
-                    disabled={isGenerating || isOptimizing}
-                    className="h-[56px] text-[15px] font-bold rounded-lg border border-gray-300 text-gray-800 bg-white hover:border-primary/50 hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                  >
-                    Festlåt
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => fillTemplate(LYRIC_TEMPLATES.motivation)}
-                    disabled={isGenerating || isOptimizing}
-                    className="h-[56px] text-[15px] font-bold rounded-lg border border-gray-300 text-gray-800 bg-white hover:border-primary/50 hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                  >
-                    Motivasjonssang
-                  </Button>
                 </div>
               </div>
 
