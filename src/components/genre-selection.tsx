@@ -250,11 +250,15 @@ export function GenreSelection({
             value={promptText}
             onChange={(e) => handlePromptChange(e.target.value)}
             placeholder="Beskriv stilen du ønsker, f.eks: pop, akustisk gitar, rolig, norsk vokal..."
+            maxLength={1000}
             className="min-h-[80px] text-text-primary placeholder:text-text-secondary"
           />
-          <p className="text-xs text-gray-500">
-            Tips: Beskriv instrumenter, tempo, stemning og stil
-          </p>
+          <div className="flex justify-between">
+            <p className="text-xs text-gray-500">
+              Tips: Beskriv instrumenter, tempo, stemning og stil
+            </p>
+            <span className="text-xs text-text-secondary">{promptText.length}/1000 tegn</span>
+          </div>
         </div>
       </div>
     </div>

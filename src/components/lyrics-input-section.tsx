@@ -116,16 +116,17 @@ export function LyricsInputSection({
                 <Button
                   onClick={handleGenerateLyrics}
                   disabled={!canGenerate}
-                  className="w-full h-12 rounded-t-none bg-[#E94560] hover:bg-[#D62839] text-white font-medium"
+                  variant="outline"
+                  className="w-full h-10 rounded-t-none border-2 border-[#FF6B35] text-[#FF6B35] bg-white hover:bg-orange-50 font-medium"
                 >
                   {isGenerating ? (
                     <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Genererer tekst...
                     </>
                   ) : (
                     <>
-                      <Sparkles className="mr-2 h-5 w-5" />
+                      <Sparkles className="mr-2 h-4 w-4" />
                       Lag tekst med KI
                     </>
                   )}
@@ -138,9 +139,9 @@ export function LyricsInputSection({
               </div>
 
               {/* Info Box */}
-              <div className="flex items-start gap-2 p-3 bg-purple-50 rounded-lg border border-purple-200">
-                <Info className="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0" />
-                <p className="text-xs text-purple-700">
+              <div className="flex items-start gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <Info className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-gray-600">
                   KI lager både melodi og tekst basert på din beskrivelse.
                   Jo mer detaljer, jo bedre resultat!
                 </p>
@@ -163,6 +164,7 @@ export function LyricsInputSection({
                   value={lyrics}
                   onChange={(e) => onLyricsChange(e.target.value)}
                   disabled={isGenerating || isOptimizing}
+                  maxLength={2000}
                   className={cn(
                     'min-h-[200px] font-mono text-sm leading-relaxed resize-none whitespace-pre-wrap pb-8',
                     (isGenerating || isOptimizing) && 'opacity-50'
@@ -226,7 +228,7 @@ Og tenkte på deg
 Refreng:
 Du er min...`}
               rows={12}
-              maxLength={1000}
+              maxLength={2000}
               value={lyrics}
               onChange={(e) => onLyricsChange(e.target.value)}
               disabled={isGenerating || isOptimizing}
@@ -252,11 +254,11 @@ Du er min...`}
           <div className="flex justify-end">
             <span className={cn(
               "text-sm",
-              lyrics.length > 900 ? "text-warning" : "text-text-secondary"
+              lyrics.length > 1800 ? "text-warning" : "text-text-secondary"
             )}>
               {lyrics.length}
             </span>
-            <span className="text-sm text-text-secondary"> / 1000 tegn</span>
+            <span className="text-sm text-text-secondary"> / 2000 tegn</span>
           </div>
 
           {/* Status message for optimizing */}
