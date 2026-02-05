@@ -105,7 +105,7 @@ export function Header() {
               </button>
             )}
             <Link
-              href="/settings?openPurchaseModal=true"
+              href="/pricing"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Priser

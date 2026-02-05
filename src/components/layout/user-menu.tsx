@@ -57,7 +57,7 @@ export function UserMenu({ user, credits, onSignOut }: UserMenuProps) {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/settings?openPurchaseModal=true" className="flex items-center gap-2 cursor-pointer">
+          <Link href="/pricing" className="flex items-center gap-2 cursor-pointer">
             <CreditCard className="h-4 w-4" />
             <span>Kjøp kreditter</span>
           </Link>

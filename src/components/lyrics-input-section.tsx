@@ -123,13 +123,12 @@ export function LyricsInputSection({
                 <Button
                   onClick={handleGenerateLyrics}
                   disabled={!canGenerate}
-                  variant="outline"
-                  className="w-full h-10 rounded-t-none border-2 border-[#FF6B35] text-[#FF6B35] bg-white hover:bg-orange-50 font-medium"
+                  className="w-full h-9 rounded-t-none bg-[#FF6B35] hover:bg-[#E85A2A] text-white text-sm font-medium"
                 >
                   {isGenerating ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Genererer tekst...
+                      Genererer...
                     </>
                   ) : (
                     <>

@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { STANDARD_GENRES } from '@/lib/standard-genres'
+import { AIAssistantModal } from '@/components/ai-assistant/modal'
+import { saveCustomGenre } from '@/lib/custom-genres-storage'
+import { Sparkles } from 'lucide-react'
 
 // Default genres to display in 2x2 grid (reduces decision paralysis)
 const DEFAULT_GENRES = ['Country', 'Norsk pop', 'Rap/Hip-Hop', 'Dans/Elektronisk']
@@ -55,6 +58,7 @@ export function GenreSelection({
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [promptText, setPromptText] = useState('')
+  const [showAIAssistant, setShowAIAssistant] = useState(false)
 
   // Sync with parent's selectedGenreId (controlled mode)
   useEffect(() => {
@@ -153,6 +157,29 @@ export function GenreSelection({
     }
   }
 
+  const handleSaveCustomGenre = (genre: {
+    id: string
+    name: string
+    display_name: string
+    sunoPrompt: string
+    createdAt: Date
+    isCustom: true
+  }) => {
+    // Save to localStorage
+    saveCustomGenre({
+      id: genre.id,
+      name: genre.name,
+      display_name: genre.display_name,
+      sunoPrompt: genre.sunoPrompt,
+      createdAt: genre.createdAt.toISOString()
+    })
+
+    // Select the new custom genre
+    setSelectedId(genre.id)
+    setPromptText(genre.sunoPrompt)
+    onGenreSelect?.(genre.id, genre.name, genre.sunoPrompt)
+  }
+
   if (isLoading) {
     return (
       <div className={`w-full ${className}`}>
@@ -240,6 +267,23 @@ export function GenreSelection({
             </button>
           ))}
         </div>
+
+        {/* AI Assistant Button */}
+        <Button
+          onClick={() => setShowAIAssistant(true)}
+          variant="outline"
+          className="w-full h-10 border-dashed border-2 border-primary/50 text-primary hover:bg-primary/5 hover:border-primary"
+        >
+          <Sparkles className="mr-2 h-4 w-4" />
+          Lag egen sjanger med AI
+        </Button>
+
+        {/* AI Assistant Modal */}
+        <AIAssistantModal
+          open={showAIAssistant}
+          onClose={() => setShowAIAssistant(false)}
+          onSaveGenre={handleSaveCustomGenre}
+        />
 
         {/* Prompt Text Box */}
         <div className="space-y-2">

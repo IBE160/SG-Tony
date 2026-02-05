@@ -58,7 +58,7 @@ export function MobileNav({ user, credits, onSignOut, onShowLoginModal }: Mobile
 
   // Items that don't require auth
   const publicItems = [
-    { href: '/settings?openPurchaseModal=true', icon: Sparkles, label: 'Priser' },
+    { href: '/pricing', icon: Sparkles, label: 'Priser' },
   ]
 
   // Settings only for logged in users

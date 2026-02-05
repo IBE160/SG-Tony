@@ -521,17 +521,16 @@ export default function Home() {
           <Button
             onClick={handleGenerateSong}
             disabled={isGeneratingSong || isGenerating || isOptimizing}
-            className="w-full h-14 text-lg bg-[#FF6B35] hover:bg-[#E85A2A]"
-            size="lg"
+            className="w-full h-11 text-base bg-[#FF6B35] hover:bg-[#E85A2A]"
           >
             {isGeneratingSong ? (
               <>
-                <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                 Starter generering...
               </>
             ) : (
               <>
-                <Music className="mr-2 h-6 w-6" />
+                <Music className="mr-2 h-5 w-5" />
                 Lag sang
               </>
             )}

@@ -17,8 +17,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { InfoTooltip } from '@/components/info-tooltip'
-import { CREDIT_PACKAGES, TOOLTIPS, type CreditPackage } from '@/lib/constants'
+import { CREDIT_PACKAGES, type CreditPackage } from '@/lib/constants'
 import { useErrorToast } from '@/hooks/use-error-toast'
 
 interface CreditPurchaseModalProps {
@@ -69,11 +68,10 @@ export function CreditPurchaseModal({ open, onOpenChange }: CreditPurchaseModalP
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl sm:text-2xl flex items-center gap-2">
+          <DialogTitle className="text-xl sm:text-2xl text-white">
             Kjøp kreditter
-            <InfoTooltip content={TOOLTIPS.credits} side="bottom" />
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-gray-300">
             Velg en kredittpakke for å lage norske sanger
           </DialogDescription>
         </DialogHeader>
@@ -93,7 +91,7 @@ export function CreditPurchaseModal({ open, onOpenChange }: CreditPurchaseModalP
               )}
 
               <CardHeader className="text-center pb-2 sm:pb-3 pt-4 sm:pt-6">
-                <CardTitle className="text-base sm:text-lg">{pkg.name}</CardTitle>
+                <CardTitle className="text-base sm:text-lg text-white">{pkg.name}</CardTitle>
                 <CardDescription>
                   <span className="text-2xl sm:text-3xl font-bold text-[#FF5B24]">
                     {pkg.priceNOK} kr
@@ -102,10 +100,10 @@ export function CreditPurchaseModal({ open, onOpenChange }: CreditPurchaseModalP
               </CardHeader>
 
               <CardContent className="text-center space-y-1 sm:space-y-2 py-2 sm:py-4">
-                <div className="text-xl sm:text-2xl font-semibold text-gray-900">
+                <div className="text-xl sm:text-2xl font-semibold text-white">
                   {pkg.credits.toLocaleString()} kreditter
                 </div>
-                <div className="text-xs sm:text-sm text-gray-600">{pkg.description}</div>
+                <div className="text-xs sm:text-sm text-gray-400">{pkg.description}</div>
               </CardContent>
 
               <CardFooter className="pb-3 sm:pb-6">
@@ -128,7 +126,7 @@ export function CreditPurchaseModal({ open, onOpenChange }: CreditPurchaseModalP
           ))}
         </div>
 
-        <div className="flex items-center justify-center gap-2 text-xs text-gray-500 mt-2 sm:mt-4">
+        <div className="flex items-center justify-center gap-2 text-xs text-gray-400 mt-2 sm:mt-4">
           <svg
             viewBox="0 0 24 24"
             className="h-5 w-5"
