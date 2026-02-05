@@ -16,7 +16,7 @@
  * Security:
  * - Validates JWT tokens from cookies
  * - Automatically refreshes expired tokens
- * - Redirects unauthenticated users to /auth/login
+ * - Redirects unauthenticated users to /auth/logg-inn
  */
 
 import { createServerClient } from '@supabase/ssr';
@@ -54,8 +54,8 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Protected routes: /songs, /settings
-  const protectedRoutes = ['/songs', '/settings'];
+  // Protected routes: /sanger, /innstillinger
+  const protectedRoutes = ['/sanger', '/innstillinger'];
   const isProtectedRoute = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
@@ -63,7 +63,7 @@ export async function updateSession(request: NextRequest) {
   // If user is not logged in and accessing protected route, redirect to login
   if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone();
-    url.pathname = '/auth/login';
+    url.pathname = '/auth/logg-inn';
     url.searchParams.set('redirect', request.nextUrl.pathname);
     return NextResponse.redirect(url);
   }

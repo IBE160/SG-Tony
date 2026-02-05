@@ -105,7 +105,7 @@ export default function AboutPage() {
 
         <div className="text-center mt-12">
           <p className="text-muted-foreground">
-            Har du spørsmål? <a href="/contact" className="text-primary hover:underline">Ta kontakt med oss</a>
+            Har du spørsmål? <a href="/kontakt" className="text-primary hover:underline">Ta kontakt med oss</a>
           </p>
         </div>
       </div>

@@ -183,7 +183,7 @@ export default function VilkaarPage() {
           </p>
           <p className="text-muted-foreground mt-4">
             For mer informasjon, se vår{' '}
-            <a href="/privacy" className="text-primary hover:underline">personvernerklæring</a>.
+            <a href="/personvern" className="text-primary hover:underline">personvernerklæring</a>.
           </p>
         </section>
 
@@ -267,7 +267,7 @@ export default function VilkaarPage() {
           <h2 className="text-2xl font-bold mb-4">16. Kontakt</h2>
           <p className="text-muted-foreground">
             Har du spørsmål om disse vilkårene?{' '}
-            <a href="/contact" className="text-primary hover:underline">Kontakt oss</a>.
+            <a href="/kontakt" className="text-primary hover:underline">Kontakt oss</a>.
           </p>
         </section>
       </div>

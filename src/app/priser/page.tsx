@@ -28,7 +28,7 @@ export default function PricingPage() {
   const handlePurchase = async (pkg: CreditPackage) => {
     // If not logged in, redirect to login
     if (!user) {
-      router.push('/auth/login')
+      router.push('/auth/logg-inn')
       return
     }
 

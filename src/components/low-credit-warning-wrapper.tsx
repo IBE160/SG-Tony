@@ -23,7 +23,7 @@ export function LowCreditWarningWrapper({ userId }: LowCreditWarningWrapperProps
   }, [userId, refreshBalance])
 
   const handlePurchaseClick = () => {
-    router.push('/settings?openPurchaseModal=true')
+    router.push('/innstillinger?openPurchaseModal=true')
   }
 
   // Don't render on server to avoid hydration mismatch

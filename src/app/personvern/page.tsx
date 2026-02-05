@@ -193,7 +193,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-2xl font-bold mb-4">14. Kontakt</h2>
           <p className="text-muted-foreground">
-            Har du spørsmål om personvern? <a href="/contact" className="text-primary hover:underline">Kontakt oss</a>.
+            Har du spørsmål om personvern? <a href="/kontakt" className="text-primary hover:underline">Kontakt oss</a>.
           </p>
         </section>
       </div>

@@ -68,7 +68,7 @@ export function TransactionHistory({
     const params = new URLSearchParams()
     if (page > 1) params.set('page', page.toString())
     if (type !== 'all') params.set('type', type)
-    router.push(`/settings${params.toString() ? '?' + params.toString() : ''}`)
+    router.push(`/innstillinger${params.toString() ? '?' + params.toString() : ''}`)
   }
 
   const handlePageChange = async (newPage: number) => {
@@ -199,7 +199,7 @@ export function TransactionHistory({
                     )}
                     {transaction.song_id && (
                       <a
-                        href="/songs"
+                        href="/sanger"
                         className="text-xs text-blue-500 hover:underline"
                       >
                         Se sanger

@@ -16,8 +16,8 @@ export function BottomNavigation() {
 
   const navItems = [
     { href: '/', icon: Home, label: 'Hjem' },
-    { href: '/songs', icon: Music, label: 'Sanger' },
-    { href: '/settings', icon: Settings, label: 'Instillinger' }
+    { href: '/sanger', icon: Music, label: 'Sanger' },
+    { href: '/innstillinger', icon: Settings, label: 'Innstillinger' }
   ]
 
   return (

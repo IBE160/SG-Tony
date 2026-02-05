@@ -66,7 +66,7 @@ export function Header() {
   }
 
   const handleSignIn = () => {
-    router.push('/auth/login')
+    router.push('/auth/logg-inn')
   }
 
   return (
@@ -91,21 +91,21 @@ export function Header() {
             </Link>
             {user ? (
               <Link
-                href="/songs"
+                href="/sanger"
                 className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
                 Mine Sanger
               </Link>
             ) : (
               <button
-                onClick={() => router.push('/auth/login')}
+                onClick={() => router.push('/auth/logg-inn')}
                 className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
                 Mine Sanger
               </button>
             )}
             <Link
-              href="/pricing"
+              href="/priser"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Priser
@@ -141,7 +141,7 @@ export function Header() {
                     user={user}
                     credits={balance}
                     onSignOut={handleSignOut}
-                    onShowLoginModal={() => router.push('/auth/login')}
+                    onShowLoginModal={() => router.push('/auth/logg-inn')}
                   />
                 </div>
               </>
@@ -161,7 +161,7 @@ export function Header() {
                     user={null}
                     credits={0}
                     onSignOut={handleSignOut}
-                    onShowLoginModal={() => router.push('/auth/login')}
+                    onShowLoginModal={() => router.push('/auth/logg-inn')}
                   />
                 </div>
               </>

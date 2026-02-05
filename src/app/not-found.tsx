@@ -31,7 +31,7 @@ export default function NotFound() {
             </Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/songs">
+            <Link href="/sanger">
               <Music className="mr-2 h-4 w-4" />
               Mine sanger
             </Link>

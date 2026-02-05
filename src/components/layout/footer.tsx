@@ -33,16 +33,16 @@ export function Footer() {
               <Link href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Hjem
               </Link>
-              <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/om-oss" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Om oss
               </Link>
               <Link href="/hjelp" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Hjelp & FAQ
               </Link>
-              <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/kontakt" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Kontakt
               </Link>
-              <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/priser" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Priser
               </Link>
             </nav>
@@ -55,7 +55,7 @@ export function Footer() {
               <Link href="/vilkaar" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Vilkår og betingelser
               </Link>
-              <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/personvern" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Personvernerklæring
               </Link>
             </nav>

@@ -53,16 +53,16 @@ export function MobileNav({ user, credits, onSignOut, onShowLoginModal }: Mobile
 
   // Items that require auth
   const authRequiredItems = [
-    { href: '/songs', icon: Music, label: 'Mine Sanger', requiresAuth: true },
+    { href: '/sanger', icon: Music, label: 'Mine Sanger', requiresAuth: true },
   ]
 
   // Items that don't require auth
   const publicItems = [
-    { href: '/pricing', icon: Sparkles, label: 'Priser' },
+    { href: '/priser', icon: Sparkles, label: 'Priser' },
   ]
 
   // Settings only for logged in users
-  const settingsItem = { href: '/settings', icon: Settings, label: 'Innstillinger' }
+  const settingsItem = { href: '/innstillinger', icon: Settings, label: 'Innstillinger' }
 
   return (
     <Sheet>
@@ -219,7 +219,7 @@ export function MobileNav({ user, credits, onSignOut, onShowLoginModal }: Mobile
             ) : (
               <div className="space-y-2">
                 <SheetClose asChild>
-                  <Link href="/auth/login">
+                  <Link href="/auth/logg-inn">
                     <Button variant="outline" className="w-full justify-start gap-3">
                       <LogIn className="h-5 w-5" />
                       Logg inn
@@ -227,7 +227,7 @@ export function MobileNav({ user, credits, onSignOut, onShowLoginModal }: Mobile
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
-                  <Link href="/auth/login">
+                  <Link href="/auth/logg-inn">
                     <Button className="w-full justify-start gap-3">
                       <Sparkles className="h-5 w-5" />
                       Kom i gang

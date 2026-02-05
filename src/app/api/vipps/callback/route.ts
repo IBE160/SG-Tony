@@ -22,7 +22,7 @@ export async function GET(request: Request) {
     if (!reference) {
       console.error('Missing reference in callback')
       return NextResponse.redirect(
-        new URL('/settings?payment=error', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000')
+        new URL('/innstillinger?payment=error', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000')
       )
     }
 
@@ -35,7 +35,7 @@ export async function GET(request: Request) {
 
     if (!supabaseUrl || !supabaseServiceKey) {
       console.error('Missing Supabase environment variables')
-      return NextResponse.redirect(new URL('/settings?payment=error', appUrl))
+      return NextResponse.redirect(new URL('/innstillinger?payment=error', appUrl))
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
@@ -49,12 +49,12 @@ export async function GET(request: Request) {
 
     if (fetchError || !paymentRecord) {
       console.error('Payment record not found:', reference, fetchError)
-      return NextResponse.redirect(new URL('/settings?payment=error', appUrl))
+      return NextResponse.redirect(new URL('/innstillinger?payment=error', appUrl))
     }
 
     // If already completed, just redirect to success
     if (paymentRecord.status === 'completed') {
-      return NextResponse.redirect(new URL('/settings?payment=success', appUrl))
+      return NextResponse.redirect(new URL('/innstillinger?payment=success', appUrl))
     }
 
     // Check payment status with Vipps
@@ -94,7 +94,7 @@ export async function GET(request: Request) {
         if (addCreditsError) {
           console.error('Failed to add credits:', addCreditsError)
           // Payment captured but credits not added - needs manual reconciliation
-          return NextResponse.redirect(new URL('/settings?payment=pending', appUrl))
+          return NextResponse.redirect(new URL('/innstillinger?payment=pending', appUrl))
         }
 
         console.log('Payment completed and credits added:', {
@@ -103,10 +103,10 @@ export async function GET(request: Request) {
           credits: paymentRecord.credits,
         })
 
-        return NextResponse.redirect(new URL('/settings?payment=success', appUrl))
+        return NextResponse.redirect(new URL('/innstillinger?payment=success', appUrl))
       } catch (captureError) {
         console.error('Failed to capture payment:', captureError)
-        return NextResponse.redirect(new URL('/settings?payment=error', appUrl))
+        return NextResponse.redirect(new URL('/innstillinger?payment=error', appUrl))
       }
     } else if (vippsPayment.state === 'ABORTED' || vippsPayment.state === 'TERMINATED') {
       // User cancelled or payment was terminated
@@ -115,7 +115,7 @@ export async function GET(request: Request) {
         .update({ status: 'cancelled' })
         .eq('reference', reference)
 
-      return NextResponse.redirect(new URL('/settings?payment=cancelled', appUrl))
+      return NextResponse.redirect(new URL('/innstillinger?payment=cancelled', appUrl))
     } else if (vippsPayment.state === 'EXPIRED') {
       // Payment expired
       await supabase
@@ -123,15 +123,15 @@ export async function GET(request: Request) {
         .update({ status: 'failed' })
         .eq('reference', reference)
 
-      return NextResponse.redirect(new URL('/settings?payment=expired', appUrl))
+      return NextResponse.redirect(new URL('/innstillinger?payment=expired', appUrl))
     } else {
       // Payment still pending (CREATED state) - user may have navigated away
-      return NextResponse.redirect(new URL('/settings?payment=pending', appUrl))
+      return NextResponse.redirect(new URL('/innstillinger?payment=pending', appUrl))
     }
   } catch (error) {
     console.error('Vipps callback error:', error)
     return NextResponse.redirect(
-      new URL('/settings?payment=error', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000')
+      new URL('/innstillinger?payment=error', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000')
     )
   }
 }

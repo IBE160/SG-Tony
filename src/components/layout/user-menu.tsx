@@ -51,13 +51,13 @@ export function UserMenu({ user, credits, onSignOut }: UserMenuProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuItem asChild>
-          <Link href="/settings" className="flex items-center gap-2 cursor-pointer">
+          <Link href="/innstillinger" className="flex items-center gap-2 cursor-pointer">
             <Settings className="h-4 w-4" />
             <span>Innstillinger</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/pricing" className="flex items-center gap-2 cursor-pointer">
+          <Link href="/priser" className="flex items-center gap-2 cursor-pointer">
             <CreditCard className="h-4 w-4" />
             <span>Kjøp kreditter</span>
           </Link>

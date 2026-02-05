@@ -102,7 +102,7 @@ function SettingsContent() {
       // Refresh balance to show new credits
       refreshBalance()
       // Clear query param
-      router.replace('/settings')
+      router.replace('/innstillinger')
     } else if (payment === 'cancelled') {
       toast({
         title: 'Betaling avbrutt',
@@ -110,7 +110,7 @@ function SettingsContent() {
         variant: 'default',
       })
       // Clear query param
-      router.replace('/settings')
+      router.replace('/innstillinger')
     } else if (payment === 'pending') {
       toast({
         title: 'Betaling venter',
@@ -118,7 +118,7 @@ function SettingsContent() {
         variant: 'default',
       })
       // Clear query param
-      router.replace('/settings')
+      router.replace('/innstillinger')
     } else if (payment === 'expired') {
       toast({
         title: 'Betaling utløpt',
@@ -126,7 +126,7 @@ function SettingsContent() {
         variant: 'destructive',
       })
       // Clear query param
-      router.replace('/settings')
+      router.replace('/innstillinger')
     } else if (payment === 'error') {
       toast({
         title: 'Noe gikk galt',
@@ -134,11 +134,11 @@ function SettingsContent() {
         variant: 'destructive',
       })
       // Clear query param
-      router.replace('/settings')
+      router.replace('/innstillinger')
     } else if (openModal === 'true') {
       setIsPurchaseModalOpen(true)
       // Clear query param
-      router.replace('/settings')
+      router.replace('/innstillinger')
     }
   }, [searchParams, toast, refreshBalance, router])
 
@@ -147,7 +147,7 @@ function SettingsContent() {
     try {
       const res = await fetch('/api/auth/logout', { method: 'POST' })
       if (res.ok) {
-        router.push('/auth/login')
+        router.push('/auth/logg-inn')
       } else {
         console.error('Logout failed')
       }

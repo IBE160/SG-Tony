@@ -5,8 +5,8 @@
  * Handles authentication state validation and route protection.
  *
  * Protected routes:
- * - /songs/* - User's song library
- * - /settings/* - User account settings
+ * - /sanger/* - User's song library
+ * - /innstillinger/* - User account settings
  *
  * Public routes (not protected):
  * - / - Home page

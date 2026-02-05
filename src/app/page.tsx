@@ -281,7 +281,7 @@ export default function Home() {
 
     if (!user) {
       // Redirect to login page - pending song data is auto-saved to localStorage
-      router.push('/auth/login')
+      router.push('/auth/logg-inn')
       return
     }
 

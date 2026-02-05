@@ -143,7 +143,7 @@ function getActionHandler(
       })
 
     case 'go-home':
-      return () => router.push('/songs')
+      return () => router.push('/sanger')
 
     case 'dismiss':
       return () => dismiss()
